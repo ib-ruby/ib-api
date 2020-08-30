@@ -1,5 +1,5 @@
 require 'thread'
-require 'active_support'
+#require 'active_support'
 require 'ib/socket'
 require 'ib/logger'
 require 'ib/messages'

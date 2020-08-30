@@ -1,6 +1,7 @@
-require "core/version"
+module IB
 
-module Core
-  class Error < StandardError; end
-  # Your code goes here...
 end
+IbRuby = IB
+Ib = IB
+
+  require 'ib/requires'

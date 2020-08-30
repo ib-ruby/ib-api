@@ -1,3 +1,6 @@
+require 'active_support/core_ext/module/attribute_accessors.rb'
+
+
 require 'ib/version'
 require 'ib/extensions'
 require 'ib/errors'

@@ -6,8 +6,7 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 gem 'value_semantics'																	# models
-gem 'ox',  git: 'https://github.com/ohler55/ox.git'   # xml handling
-
+gem 'ox',  git: 'https://github.com/ohler55/ox.git'   # xml handling  used for news and flex
 
 
 gem 'rspec'
