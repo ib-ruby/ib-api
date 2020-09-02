@@ -9,7 +9,7 @@ module IB
 
 			class ManagedAccounts
 				def accounts
-					accounts_list.split(',').map{|a| IB::Account.new account: a}
+					accounts_list.split(',').map{|a| Account.new account: a}
 				end
 
 				def to_human
@@ -27,6 +27,10 @@ module IB
 				class ReceiveFA
 					def accounts
 						xml[:ListOfAccountAliases][:AccountAlias].map{|x| Account.new x }
+					end
+
+					def to_human
+						"<FA: #{accounts.map(&:to_human).join(" - ")}>"
 					end
 				end
 

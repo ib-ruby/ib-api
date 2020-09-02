@@ -1,3 +1,18 @@
+module CoreExtensions
+  module Array
+    module DuplicatesCounter
+      def count_duplicates
+        self.each_with_object(Hash.new(0)) { |element, counter| counter[element] += 1 }.sort_by{|k,v| -v}.to_h
+      end
+    end
+  end
+end
+
+Array.include CoreExtensions::Array::DuplicatesCounter
+
+
+
+
 class Time
   # Render datetime in IB format (zero padded "yyyymmdd HH:mm:ss")
   def to_ib

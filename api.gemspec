@@ -1,11 +1,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "core/version"
+require "api/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "ib-core"
-  spec.version       = Core::VERSION
+  spec.name          = "ib-api"
+  spec.version       = Api::VERSION
   spec.authors       = ["Hartmut Bischoff"]
   spec.email         = ["topofocus@gmail.com"]
 

@@ -4,4 +4,4 @@ end
 IbRuby = IB
 Ib = IB
 
-  require 'ib/requires'
+require 'requires'
