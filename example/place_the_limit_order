@@ -29,9 +29,10 @@ module OrderPlacement
 		ib.clear_received :TickPrice
 		# let the calling method decide how to use the price 
 		# the calling method should return a valid order
-		order =  yield(last_price.presence || 47)
+		order =  yield( last_price.presence || 47 )
 		# to finish, we place the order using the given contract and return the order_id
-		the_order_id = if modus == :place
+		# always place the order, if there is no reference to an existing one: local_id nust not be nil, 0 or "" 
+		the_order_id = if modus == :place || order.local_id.to_i.zero?  
 		 ib.place_order order, contract      
 									 else
 		 ib.modify_order order, contract
@@ -47,32 +48,20 @@ end
 
 
 require 'bundler/setup'
-require 'ib-api'
-require 'symbols'
-require 'order-prototypes'
+require 'ib-ruby'
 include OrderPlacement
 
-# Only for Advisor accounts: you need to provide account_code such as DU666777
+# Only for Advisor accounts: you need to provide account_code such as U666777
 account_code = ARGV[0] || ''
-puts "\n" * 3
-puts  "*" * 50
-puts " We are going to place a BUY-order on Wells Fargo on the account #{account_code} "
-puts ""
-puts " The Order is placed by the Order-Prototye »Limit.order»"
-puts " "
-puts " The Order is left open after finishing this script. You have to cancel it manualy"
-puts  "*" * 50
-puts "\n" * 3
 #
 # First, connect to IB TWS. Arbitrary :client_id is used to identify your script
 ib = IB::Connection.new client_id: 1112  do | gw | #, :port => 7496 # TWS
 
 # Subscribe to TWS alerts/errors and order-related messages prior to the connection of the client
-  gw.subscribe(:Alert, :ManagedAccounts, :OpenOrder, :OrderStatus,  :ContractDataEnd ) { |msg| puts msg.to_human }
+  gw.subscribe(:Alert, :OpenOrder, :OrderStatus,  :ContractDataEnd ) { |msg| puts msg.to_human }
   gw.subscribe(:ContractData ) do |msg| 
     puts msg.contract.to_human + "\n"
   end
-	gw.logger.level = Logger::FATAL # DEBUG  -- INFO -- WARN -- ERROR  -- FATAL
 
 end
 
@@ -96,10 +85,6 @@ contract =  IB::Symbols::Stocks.wfc
 
 
 puts "going to modify the order "
-
-puts "\n******** Press <Enter> to proceed... *********\n\n"
-STDIN.gets
-
 puts "changing price by 1$"
 
 			the_modified_order_id = place_the_order( contract: contract, modus: :modify ) do | asset_price |
@@ -117,7 +102,6 @@ STDIN.gets
 
 
 ## RUN ONLY ON A DEMO ACCOUNT
-#
 #
 # expected output
 #

@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+#
+# This script places WFC bracketed buy order.
+# Two child orders are attached:
+#   STOP order
+#   LIMIT order (profit target)
+
+require 'rubygems'
+require 'bundler/setup'
+require 'ib-api'
+require 'symbols'
+require 'order-prototypes'
+# Only for Advisor accounts: you need to provide account_code such as U666777
+account_code = ARGV[0] || ''
+# First, connect to IB TWS. Arbitrary :client_id is used to identify your script
+ib = IB::Connection.new :client_id => 1112 do | gw | #, :port => 7497 # TWS
+
+# Subscribe to TWS alerts/errors and order-related messages
+	gw.subscribe(:Alert, :OpenOrder, :OrderStatus, :ManagedAccounts) { |msg| puts msg.to_human }
+end
+
+symbol = IB::Symbols::Stocks[:wfc]
+
+order_price   = 24 
+stop_price    = order_price - 0.25
+profit_price  = order_price + 0.25
+
+#-- Parent Order --
+buy_order = IB::Limit.order :total_quantity => 100,
+                          :price => order_price,
+                          :action => :buy,
+                          :algo_strategy => '',
+                          :transmit => false,
+		      account: account_code 
+ib.wait_for :NextValidId
+
+#-- Child STOP --
+stop_order = IB::SimpleStop.order :total_quantity => 100,
+                          :price => stop_price,
+                          :action => :sell,
+                          :parent_id => buy_order.local_id,
+		      account: account_code 
+#-- Profit LMT
+profit_order = IB::Limit.order  :total_quantity => 100,
+                          :price => profit_price,
+                          :action => :sell,
+                          :parent_id => buy_order.local_id,
+		      account: account_code 
+
+# place parent order
+ib.place_order buy_order, symbol
+stop_order.parent_id = buy_order.local_id
+profit_order.parent_id = buy_order.local_id
+
+# place child orders
+ib.place_order stop_order, symbol
+ib.place_order profit_order, symbol
+
+ib.send_message :RequestAllOpenOrders
+
+puts "\n******** Press <Enter> to cancel... *********\n\n"
+STDIN.gets

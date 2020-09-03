@@ -3,19 +3,19 @@
 # This script subscribes to market data for a list of Options
 
 require 'bundler/setup'
-require 'ib-core'
+require 'ib-api'
 require 'symbols'
 COUNT_OF_EVENTS =  20
 # Definition of what we want market data for.  We have to keep track of what ticker id
 # corresponds to what symbol ourselves, because the ticks don't include any other
 # identifying information. The choice of ticker ids is, as far as I can tell, arbitrary.
-contracts = [ IB::Symbols::Options.ge20, IB::Symbols::Options.z750, IB::Symbols::Options.spy75,
-							IB::Symbols::Options.aapl200 ]
+contracts = [ IB::Symbols::Options.ge,  IB::Symbols::Options.spy,
+							IB::Symbols::Options.aapl]
 list_of_ids =[]
 
 counter = 0
 
-contracts = [ IB::Option.new( symbol: 'ESTX50', exchange:'DTB', multiplier: 10, currency: 'EUR', strike: 3200, expiry: '202012', right: :put) ,IB::Symbols::Options.ge20 ]
+#contracts = [ IB::Option.new( symbol: 'ESTX50', exchange:'DTB', multiplier: 10, currency: 'EUR', strike: 3200, expiry: '202012', right: :put) ,IB::Symbols::Options.ge ]
 # First, connect to IB TWS. Arbitrary :client_id is used to identify your script
 ib = IB::Connection.new( client_id: 1116, port: 7496)  do | gw| #, :port => 7496 # TWS
 

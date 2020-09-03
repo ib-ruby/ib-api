@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+#
+# This script places GOOG option butterfly combo order
+
+require 'rubygems'
+require 'bundler/setup'
+require 'ib-api'
+require 'extensions/verify'
+require 'extensions/market-price'
+require 'order-prototypes'
+
+# Utility method that helps us build multi-legged (BAG) Orders
+def butterfly symbol, expiry, right, *strikes
+	
+	legs = strikes.zip([1, -2, 1]).map do |strike, weight|
+		# Create contract
+		the_leg = nil
+		IB::Option.new( :symbol => symbol,
+									 :expiry => expiry,
+									 :right => right,
+									 :strike => strike).verify do | c |
+
+										 # Create Comboleg from con_id and weight
+										 the_leg = IB::ComboLeg.new :con_id => c.con_id, :weight => weight 
+									 end
+	  the_leg #  return_value 
+  end
+	if legs.size < 3
+		puts "Could'nd initialize all legs"
+		nil   #  return nil
+	else
+  # Create and return new Combo contract
+  IB::Bag.new :symbol => symbol,
+              :currency => "USD", # Only US options in combo Contracts
+              :exchange => "SMART",
+              :combo_legs => legs
+	end
+end
+
+# Only for Advisor accounts: you need to provide account_code such as U666777
+account_code = ARGV[0] || ''
+
+# 
+# First, connect to IB TWS. Arbitrary :client_id is used to identify your script
+ib = IB::Connection.new :client_id => 1112 do | gw | #, :port => 7497 # TWS
+
+	# Subscribe to TWS alerts/errors and order-related messages
+	gw.subscribe(:Alert, :OpenOrder, :OrderStatus, :ManagedAccounts) { |msg| puts msg.to_human }
+end
+ib.wait_for :NextValidId
+
+# Create multi-legged option Combo using utility method above
+combo = butterfly 'WMT', '20201218', 'CALL', 145, 150 , 155
+unless combo.nil?
+	puts "MARKETPRICE: #{combo.market_price}"
+	# Create Order stub
+	order = IB::Limit.order total_quantity: 10, # 10 butterflies
+		limit_price: 0.06, # at 0.06 x 100 USD per contract
+		action: :buy,
+		account: account_code 
+
+
+	ib.place_order order, combo
+
+	ib.wait_for [:OpenOrder, 3], [:OrderStatus, 2]
+
+	puts "\n******** Press <Enter> to cancel... *********\n\n"
+STDIN.gets
+end
+
+### Expected output
+
+#./place_butterfly_order DU167349
+#Connected to server, version: 137,
+# connection time: 2020-09-03 05:13:24 +0000 local, 2020-09-03T05:13:24+00:00 remote.
+#< ManagedAccounts: DF167347 - DU167348 - DU167349>
+#Got next valid order id: 65.
+#TWS Warning 2104: Market data farm connection is OK:eufarm
+#TWS Warning 2104: Market data farm connection is OK:usopt
+#TWS Warning 2104: Market data farm connection is OK:usfarm
+#TWS Warning 2107: HMDS data farm connection is inactive but should be available upon demand.euhmds
+#TWS Error 354: Requested market data is not subscribed.
+#MARKETPRICE: []
+#<OpenOrder: <Bag: WMT SMART USD legs: 418440165|1,418440170|-2,418440175|1 > <Order: LMT GTC buy 10.0  @ 0.06 PreSubmitted #65/1750019075 from 1112/DU167349>>
+#<OrderState: PreSubmitted #65/1750019075 from 1112 filled 0.0/10.0 at 0.0/0.0 why_held locate>
+#
+#******** Press <Enter> to cancel... *********
+#
+#<OpenOrder: <Bag: WMT SMART USD legs: 418440165|1,418440170|-2,418440175|1 > <Order: LMT GTC buy 10.0  @ 0.06 Submitted #65/1750019075 from 1112/DU167349>>
+#<OrderState: Submitted #65/1750019075 from 1112 filled 0.0/10.0 at 0.0/0.0 why_held >
+#
+#./cancel_orders 
+#< ManagedAccounts: DF167347 - DU167348 - DU167349>
+#TWS Warning 2104: Market data farm connection is OK:eufarm
+#TWS Warning 2104: Market data farm connection is OK:usopt
+#TWS Warning 2104: Market data farm connection is OK:usfarm
+#TWS Warning 2107: HMDS data farm connection is inactive but should be available upon demand.euhmds
+#-------------------------------------------------------
+#Remaining Orders
+#-------------------------------------------------------
+#<OpenOrder: <Bag: WMT SMART USD legs: 418440165|1,418440170|-2,418440175|1 > <Order: LMT GTC buy 10.0  @ 0.06 PendingCancel #65/1750019075 from 1112/DU167349>>
+#<OrderState: PendingCancel #65/1750019075 from 1112 filled 0.0/10.0 at 0.0/0.0 why_held >
+#<OpenOrderEnd: >
+##
