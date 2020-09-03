@@ -11,7 +11,8 @@ In its plain vanilla usage, it just exchanges messages with the TWS. The User is
 Additional services can be loaded via `require` 
 
 * require 'symbols'  enables the usage of predefined Symbols and Watchlists
-* require 'order_prototypes' enables to use predefined orders like: `Limit.order`, `SimpleStop.order` etc
+* require 'order-prototypes' enables to use predefined orders like: `Limit.order`, `SimpleStop.order` etc
+* require 'spread-prototypes' offers a simple method to define popular spreads 
 * require 'extensions/verify' adds a handy `verify` method to Contract
 * require 'extensions/market-price' simplifies the fetching of the actual market_price to any instrument
 * require 'extensions/eod' fetches _end of Day_ historical data from any instrument
