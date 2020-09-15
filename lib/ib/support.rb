@@ -64,7 +64,7 @@ module IBSupport
 			t= read_int
 				s= Time.at(t)
 	#			s.year == 1970  --> data is most likely a date-string
-				s.year == 1970 ? Date.parse(t.to_s) : t
+				s.year == 1970 ? Date.parse(t.to_s) : s
 		end
 
 		def read_parse_date
