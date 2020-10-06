@@ -2,11 +2,11 @@ require 'main_helper'
 
 
 RSpec.shared_examples_for "simple_instruction" do
-	it { is_expected.to be_a IB::Messages::Incoming::AbstractMessage}
-	its(:message_id) { is_expected.to eq 10 }
-	its(:version) { is_expected.to eq 1 }
-	its(:data) { is_expected.not_to  be_empty }
-	its( :buffer  ){ is_expected.to be_empty }
+	it { is_expected.to be_a IB::Messages::Incoming::AbstractMessage }
+	its( :message_id ) { is_expected.to eq 10 }
+	its( :version )    { is_expected.to eq 1 }
+	its( :data )       { is_expected.not_to  be_empty }
+	its( :buffer  )    { is_expected.to be_empty }
 end 
 
 
