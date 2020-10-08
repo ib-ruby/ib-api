@@ -1,6 +1,5 @@
 module IB
   module Messages
-
     # This is just a basic generic message from the server.
     #
     # Class variables:
@@ -11,7 +10,6 @@ module IB
     # @version - int: current version of message format.
     # @data - Hash of actual data read from a stream.
     class AbstractMessage
-
       # Class methods
       def self.data_map # Map for converting between structured message and raw data
         @data_map ||= []
@@ -21,8 +19,8 @@ module IB
         @version || 1
       end
 
-      def self.message_id
-        @message_id
+      class << self
+        attr_reader :message_id
       end
 
       # Returns message type Symbol (e.g. :OpenOrderEnd)
@@ -34,9 +32,9 @@ module IB
         self.class.message_id
       end
 
-			def request_id
-				@data[:request_id].presence || nil
-			end
+      def request_id
+        @data[:request_id].presence || nil
+      end
 
       def message_type
         self.class.message_type
@@ -44,20 +42,18 @@ module IB
 
       attr_accessor :created_at, :data
 
-			def self.properties?
-				@given_arguments
-			end
-
-
-      def to_human
-        "<#{self.message_type}:" +
-        @data.map do |key, value|
-          unless [:version].include?(key)
-            " #{key} #{ value.is_a?(Hash) ? value.inspect : value}"
-          end
-        end.compact.join(',') + " >"
+      def self.properties?
+        @given_arguments
       end
 
+      def to_human
+        "<#{message_type}:" +
+          @data.map do |key, value|
+            unless [:version].include?(key)
+              " #{key} #{value.is_a?(Hash) ? value.inspect : value}"
+            end
+          end.compact.join(',') + ' >'
+      end
     end # class AbstractMessage
 
     # Macro that defines short message classes using a one-liner.
@@ -71,19 +67,20 @@ module IB
 
       # Define new message class
       message_class = Class.new(base) do
-        @message_id, @version = message_id, version || 1
+        @message_id = message_id
+        @version = version || 1
         @data_map = data_map
-				@given_arguments =[]
+        @given_arguments = []
 
         @data_map.each do |(name, _, type_args)|
-					dont_process = name == :request_id # [ :request_id, :local_id, :id ].include? name.to_sym 
-					@given_arguments << name.to_sym
+          dont_process = name == :request_id # [ :request_id, :local_id, :id ].include? name.to_sym
+          @given_arguments << name.to_sym
           # Avoid redefining existing accessor methods
           unless instance_methods.include?(name.to_s) || instance_methods.include?(name.to_sym) || dont_process
             if type_args.is_a?(Symbol) # This is Incoming with [group, field, type]
               attr_reader name
             else
-              define_method(name) { @data[name] } 
+              define_method(name) { @data[name] }
             end
           end
         end
@@ -96,6 +93,5 @@ module IB
 
       message_class
     end
-
   end # module Messages
 end # module IB

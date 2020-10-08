@@ -1,5 +1,4 @@
 module IB
-
   # Error handling
   class Error < RuntimeError
   end
@@ -10,7 +9,7 @@ module IB
   class SymbolError < ArgumentError
   end
 
-  class LoadError < LoadError
+  class LoadError < RuntimeError
   end
 
   class FlexError < RuntimeError
@@ -20,25 +19,25 @@ module IB
   end
 end # module IB
 
-# Patching Object with universally accessible top level error method. 
-# The method is used throughout the lib instead of plainly raising exceptions. 
-# This allows lib user to easily inject user-specific error handling into the lib 
+# Patching Object with universally accessible top level error method.
+# The method is used throughout the lib instead of plainly raising exceptions.
+# This allows lib user to easily inject user-specific error handling into the lib
 # by just replacing Object#error method.
-def error message, type=:standard, backtrace=nil
+def error message, type = :standard, backtrace=nil
   e = case type
-  when :standard
-    IB::Error.new message
-  when :args
-    IB::ArgumentError.new message
-  when :symbol
-    IB::SymbolError.new message
-  when :load
-    IB::LoadError.new message
-  when :flex
-    IB::FlexError.new message
-  when :reader
-    IB::TransmissionError.new message
-  end
+      when :standard
+        IB::Error.new message
+      when :args
+        IB::ArgumentError.new message
+      when :symbol
+        IB::SymbolError.new message
+      when :load
+        IB::LoadError.new message
+      when :flex
+        IB::FlexError.new message
+      when :reader
+        IB::TransmissionError.new message
+      end
   e.set_backtrace(backtrace) if backtrace
   raise e
 end

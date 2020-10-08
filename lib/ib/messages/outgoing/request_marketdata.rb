@@ -1,13 +1,11 @@
-
 module IB
   module Messages
     module Outgoing
       extend Messages # def_message macros
 
-
       # @data={:id => int: ticker_id - Must be a unique value. When the market data
       #                                returns, it will be identified by this tag,
-			#                                if omitted, id-autogeneration process is performed
+      #                                if omitted, id-autogeneration process is performed
       #      :contract => IB::Contract, requested contract.
       #      :tick_list => String: comma delimited list of requested tick groups:
       #        Group ID - Description - Requested Tick Types
@@ -28,11 +26,11 @@ module IB
       #        236 - Shortable (inventory) - 46
       #        256 - Inventory - ?
       #        258 - Fundamental Ratios - 47
-      #        291 - (ivclose)                          
-      #        292 - (Wide News)                          
-      #        293 - (TradeCount)                          
-      #        295 - (VolumeRate)                          
-      #        318 - (iLastRTHT-Trade)                          
+      #        291 - (ivclose)
+      #        292 - (Wide News)
+      #        293 - (TradeCount)
+      #        295 - (VolumeRate)
+      #        318 - (iLastRTHT-Trade)
       #        370 - (Participation Monitor)
       #        375 - RTTrdVolumne
       #        377 - CttTickTag
@@ -76,24 +74,24 @@ module IB
       #
       #      :snapshot => bool: Check to return a single snapshot of market data and
       #                   have the market data subscription canceled. Do not enter any
-      #                   :tick_list values if you use snapshot. 
+      #                   :tick_list values if you use snapshot.
       #
       #      :regulatory_snapshot => bool - With the US Value Snapshot Bundle for stocks,
       #                   regulatory snapshots are available for 0.01 USD each.
       #      :mktDataOptions => (TagValueList)  For internal use only.
-      #                    Use default value XYZ. 
+      #                    Use default value XYZ.
       #
       RequestMarketData =
-          def_message [1, 11], :request_id,
-                      [:contract, :serialize_short, :primary_exchange],  # include primary exchange in request
-                      [:contract, :serialize_legs, []],
-                      [:contract, :serialize_under_comp, []],
-                      [:tick_list, lambda do |tick_list|
-                        tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')
-                      end, []],
-                      [:snapshot, false],
-		      [:regulatory_snapshot, false],
-		      [:mkt_data_options, "XYZ"]
+        def_message [1, 11], :request_id,
+                    %i[contract serialize_short primary_exchange],  # include primary exchange in request
+                    [:contract, :serialize_legs, []],
+                    [:contract, :serialize_under_comp, []],
+                    [:tick_list, lambda do |tick_list|
+                      tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')
+                    end, []],
+                    [:snapshot, false],
+                    [:regulatory_snapshot, false],
+                    [:mkt_data_options, 'XYZ']
     end
   end
 end

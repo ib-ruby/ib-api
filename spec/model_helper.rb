@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'db_helper'
 
-[:props, :aliases, :errors, :assigns, :human, :associations, :collections].each do |aspect|
+%i[props aliases errors assigns human associations collections].each do |aspect|
   eval "def #{aspect}
           (metadata[:#{aspect}] rescue example.metadata[:#{aspect}]) || {}
         end"
@@ -12,9 +12,9 @@ def codes_and_values_for property
 end
 
 def numeric_assigns
-  {1313 => 1313,
-   [:foo, 'BAR'] => /is not a number/,
-   nil => /is not a number/}
+  { 1313 => 1313,
+    [:foo, 'BAR'] => /is not a number/,
+    nil => /is not a number/ }
 end
 
 def numeric_or_nil_assigns
@@ -22,21 +22,21 @@ def numeric_or_nil_assigns
 end
 
 def to_i_assigns
-  {[1313, '1313'] => 1313,
-   ['foo', 'BAR', nil, '', 0] => 0, } # Symbols NOT coerced! They DO have int equivalent
+  { [1313, '1313'] => 1313,
+    ['foo', 'BAR', nil, '', 0] => 0 } # Symbols NOT coerced! They DO have int equivalent
 end
 
 def float_assigns
-  {13.13 => 13.13,
-   13 => 13.0,
-   nil => /is not a number/,
-   [:foo, 'BAR'] => /is not a number/}
+  { 13.13 => 13.13,
+    13 => 13.0,
+    nil => /is not a number/,
+    [:foo, 'BAR'] => /is not a number/ }
 end
 
 def to_f_assigns
-  {13.13 => 13.13,
-   13 => 13.0,
-   [:foo, 'BAR', '', nil, 0] => 0.0}
+  { 13.13 => 13.13,
+    13 => 13.0,
+    [:foo, 'BAR', '', nil, 0] => 0.0 }
 end
 
 def float_or_nil_assigns
@@ -44,69 +44,66 @@ def float_or_nil_assigns
 end
 
 def boolean_assigns
-  {[1, true, 't'] => true,
-   [0, false, 'f'] => false}
+  { [1, true, 't'] => true,
+    [0, false, 'f'] => false }
 end
 
 def string_assigns
-  {[:Bar, 'Bar'] => 'Bar',
-   [:foo, 'foo'] => 'foo'}
+  { [:Bar, 'Bar'] => 'Bar',
+    [:foo, 'foo'] => 'foo' }
 end
 
 def string_upcase_assigns
-  {[:cboe, :Cboe, 'cboE', 'CBOE'] => 'CBOE',
-   [:bar, 'Bar'] => 'BAR',
-   [:foo, 'foo'] => 'FOO'}
+  { [:cboe, :Cboe, 'cboE', 'CBOE'] => 'CBOE',
+    [:bar, 'Bar'] => 'BAR',
+    [:foo, 'foo'] => 'FOO' }
 end
 
 def open_close_assigns
-  {['SAME', 'same', 'S', 's', :same, 0, '0'] => :same,
-   ['OPEN', 'open', 'O', 'o', :open, 1, '1'] => :open,
-   ['CLOSE', 'close', 'C', 'c', :close, 2, '2'] => :close,
-   ['UNKNOWN', 'unknown', 'U', 'u', :unknown, 3, '3'] => :unknown,
-   [42, nil, 'Foo', :bar] => /should be same.open.close.unknown/}
+  { ['SAME', 'same', 'S', 's', :same, 0, '0'] => :same,
+    ['OPEN', 'open', 'O', 'o', :open, 1, '1'] => :open,
+    ['CLOSE', 'close', 'C', 'c', :close, 2, '2'] => :close,
+    ['UNKNOWN', 'unknown', 'U', 'u', :unknown, 3, '3'] => :unknown,
+    [42, nil, 'Foo', :bar] => /should be same.open.close.unknown/ }
 end
 
 def buy_sell_assigns
-  {['BOT', 'BUY', 'Buy', 'buy', :BUY, :BOT, :Buy, :buy, 'B', :b] => :buy,
-   ['SELL', 'SLD', 'Sel', 'sell', :SELL, :SLD, :Sell, :sell, 'S', :S] => :sell,
-   [1, nil, 'ASK', :foo] => /should be buy.sell/
-   }
+  { ['BOT', 'BUY', 'Buy', 'buy', :BUY, :BOT, :Buy, :buy, 'B', :b] => :buy,
+    ['SELL', 'SLD', 'Sel', 'sell', :SELL, :SLD, :Sell, :sell, 'S', :S] => :sell,
+    [1, nil, 'ASK', :foo] => /should be buy.sell/ }
 end
 
 def buy_sell_short_assigns
   buy_sell_assigns.merge(
     ['SSHORT', 'Short', 'short', :SHORT, :short, 'T', :T] => :short,
     ['SSHORTX', 'Shortextemt', 'shortx', :short_exempt, 'X', :X] => :short_exempt,
-  [1, nil, 'ASK', :foo] => /should be buy.sell.short/)
+    [1, nil, 'ASK', :foo] => /should be buy.sell.short/
+  )
 end
 
 def test_assigns cases, prop, name
-
   # For all test cases given as an Array [res1, res2] or Hash {val => res} ...
   (cases.is_a?(Array) ? cases.map { |e| [e, e] } : cases).each do |values, result|
-
     # For all values in this test case ...
     [values].flatten.each do |value|
-      #p prop, name, value, result
+      # p prop, name, value, result
 
       # Assigning this value to a property results in ...
       case result
       when Exception # ... Exception
 
         it "#{prop} = #{value.inspect} #=> raises #{result}" do
-          expect { subject.send "#{prop}=", value }.
-            to raise_error result
+          expect { subject.send "#{prop}=", value }
+            .to raise_error result
         end
 
       when Regexp # ... Non-exceptional error, making model invalid
 
-        it "#{prop} = #{value.inspect} #=> error #{result.to_s}" do
-
+        it "#{prop} = #{value.inspect} #=> error #{result}" do
           expect { subject.send "#{prop}=", value }.to_not raise_error
 
           subject.valid? # just triggers validation
-          #pp subject.errors.messages
+          # pp subject.errors.messages
 
           subject.errors.messages.should have_key name
           subject.should be_invalid
@@ -117,10 +114,9 @@ def test_assigns cases, prop, name
       else # ... correct uniform assignment to result
 
         it "#{prop} = #{value.inspect} #=> #{result.inspect}" do
-
           was_valid = subject.valid?
           expect { subject.send "#{prop}=", value }.to_not raise_error
-          subject.send("#{prop}").should == result
+          subject.send(prop.to_s).should == result
           if was_valid
             # Assignment keeps validity
             subject.errors.messages.should_not have_key name
@@ -133,16 +129,16 @@ def test_assigns cases, prop, name
           it "#{prop} alias assignment changes #{name} property, and vice versa" do
             # Assignment to alias changes property as well
             subject.send "#{prop}=", value
-            subject.send("#{name}").should == result
+            subject.send(name.to_s).should == result
 
             # Unsetting alias unsets property as well
             subject.send "#{prop}=", nil # unset alias
-            subject.send("#{prop}").should be_blank #== nil
-            subject.send("#{name}").should be_blank #== nil
+            subject.send(prop.to_s).should be_blank #== nil
+            subject.send(name.to_s).should be_blank #== nil
 
             # Assignment to original property changes alias as well
             subject.send "#{name}=", value
-            subject.send("#{prop}").should == result
+            subject.send(prop.to_s).should == result
           end
         end
       end
@@ -151,7 +147,7 @@ def test_assigns cases, prop, name
 end
 
 RSpec.shared_examples_for 'Model with valid defaults' do
-  context 'instantiation without properties' , focus: true do
+  context 'instantiation without properties', focus: true do
     subject { described_class.new }
     let(:init_with_props?) { false }
 
@@ -237,7 +233,6 @@ RSpec.shared_examples_for 'Model instantiated with properties' do
 end
 
 RSpec.shared_examples_for 'Model properties' do
-
   it 'leaves order_id alone, no aliasing' do
     if subject.respond_to?(:order_id)
       subject.order_id.should be_nil
@@ -251,20 +246,20 @@ RSpec.shared_examples_for 'Model properties' do
   end
 
   it 'allows setting properties' do
-    expect {
+    expect do
       props.each do |name, value|
         subject.send("#{name}=", value)
         subject.send(name).should == value
       end
-    }.to_not raise_error
+    end.to_not raise_error
   end
 
   props.each do |name, value|
     it "#{name} = #{value.inspect} #=> does not raise" do
-      expect {
+      expect do
         subject.send("#{name}=", value)
         subject.send(name).should == value
-      }.to_not raise_error
+      end.to_not raise_error
     end
   end
 
@@ -282,11 +277,9 @@ RSpec.shared_examples_for 'Model properties' do
       test_assigns cases, prop, name
     end
   end
-
 end
 
 RSpec.shared_examples_for 'Valid Model' do
-
   it 'validates' do
     subject.should be_valid
     subject.errors.should be_empty
@@ -296,7 +289,6 @@ RSpec.shared_examples_for 'Valid Model' do
 end
 
 RSpec.shared_examples_for 'Invalid Model' do
-
   it 'does not validate' do
     subject.should_not be_valid
     subject.should be_invalid
@@ -311,25 +303,24 @@ RSpec.shared_examples_for 'Contract' do
   it 'becomes invalid if assigned wrong :sec_type property' do
     subject.sec_type = 'FOO'
     subject.should be_invalid
-    subject.errors.messages[:sec_type].should include "should be valid security type"
+    subject.errors.messages[:sec_type].should include 'should be valid security type'
   end
 
   it 'becomes invalid if assigned wrong :right property' do
     subject.right = 'BAR'
     subject.should be_invalid
-    subject.errors.messages[:right].should include "should be put, call or none"
+    subject.errors.messages[:right].should include 'should be put, call or none'
   end
 
   it 'becomes invalid if assigned wrong :expiry property' do
     subject.expiry = 'BAR'
     subject.should be_invalid
-    subject.errors.messages[:expiry].should include "should be YYYYMM or YYYYMMDD"
+    subject.errors.messages[:expiry].should include 'should be YYYYMM or YYYYMMDD'
   end
 
   it 'becomes invalid if primary_exchange is set to SMART' do
     subject.primary_exchange = 'SMART'
     subject.should be_invalid
-    subject.errors.messages[:primary_exchange].should include "should not be SMART"
+    subject.errors.messages[:primary_exchange].should include 'should not be SMART'
   end
-
 end
