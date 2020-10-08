@@ -16,7 +16,7 @@ module IB
     # 	where :strike defines the center of the Spread.
     #
 
-    def initialize master=nil,
+    def initialize master = nil,
                    underlying: nil,
                    strike: 0,
                    expiry: IB::Symbols::Futures.next_expiry,

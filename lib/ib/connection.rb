@@ -27,7 +27,7 @@ module IB
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
-    def initialize host: '127.0.0.1',
+    def initialize(host: '127.0.0.1',
                    port: '4002', # IB Gateway connection (default --> demo) 4001:  production
                    #:port => '7497', # TWS connection  --> demo				  7496:  production
                    connect: true, # Connect at initialization
@@ -38,7 +38,7 @@ module IB
                    client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
                    optional_capacities: '', # TWS-Version 974: "+PACEAPI"
                    # server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
-                   **_any_other_parameters_which_are_ignored
+                   **_any_other_parameters_which_are_ignored)
       # V 974 release motes
       # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
@@ -171,7 +171,7 @@ module IB
     # Subscribe Proc or block to specific type(s) of incoming message events.
     # Listener will be called later with received message instance as its argument.
     # Returns subscriber id to allow unsubscribing
-    def subscribe *args, &block
+    def subscribe(*args, &block)
       @subscribe_lock.synchronize do
         subscriber = args.last.respond_to?(:call) ? args.pop : block
         id = random_id
@@ -202,7 +202,7 @@ module IB
     end
 
     # Remove all subscribers with specific subscriber id
-    def unsubscribe *ids
+    def unsubscribe(*ids)
       @subscribe_lock.synchronize do
         ids.collect do |id|
           removed_at_id = subscribers.map { |_, subscribers| subscribers.delete id }.compact
@@ -214,7 +214,7 @@ module IB
     ### Working with received messages Hash
 
     # Clear received messages Hash
-    def clear_received *message_types
+    def clear_received(*message_types)
       @receive_lock.synchronize do
         if message_types.empty?
           received.each { |_message_type, container| container.clear }
@@ -231,14 +231,14 @@ module IB
         # ib.received[:MessageType].attribute
         the_array = []
         def the_array.method_missing(method, *key)
-          map { |x| x.public_send(method, *key)} unless method == :to_hash || method == :to_str # || method == :to_int
+          map { |x| x.public_send(method, *key) } unless method == :to_hash || method == :to_str # || method == :to_int
         end
         hash[message_type] = the_array
       end
     end
 
     # Check if messages of given type were received at_least n times
-    def received? message_type, times = 1
+    def received?(message_type, times = 1)
       @receive_lock.synchronize do
         received[message_type].size >= times
       end
@@ -250,7 +250,7 @@ module IB
     #
     # wait_for depends heavyly on Connection#received. If collection of messages through recieved
     # is turned off, wait_for loses most of its functionality
-    def wait_for *args, &block
+    def wait_for(*args, &block)
       timeout = args.find { |arg| arg.is_a? Numeric } # extract timeout from args
       end_time = Time.now + (timeout || 1) # default timeout 1 sec
       conditions = args.delete_if { |arg| arg.is_a? Numeric }.push(block).compact
@@ -271,7 +271,7 @@ module IB
     end
 
     # Process incoming messages during *poll_time* (200) msecs, nonblocking
-    def process_messages poll_time = 50 # in msec
+    def process_messages(poll_time = 50) # in msec
       time_out = Time.now + poll_time / 1000.0
       while (time_left = time_out - Time.now) > 0
         # If socket is readable, process single incoming message
@@ -300,7 +300,7 @@ module IB
 
     # Send an outgoing message.
     # returns the used request_id if appropiate, otherwise "true"
-    def send_message what, *args
+    def send_message(what, *args)
       message =
         if what.is_a?(Messages::Outgoing::AbstractMessage)
           what
@@ -330,17 +330,17 @@ module IB
 
     # Place Order (convenience wrapper for send_message :PlaceOrder).
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
-    def place_order order, contract
+    def place_order(order, contract)
       order.place contract, self
     end
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
-    def modify_order order, contract
+    def modify_order(order, contract)
       order.modify contract, self
     end
 
     # Cancel Orders by their local ids (convenience wrapper for send_message :CancelOrder).
-    def cancel_order *local_ids
+    def cancel_order(*local_ids)
       local_ids.each do |local_id|
         send_message :CancelOrder, local_id: local_id.to_i
       end
@@ -357,7 +357,7 @@ module IB
         @reader_running = true
         @reader_thread = Thread.new { process_messages while @reader_running }
       else
-        logger.fatal {'Could not start reader, not connected!'}
+        logger.fatal { 'Could not start reader, not connected!' }
         nil # return_value
       end
     end
@@ -381,7 +381,7 @@ module IB
         msg_id = the_decoded_message.shift.to_i
 
         # Debug:
-        logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
+        logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})" }
 
         # Create new instance of the appropriate message type,
         # and have it read the message from socket.
@@ -412,7 +412,7 @@ module IB
     end
 
     # Check if all given conditions are satisfied
-    def satisfied? *conditions
+    def satisfied?(*conditions)
       !conditions.empty? &&
         conditions.inject(true) do |result, condition|
           result && if condition.is_a?(Symbol)
