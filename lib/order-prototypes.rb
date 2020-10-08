@@ -1,25 +1,25 @@
-#The Module OrderPrototypes provides a wrapper to define even complex ordertypes.
+# The Module OrderPrototypes provides a wrapper to define even complex ordertypes.
 #
-#The Order is build by 
+# The Order is build by
 #
 #	IB::<OrderPrototye>.order
 #
-#A description is available through
+# A description is available through
 #
 #	puts IB::<OrderPrototype>.summary
 #
-#Nessesary and optional arguments are printed by
+# Nessesary and optional arguments are printed by
 #
 #	puts IB::<OrderPrototype>.parameters
 #
-#Orders can be setup interactively
+# Orders can be setup interactively
 #
 #		> d =  Discretionary.order
 #		Traceback (most recent call last): (..)
-#		IB::ArgumentError (IB::Discretionary.order -> A necessary field is missing: 
+#		IB::ArgumentError (IB::Discretionary.order -> A necessary field is missing:
 #					action: --> {"B"=>:buy, "S"=>:sell, "T"=>:short, "X"=>:short_exempt})
 #		> d =  Discretionary.order action: :buy
-#		IB::ArgumentError (IB::Discretionary.order -> A necessary field is missing: 
+#		IB::ArgumentError (IB::Discretionary.order -> A necessary field is missing:
 #					total_quantity: --> also aliased as :size)
 #		> d =  Discretionary.order action: :buy, size: 100
 #					Traceback (most recent call last):
@@ -27,8 +27,8 @@
 #
 #
 #
-#Prototypes are defined as module. They extend OrderPrototype and establish singleton methods, which
-#can adress and extend similar methods from OrderPrototype. 
+# Prototypes are defined as module. They extend OrderPrototype and establish singleton methods, which
+# can adress and extend similar methods from OrderPrototype.
 #
 #
 

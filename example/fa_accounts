@@ -6,20 +6,17 @@ require 'bundler/setup'
 require 'ib-api'
 
 # First, connect to IB TWS.
-ib = IB::Connection.new client_id: 1114,  port: 4002 #, :port => 7496 # TWS
+ib = IB::Connection.new client_id: 1114, port: 4002 # , :port => 7496 # TWS
 
 # Subscribe to TWS alerts/errors and FA/managed account info
 ib.subscribe(:Alert, :ManagedAccounts, :ReceiveFA) { |msg| puts msg.to_human }
 
 ##
 ## type of Financial Advisor configuration data
- #                    being received from TWS. Valid values include:
- #                    1 = GROUPS, 2 = PROFILE, 3 = ACCOUNT ALIASES
+#                    being received from TWS. Valid values include:
+#                    1 = GROUPS, 2 = PROFILE, 3 = ACCOUNT ALIASES
 
-ib.send_message :RequestFA, fa_data_type: 3  
+ib.send_message :RequestFA, fa_data_type: 3
 ib.send_message :RequestManagedAccounts
 
 ib.wait_for :ReceiveFA
-
-
-
