@@ -1,6 +1,7 @@
 require 'models/ib/contract'
 
 module IB
+
   # "BAG" is not really a contract, but a combination (combo) of securities.
   # AKA basket or bag of securities. Individual securities in combo are represented
   # by ComboLeg objects.
@@ -10,25 +11,25 @@ module IB
     # The exception is for a STK legs, which must specify the SMART exchange.
     # 2. :symbol => "USD" For combo Contract, this is an arbitrary value (like "USD")
 
-    validates_format_of :sec_type, with: /\Abag\z/, message: 'should be a bag'
-    validates_format_of :right, with: /\Anone\z/, message: 'should be none'
-    validates_format_of :expiry, with: /\A\z/, message: 'should be blank'
+    validates_format_of :sec_type, :with => /\Abag\z/, :message => "should be a bag"
+    validates_format_of :right, :with => /\Anone\z/, :message => "should be none"
+    validates_format_of :expiry, :with => /\A\z/, :message => "should be blank"
 
     def default_attributes
-      super.merge sec_type: :bag # ,:legs => Array.new,
+      super.merge :sec_type => :bag #,:legs => Array.new,
     end
 
-    #    def description
-    #      self[:description] || to_human
-    #    end
+#    def description
+#      self[:description] || to_human
+#    end
 
     def to_human
       "<Bag: #{[symbol, exchange, currency].join(' ')} legs: #{legs_description} >"
     end
 
-    def con_id= arg
-      # dont' update con_id
-    end
+		def con_id= arg
+			# dont' update con_id
+		end
 
     ### Leg-related methods
 
@@ -49,5 +50,6 @@ module IB
     def == other
       super && same_legs?(other)
     end
+
   end # class Bag
 end # IB
