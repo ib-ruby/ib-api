@@ -1,3 +1,3 @@
-module Api
-  VERSION = '0.1.0'.freeze
+module Api 
+  VERSION = "0.1.0"
 end

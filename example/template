@@ -5,12 +5,15 @@
 require 'bundler/setup'
 require 'ib-api'
 
-# First, connect to IB TWS and subscribe for events.
-ib = IB::Connection.new client_id: 1112 do |gw| # , :port => 7497 # TWS
-  # Subscribe to TWS alerts/errors
-  gw.subscribe(:Alert, :ManagedAccounts) { |msg| puts msg.to_human }
-  # Set log level
-  gw.logger.level = Logger::FATAL # DEBUG  -- INFO -- WARN -- ERROR  -- FATAL
+# First, connect to IB TWS and subscribe for events. 
+ib = IB::Connection.new :client_id => 1112  do | gw | #, :port => 7497 # TWS
+
+	# Subscribe to TWS alerts/errors
+	gw.subscribe(:Alert, :ManagedAccounts) { |msg| puts msg.to_human }
+	# Set log level
+	gw.logger.level = Logger::FATAL # DEBUG  -- INFO -- WARN -- ERROR  -- FATAL
+
 end
 # Put your code here
 # ...
+
