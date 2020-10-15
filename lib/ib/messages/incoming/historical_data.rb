@@ -59,7 +59,6 @@ module IB
 
 
 				HistogramData  = def_message( [89,0], 
-																		 [:strange_version_item, :int], 
 																	[:request_id, :int], 
 																	[ :number_of_points , :int ]) do
 																		# to human

@@ -1,4 +1,3 @@
-require 'symbols'
 =begin
 request con_id for a given  IB::Contract
 
@@ -7,7 +6,7 @@ returns the con_id's
 After calling the helper-function, the fetched ContractDetail-Messages are still present in received-buffer 
 =end
 
-def request_con_id  contract: IB::Symbols::Stocks.wfc 
+def request_con_id  contract: SAMPLE
 
 		ib =  IB::Connection.current
 		ib.clear_received

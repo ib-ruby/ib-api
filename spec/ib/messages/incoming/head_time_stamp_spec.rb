@@ -1,5 +1,5 @@
 require 'main_helper'
-require 'symbols'
+
 
 shared_examples_for 'HeadTimeStamp message' do
   it { is_expected.to be_an IB::Messages::Incoming::HeadTimeStamp }
@@ -28,12 +28,14 @@ describe IB::Messages::Incoming do
     it_behaves_like 'HeadTimeStamp message'
   end
 
-  context 'Message received from IB', :connected => true  do
+puts "\n\nIf the second call to »behaves like HeadTimeStamp message« fails, choose a contract with market-data permissions\n\(modify spec.yml)\n"
+
+  context "Message for #{SAMPLE.to_human} received from IB", :connected => true  do
 
     before(:all) do
 			establish_connection
       @ib = IB::Connection.current
-			@ib.send_message :RequestHeadTimeStamp, request_id: 123, contract: IB::Symbols::Stocks.aapl
+			@ib.send_message :RequestHeadTimeStamp, request_id: 123, contract: SAMPLE # IB::Stock.new(symbol: 'GE')
       @ib.wait_for :HeadTimeStamp
     end
 

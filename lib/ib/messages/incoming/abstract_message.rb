@@ -32,9 +32,10 @@ module IB
 						@buffer =[] # initialize empty buffer, indicates a successfull initializing
 					else
 						@buffer = source
-						#  if uncommented, the raw-input from the tws is included in the logging
-				#		puts "BUFFER .> #{buffer.inspect}"
-#					Connection.logger.debug { "BUFFER :> #{buffer.inspect} "}
+			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
+			#  if uncommented, the raw-input from the tws is included in the logging
+			#		  puts "BUFFER :> #{buffer.inspect} "
+			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 						@data = Hash.new
 						self.load
 					end

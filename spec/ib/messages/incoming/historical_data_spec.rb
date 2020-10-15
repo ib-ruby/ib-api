@@ -1,5 +1,4 @@
 require 'main_helper'
-require 'symbols'
 
 RSpec.shared_examples_for 'HistoricalData message' do
   it { is_expected.to be_an IB::Messages::Incoming::HistoricalData }
@@ -52,7 +51,7 @@ describe IB::Messages::Incoming::HistoricalData do
       ib = IB::Connection.current
 			ib.send_message IB::Messages::Outgoing::RequestHistoricalData.new(
                       :request_id => 123,
-                      :contract => IB::Symbols::Forex.gbpusd ,
+                      :contract => SAMPLE,  #IB::Symbols::Forex.gbpusd ,
                       :end_date_time => Time.now.to_ib,
                       :duration => '1 D', #    
                       :bar_size => :hour1, #  IB::BAR_SIZES.key(:hour)?
