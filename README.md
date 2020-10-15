@@ -3,6 +3,7 @@ Ruby interface to Interactive Brokers' TWS API
 
 Reimplementation of the basic functions if ib-ruby into a small gem
 
+**Status:** The code is under final rewiew. A Gem will be release shortly.
 
 `ib-api`   offers a modular access to the TWS-Api-Interface of Interactive Brokers.
 
