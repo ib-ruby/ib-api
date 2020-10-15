@@ -41,7 +41,7 @@ module IB
                    received:  true, # Keep all received messages in a @received Hash
 #									 redis: false,    # future plans
                    logger: default_logger,
-                   client_id: random_id,
+                   client_id:  rand( 1001 .. 9999 ) ,
                    client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
 									 optional_capacities: "", # TWS-Version 974: "+PACEAPI"
                    #server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
@@ -414,7 +414,7 @@ module IB
 		end
 
 		def random_id
-			SafeRandIdGenerator.call
+			rand 999999
 		end
 
 		# Check if all given conditions are satisfied
