@@ -1,7 +1,7 @@
 # ib-api
 Ruby interface to Interactive Brokers' TWS API 
 
-Reimplementation of the basic functions if ib-ruby into a small gem
+Reimplementation of the basic functions of ib-ruby
 
 ---
 **Status:** The code is under final rewiew. 
@@ -10,9 +10,12 @@ A Gem will be released shortly.
 
 ---
 
-`ib-api`   offers a modular access to the TWS-Api-Interface of Interactive Brokers.
+`ib-ruby`   offers a modular access to the TWS-Api-Interface of Interactive Brokers.
+
+`ib-api` provides a simple interface to low-level TWS API-calls.  
 
 In its plain vanilla usage, it just exchanges messages with the TWS. The User is responsible for any further data processing.
+
 
 It needs just a few lines of code to place an order
 
@@ -23,9 +26,12 @@ ib =  IB::Connection.new
 # define a contract to deal with
 the_stock =  IB::Stock.new symbol: 'TAP'
 
-# order 100 stocks for 35 $ 
+# order 100 shares for 35 $ 
 limit_order = Order.new  limit_price: 35, order_type: 'LMT',  total_quantity: 100, action: :buy
-ib.place_order limit_order, the_stock
+ib.send_message :PlaceOrder,
+        :order => limit_order,
+        :contract => the_stock,
+        :local_id => ib.next_local_id
 
 # wait until the orderstate message returned
 ib.wait_for :OrderStatus
