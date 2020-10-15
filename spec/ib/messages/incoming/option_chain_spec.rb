@@ -29,7 +29,7 @@ RSpec.describe IB::Messages::Incoming::OptionChainDefinition do
     before(:all) do
 			establish_connection
       ib = IB::Connection.current
-			contract= IB::Stock.new symbol: 'GOOG'
+			contract= SAMPLE
 			the_con_id = request_con_id(  contract: contract).first
 
 			ib.send_message :RequestOptionChainDefinition, con_id: the_con_id,

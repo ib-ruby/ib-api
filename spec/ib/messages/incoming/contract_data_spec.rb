@@ -22,7 +22,7 @@ RSpec.describe IB::Messages::Incoming::ContractData do
     before(:all) do
 		  establish_connection
       ib = IB::Connection.current
-			ib.send_message :RequestContractDetails, contract: IB::Symbols::Stocks.wfc
+			ib.send_message :RequestContractDetails, contract: SAMPLE
       ib.wait_for :ContractDetailsEnd
     end
 
