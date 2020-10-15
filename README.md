@@ -10,14 +10,14 @@ A Gem will be released shortly.
 
 ---
 
-`ib-ruby`   offers a modular access to the TWS-Api-Interface of Interactive Brokers.
+`ib-ruby`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
 
-`ib-api` provides a simple interface to low-level TWS API-calls.  
+`ib-api`    provides a simple interface to low-level TWS API-calls.  
 
 In its plain vanilla usage, it just exchanges messages with the TWS. The User is responsible for any further data processing.
 
 
-It needs just a few lines of code to place an order
+Even then, it needs just a few lines of code to place an order
 
 ```ruby
 # connect 
