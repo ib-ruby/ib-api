@@ -8,19 +8,29 @@ Reimplementation of the basic functions if ib-ruby into a small gem
 
 In its plain vanilla usage, it just exchanges messages with the TWS. The User is responsible for any further data processing.
 
-Additional services can be loaded via `require` 
+It needs just a few lines of code to place an order
 
-* require 'symbols'  enables the usage of predefined Symbols and Watchlists
-* require 'order-prototypes' enables to use predefined orders like: `Limit.order`, `SimpleStop.order` etc
-* require 'spread-prototypes' offers a simple method to define popular spreads 
-* require 'extensions/verify' adds a handy `verify` method to Contract
-* require 'extensions/market-price' simplifies the fetching of the actual market_price to any instrument
-* require 'extensions/eod' fetches _end of Day_ historical data from any instrument
-* require 'extensions/option-chain' gives easy access to atm, otm and itm-Option-chains
+```ruby
+# connect 
+ib =  IB::Connection.new 
 
+# define a contract to deal with
+the_stock =  IB::Stock.new symbol: 'TAP'
 
+# order 100 stocks for 35 $ 
+limit_order = Order.new  limit_price: 35, order_type: 'LMT',  total_quantity: 100, action: :buy
+ib.place_order limit_order, the_stock
 
-(in progress)
+# wait until the orderstate message returned
+ib.wait_for :OrderStatus
+
+# print the Orderstatus
+puts ib.recieved[:OrderStatus].to_human
+
+# => ["<OrderState: Submitted #17/1528367295 from 2000 filled 0.0/100.0 at 0.0/0.0 why_held >"]
+
+```
+
 
 
 
