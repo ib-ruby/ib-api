@@ -9,7 +9,7 @@ end
 
 if the order-object provides a local_id, the order is modified.
 =end
-def place_the_order( contract: IB::Symbols::Stocks.wfc )  
+def place_the_order( contract: SAMPLE )  
 		ib =  IB::Connection.current
 		raise 'Unable to place order, no connection' unless ib && ib.connected?
 		order =  yield( get_contract_price( contract: contract) )
@@ -23,7 +23,7 @@ def place_the_order( contract: IB::Symbols::Stocks.wfc )
 		the_order_id  # return value
 end
 
-def get_contract_price contract: IB::Symbols::Stocks.wfc
+def get_contract_price contract:  SAMPLE
 	ib =  IB::Connection.current
 	ib.send_message :RequestMarketDataType, :market_data_type => :delayed
 	the_id = ib.send_message :RequestMarketData, contract:  contract
@@ -101,10 +101,10 @@ RSpec.shared_examples_for 'Placed Order' do
 			expect( IB::VALUES[:tif].values ).to include subject.tif
 		end
 		its( :clearing_intent ){is_expected.to eq :ib }
-		it "mysterious trailing stop price is absent", :pending => true do
-			pending "seems to be irrelevant, but needs clarification"
-			expect( subject.trail_stop_price  ).to be_nil.or be_zero
-		end
+#		it "mysterious trailing stop price is absent", :pending => true do
+#			pending "seems to be irrelevant, but needs clarification"
+#			expect( subject.trail_stop_price  ).to be_nil.or be_zero
+#		end
 #	end
 end
 
@@ -113,17 +113,16 @@ RSpec.shared_examples_for 'Presubmitted what-if Order' do | used_contract |
 	if used_contract.is_a? IB::Bag  ## Combos dont have fixed commissions
 		its( :commission ){ is_expected.to be_nil.or be_zero } 
 	else
-		its( :commission ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
+		its( :commission ){ is_expected.to be_nil.or be_zero } 
+		its( :min_commission ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
+		its( :max_commission ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
+		its( :commission_currency ){ is_expected.to be_a( String )} 
 	end
 
 	its( :what_if ){  is_expected.to be_truthy }
 	its( :equity_with_loan  ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
 	its( :init_margin  ){ is_expected.to be_a( BigDecimal ).and be > 0 }
 	its( :maint_margin ){ is_expected.to be_a( BigDecimal ).and be > 0 }
-	it "mysterious trailing stop price is absent", pending: true do
-		pending "seems to be irrelevant, but needs clarification"
-		expect( subject.trail_stop_price ).to be_nil.or be_zero
-	end
 
 end
 
