@@ -14,20 +14,20 @@ A Gem will be released shortly.
 
 `ib-api`    provides a simple interface to low-level TWS API-calls.  
 
-In its plain vanilla usage, it just exchanges messages with the TWS. The User is responsible for any further data processing.
+In its plain vanilla usage, it just exchanges messages with the TWS. The user is responsible for any further data processing.
 
 
 Even then, it needs just a few lines of code to place an order
 
 ```ruby
-# connect 
+# connect with default parameters 
 ib =  IB::Connection.new 
 
 # define a contract to deal with
 the_stock =  IB::Stock.new symbol: 'TAP'
 
 # order 100 shares for 35 $ 
-limit_order = Order.new  limit_price: 35, order_type: 'LMT',  total_quantity: 100, action: :buy
+limit_order = IB::Order.new  limit_price: 35, order_type: 'LMT',  total_quantity: 100, action: :buy
 ib.send_message :PlaceOrder,
         :order => limit_order,
         :contract => the_stock,
