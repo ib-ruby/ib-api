@@ -339,12 +339,26 @@ module IB
     # Place Order (convenience wrapper for send_message :PlaceOrder).
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
     def place_order order, contract
-      order.place contract, self
+     # order.place contract, self  ## old
+      error "Unable to place order, next_local_id not known" unless next_local_id
+			error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
+      order.client_id = client_id
+      order.local_id = next_local_id
+      self.next_local_id += 1
+      order.placed_at = Time.now
+			modify_order order, contract
     end
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
-      order.modify contract, self
+ #      order.modify contract, self    ## old
+			error "Unable to modify order; local_id not specified" if order.local_id.nil?
+      order.modified_at = Time.now
+      send_message :PlaceOrder,
+        :order => order,
+        :contract => contract,
+        :local_id => order.local_id
+      order.local_id  # return value
     end
 
     # Cancel Orders by their local ids (convenience wrapper for send_message :CancelOrder).

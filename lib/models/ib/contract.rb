@@ -215,6 +215,11 @@ module IB
 		end
 
 
+		# creates a new Contract substituting attributes by the provied key-value pairs
+		def merge **new_attributes
+			self.class.new attributes.merge new_attributes
+		end
+
     # Contract comparison
 
     def == other  # :nodoc: 
