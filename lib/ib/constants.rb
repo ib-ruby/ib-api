@@ -205,7 +205,6 @@ module IB
        'NONE' => :none, # Used to indicate no hedge in :delta_neutral_order_type
        'None' => :none, # Used to indicate no hedge in :delta_neutral_order_type
       }.freeze
-
   # Valid security types (sec_type attribute of IB::Contract)
   SECURITY_TYPES =
     {	'BAG' =>  :bag,
@@ -223,7 +222,13 @@ module IB
        'OPT'  =>  :option,
        'IOPT' =>  :dutch_option,
        'STK'  =>  :stock,
-       'WAR'  =>  :warrant}.freeze
+       'WAR'  =>  :warrant,
+	     'ICU' =>   :icu,
+			 'ICS' =>  :ics, 
+	     'BILL' =>  :bill,
+	     'BSK'  =>  :basket,
+			 'FWD' =>   :forward,
+			 'FIXED' => :fixed }.freeze
 
   # Obtain symbolic value from given property code:
   # VALUES[:side]['B'] -> :buy
