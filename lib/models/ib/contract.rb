@@ -1,6 +1,8 @@
 require 'models/ib/contract_detail'
 require 'models/ib/underlying'
 
+
+
 module IB
   class Contract < IB::Model
     include BaseProperties
@@ -203,6 +205,10 @@ module IB
       serialize_long.join(":")
     end
 
+		# extracts essential attributes of the contract, 
+		# and returns a new contract.
+		# 
+		# the link to contract-details is __not__ maintained.
 		def  essential
 
 			self_attributes = [ :right, :sec_type]
@@ -215,8 +221,11 @@ module IB
 		end
 
 
-		# creates a new Contract substituting attributes by the provied key-value pairs
+		# creates a new Contract substituting attributes by the provied key-value pairs.
+		#
+		# con_id is resetted
 		def merge **new_attributes
+			self.con_id =  0
 			self.class.new attributes.merge new_attributes
 		end
 
