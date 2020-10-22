@@ -11,11 +11,18 @@ Reimplementation of the basic functions of ib-ruby
 
 ----
 
+Install in the usual way
+
+```
+$ gem install ib-api
+```
+
 In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
 
 Even then, it needs just a few lines of code to place an order
 
 ```ruby
+require 'ib-api'
 # connect with default parameters 
 ib =  IB::Connection.new 
 
