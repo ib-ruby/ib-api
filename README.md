@@ -3,16 +3,13 @@ Ruby interface to Interactive Brokers' TWS API
 
 Reimplementation of the basic functions of ib-ruby
 
----
-**Status:** The code is under final rewiew. 
 
-A Gem will be released shortly.
-
----
-
+----
 `ib-ruby`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
 
 `ib-api`    provides a simple interface to low-level TWS API-calls.  
+
+----
 
 In its plain vanilla usage, it just exchanges messages with the TWS. The user is responsible for any further data processing.
 
@@ -44,7 +41,18 @@ puts ib.recieved[:OrderStatus].to_human
 ```
 
 
+## Tests
 
+are invoked by 
+
+```
+bundle exec guard
+# or
+bundle exec rake spec
+```
+Integration tests on order-placements are not included. To run the test suite its thus safe to use a _real Account_.
+You have to edit `spec/spec.yml` and replace the `:account`-Setting with your own `AccountID`, even if you connect to a single account. 
+ 
 
 
 ## Contributing
