@@ -29,11 +29,10 @@ RSpec.describe IB::Messages::Incoming::OptionChainDefinition do
     before(:all) do
 			establish_connection
       ib = IB::Connection.current
-			contract= SAMPLE
-			the_con_id = request_con_id(  contract: contract).first
+			the_con_id = SAMPLE.con_id.presence || request_con_id.first
 
 			ib.send_message :RequestOptionChainDefinition, con_id: the_con_id,
-																					 symbol: contract.symbol,
+																					 symbol: SAMPLE.symbol,
 																				#	 exchange: 'BOX,CBOE',
 																					 sec_type: "STK" #contract.sec_type
 

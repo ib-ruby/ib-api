@@ -30,7 +30,7 @@ RSpec.describe IB::Messages::Incoming::PositionsMulti do
 		it_behaves_like 'Position Message' 
 
 		end
-  context 'Message received from IB', :connected => true , focus: true do
+  context 'Message received from IB', :connected => true  do
     before(:all) do
 			establish_connection
       ib = IB::Connection.current

@@ -58,7 +58,7 @@ RSpec.describe IB::Messages::Incoming do
     end
 
     after(:all) { close_connection }
-		
+	
 		it_behaves_like 'Portfolio Value Message' do
 			let( :the_portfolio_value ){ IB::Connection.current.received[:PortfolioValue].first  }  
 		end

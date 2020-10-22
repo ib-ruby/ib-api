@@ -4,7 +4,7 @@ describe "Request Account Data", :connected => true, :integration => true  do
 
   before(:all){ establish_connection }
 
-  after(:all) { close_connection }
+  #after(:all) { close_connection }
 
   context "with subscribe option set" do
     before(:all) do

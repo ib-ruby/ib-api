@@ -20,6 +20,7 @@ module IB
 
 				def check_version actual, expected
 					unless actual == expected || expected.is_a?(Array) && expected.include?(actual)
+						puts self.class.name
 						error "Unsupported version #{actual} received, expected #{expected}"
 					end
 				end
@@ -34,7 +35,7 @@ module IB
 						@buffer = source
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 			#  if uncommented, the raw-input from the tws is included in the logging
-			#		  puts "BUFFER :> #{buffer.inspect} "
+		  #		  puts "BUFFER :> #{buffer.inspect} "
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 						@data = Hash.new
 						self.load

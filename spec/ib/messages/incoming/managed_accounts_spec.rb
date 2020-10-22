@@ -20,9 +20,6 @@ describe IB::Messages::Incoming do
   context 'Message received from IB', :connected => true  do
     before(:all) do
 			establish_connection
-      ib = IB::Connection.current
-										 
-      ib.wait_for :ManagedAccounts
     end
 
     after(:all) { close_connection }

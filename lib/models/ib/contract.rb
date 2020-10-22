@@ -371,13 +371,6 @@ In places where these terms are used to indicate a concept, we have left them as
   require 'models/ib/future'
   require 'models/ib/stock'
   require 'models/ib/index'
-	require 'models/ib/spread'
-#	require 'models/ib/straddle'
-#  require 'models/ib/strangle'
-#  require 'models/ib/calendar'
-#  require 'models/ib/vertical'
-#  require 'models/ib/butterfly'
-#  require 'models/ib/stock_spread'
 
   class Contract
     # Contract subclasses representing specialized security types.
@@ -389,17 +382,11 @@ In places where these terms are used to indicate a concept, we have left them as
     Subclasses[:stock] = IB::Stock
     Subclasses[:forex] =  IB::Forex
     Subclasses[:index] = IB::Index
-    Subclasses[:Spread] = IB::Spread
-#    Subclasses[:strangle] = IB::Strangle
-#    Subclasses[:calendar] = IB::Calendar
-#    Subclasses[:vertical] = IB::Vertical
 
 
     # This builds an appropriate Contract subclass based on its type
 		#
-		# does NOT work with Straddle,Strangle,Calendar,Vertical and other spread-types
-		# 
-		# is used to copy Contracts by value
+		# the method is also used to copy Contract.values to new instances
     def self.build opts = {}
       subclass =( VALUES[:sec_type][opts[:sec_type]] || opts['sec_type'] || opts[:sec_type]).to_sym
       Contract::Subclasses[subclass].new opts

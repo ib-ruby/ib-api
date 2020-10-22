@@ -7,7 +7,7 @@ module IB
 
       ContractDetails = ContractData =
         def_message([10, [6, 8]],
-                    [:request_id, :int], # request id 
+                    [:request_id, :int],                          ## request id 
                     [:contract, :symbol, :string],								## next the major contract-fields
                     [:contract, :sec_type, :string],							## are transmitted
                     [:contract, :last_trading_day, :date],				## difference to the array.get_contract
@@ -16,8 +16,8 @@ module IB
                     [:contract, :exchange, :string],							##
                     [:contract, :currency, :string],							## thus we have to read the fields separately
                     [:contract, :local_symbol, :string],
-                    [:contract_detail, :market_name, :string], # extended
-										[:contract, :trading_class, :string],  # new Version 8
+                    [:contract_detail, :market_name, :string],    ## extended
+										[:contract, :trading_class, :string],         ## new Version 8
                     [:contract, :con_id, :int],
                     [:contract_detail, :min_tick, :decimal],
                     [:contract_detail, :md_size_multiplier, :int],

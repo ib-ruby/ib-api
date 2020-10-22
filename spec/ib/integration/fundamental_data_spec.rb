@@ -5,28 +5,26 @@ describe 'Request Fundamental Data',
 
   before(:all) do
 		establish_connection 
-    @ib = IB::Connection.current
+    ib = IB::Connection.current
 
-    @contract = IB::Contract.new :symbol => 'IBM',
+    contract = IB::Contract.new :symbol => 'IBM',
                                  :exchange => 'NYSE',
                                  :currency => 'USD',
                                  :sec_type => 'STK'
 
-    @ib.send_message :RequestFundamentalData,
+    ib.send_message :RequestFundamentalData,
                      :id => 456,
-                     :contract => @contract,
+                     :contract => contract,
                      :report_type => 'snapshot' # 'estimates', 'finstat'
 
-    @ib.wait_for :FundamentalData, 10 # sec
+    ib.wait_for :FundamentalData, 20 # sec
   end
 
-  after(:all) do
-    close_connection
-  end
+#  after(:all){ close_connection }
 
-  subject { @ib.received[:FundamentalData].first }
+  subject { IB::Connection.current.received[:FundamentalData].first }
 
-  it { expect( @ib.received[:FundamentalData]).to  have_at_least(1).data_message }
+  it { expect( IB::Connection.current.received[:FundamentalData]).to  have_at_least(1).data_message }
 
   it { is_expected.to be_an IB::Messages::Incoming::FundamentalData }
   its(:request_id) { is_expected.to eq 456 }

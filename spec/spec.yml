@@ -1,15 +1,17 @@
 ---
 :connection:
- :port:  4002 # 7497 or 4001 / 7496
+ :port: 4002 # 7497 or 4001 / 7496
  :host: 127.0.0.1
- :client_id: 2111
+# :client_id: 2111  # if commented: use a randomy choosen id instead
  :base_currency: EUR
- :reuters: false
+ :reuters: false      # currently not used
  :account: DU167348   # Set this to your Paper Account Number
+ :market_data: false  # if true: include tests depending on market-data subscriptions for the sample
 :stock:
   :symbol: 'GE'  
-  :currency: 'USD'  # optional
-  :exchange: 'SMART' # optional
+  :currency: 'USD'    # optional
+  :exchange: 'SMART'  # optional
+  :con_id: 7516       # optional
   
 
 

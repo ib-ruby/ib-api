@@ -29,10 +29,10 @@ shared_examples_for 'Valid account data request' do
   context "received :AccountUpdateTime message" do
     subject { IB::Connection.current.received[:AccountUpdateTime].first }
 
-    it { should be_an IB::Messages::Incoming::AccountUpdateTime }
-    its(:data) { should be_a Hash }
-    its(:time_stamp) { should =~ /\d\d:\d\d/ }
-    its(:to_human) { should =~ /AccountUpdateTime/ }
+    it { is_expected.to be_an IB::Messages::Incoming::AccountUpdateTime }
+    its(:data) { is_expected.to be_a Hash }
+    its(:time_stamp) { is_expected.to  match /\d\d:\d\d/ }
+    its(:to_human) { is_expected.to match /AccountUpdateTime/ }
   end
 
   context "received :AccountValue message" do
@@ -52,8 +52,8 @@ shared_examples_for 'Valid account data request' do
     subject { IB::Connection.current.received[:PortfolioValue].first }
 
     it { is_expected.to  be_an IB::Messages::Incoming::PortfolioValue }
-    its( :contract ) { should be_a IB::Contract }
-    its( :data ) { should be_a Hash }
+    its( :contract ) { is_expected.to  be_a IB::Contract }
+    its( :data ) { is_expected.to be_a Hash }
 		its( :portfolio_value ){is_expected.to be_a IB::PortfolioValue }
     its( :account ) {  is_expected.to match /\w\d/ }
 
@@ -77,3 +77,17 @@ shared_examples_for 'Valid account data request' do
     its(:to_human) { should =~ /AccountDownloadEnd/ }
   end
 end
+
+shared_examples_for 'ReceiveFA message' do
+  it { is_expected.to be_an IB::Messages::Incoming::ReceiveFA }
+  its(:message_type) { is_expected.to eq :ReceiveFA }
+  its(:message_id) { is_expected.to eq 16 }
+	its(:accounts) {is_expected.to be_an Array}
+	its( :buffer  ){ is_expected.to be_empty }
+
+  it 'has class accessors as well' do
+    expect( subject.class.message_id).to eq  16 
+    expect( subject.class.message_type).to eq :ReceiveFA
+  end
+end
+

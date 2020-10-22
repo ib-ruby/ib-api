@@ -34,17 +34,19 @@ describe IB::Messages::Incoming do
 ##
     before(:all) do
 			establish_connection
-      @ib = IB::Connection.current 
-			@ib.send_message :RequestHistogramData,  contract: SAMPLE,
+      ib = IB::Connection.current 
+			if OPTS[:market_data]
+			ib.send_message :RequestHistogramData,  contract: SAMPLE,
 											 time_period: '1 week', request_id: 119 
-      @ib.wait_for :HistogramData  
+      ib.wait_for :HistogramData  
+			end
     end
 
     after(:all) { close_connection }
 
 
-    subject { @ib.received[:HistogramData].first }
+    subject { IB::Connection.current.received[:HistogramData].first }
 		 
-    it_behaves_like 'HistogramData message' 
+    it_behaves_like 'HistogramData message'  if OPTS[:marke_data]
   end #
 end # describe IB::Messages:Incoming

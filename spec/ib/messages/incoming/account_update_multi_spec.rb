@@ -23,14 +23,14 @@ RSpec.describe IB::Messages::Incoming::AccountUpdatesMulti do
     before(:all) do
 			establish_connection
       ib = IB::Connection.current
-			request_id =ib.send_message :RequestAccountUpdatesMulti, account: 'ALL'
+			request_id =ib.send_message :RequestAccountUpdatesMulti #, account: 'ALL' is default
       ib.wait_for :AccountUpdatesMulti, 10
-			sleep 1
+			sleep 0.1 
 			ib.send_message :CancelAccountUpdatesMulti, request_id: request_id
     end
 
     after(:all) { close_connection }
-		
+
 		subject{ IB::Connection.current.received[:AccountUpdatesMulti].first  }  
 		it_behaves_like 'Account Updates Multi Message' 
 	

@@ -1,9 +1,10 @@
 require 'main_helper'
 
+## use a Message_id far beyond those defined by the tws
 
 RSpec.shared_examples_for "simple_instruction" do
 	it { is_expected.to be_a IB::Messages::Incoming::AbstractMessage }
-	its( :message_id ) { is_expected.to eq 10 }
+	its( :message_id ) { is_expected.to eq 1000 }
 	its( :version )    { is_expected.to eq 1 }
 	its( :data )       { is_expected.not_to  be_empty }
 	its( :buffer  )    { is_expected.to be_empty }
@@ -12,13 +13,13 @@ end
 
 RSpec.describe IB::Messages::Incoming   do
 
-		let( :simple_instruction ){   IB::Messages::Incoming.def_message  10  }
-		let( :int_instruction ){   IB::Messages::Incoming.def_message 10, [:the_integer, :int] }
-		let( :string_instruction ){   IB::Messages::Incoming.def_message 10, [:the_string, :string] }
-		let( :decimal_instruction ){   IB::Messages::Incoming.def_message 10, [:the_decimal, :decimal] }
-		let( :boolean_instruction ){   IB::Messages::Incoming.def_message 10, [:the_bool, :boolean] }
-		let( :array_instruction ){   IB::Messages::Incoming.def_message 10, [:the_array, :array ] }
-		let( :hash_instruction ){   IB::Messages::Incoming.def_message 10, [:the_hash, :hash] }
+		let( :simple_instruction ){   IB::Messages::Incoming.def_message  1000  }
+		let( :int_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_integer, :int] }
+		let( :string_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_string, :string] }
+		let( :decimal_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_decimal, :decimal] }
+		let( :boolean_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_bool, :boolean] }
+		let( :array_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_array, :array ] }
+		let( :hash_instruction ){   IB::Messages::Incoming.def_message 1000, [:the_hash, :hash] }
 
 
 			#subject{ IB::Messages::Incoming.def_message 10 }

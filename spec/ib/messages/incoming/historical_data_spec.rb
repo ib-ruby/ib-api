@@ -49,6 +49,7 @@ describe IB::Messages::Incoming::HistoricalData do
     before(:all) do
 			establish_connection
       ib = IB::Connection.current
+			if OPTS[:market_data]
 			ib.send_message IB::Messages::Outgoing::RequestHistoricalData.new(
                       :request_id => 123,
                       :contract => SAMPLE,  #IB::Symbols::Forex.gbpusd ,
@@ -59,13 +60,14 @@ describe IB::Messages::Incoming::HistoricalData do
 											:use_rth => 0,
 											:keep_up_todate => 0,)
       ib.wait_for :HistoricalData
+			end
     end
 
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:HistoricalData].last }
 		 
-    it_behaves_like 'HistoricalData message' 
+    it_behaves_like 'HistoricalData message' if OPTS[:market_data]
 
 
   end #

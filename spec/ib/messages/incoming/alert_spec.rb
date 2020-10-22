@@ -1,6 +1,6 @@
 require 'main_helper'
 
-shared_examples_for 'Alert message' do
+shared_examples_for 'this Alert message' do
   it { should be_an IB::Messages::Incoming::Alert }
   it { should be_warning }
   it { should_not be_error }
@@ -33,22 +33,19 @@ describe IB::Messages::Incoming::Alert do
           :message => 'Market data farm connection is OK:cashfarm')
     end
 
-    it_behaves_like 'Alert message'
+    it_behaves_like 'this Alert message'
   end
 
   context 'Message received from IB', :connected => true  do
 
     before(:all) do
 			establish_connection
-      ib = IB::Connection.current
-      ib.wait_for :Alert
-      pending 'No Alert received upon connect!' unless ib.received? :Alert
     end
 
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:Alert].first }
 		
-    it_behaves_like 'Alert message'
+    it_behaves_like 'this Alert message'
   end #
 end # describe IB::Messages:Incoming

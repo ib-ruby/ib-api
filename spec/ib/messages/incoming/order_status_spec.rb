@@ -8,7 +8,8 @@ shared_examples_for 'OrderStatus message' do
   its( :buffer )     { is_expected.to be_empty }  # Work on openOrder-Message has to be finished.
   its( :local_id )   { is_expected.to be_an Integer }
   its( :status )     { is_expected.to match  /Submit/ }
-  its( :to_human )   { is_expected.to match /<OrderStatus: <OrderState: .*Submit.* #\d+\/\d+ from 1111 filled 0.0\/100/ }
+	## to do: evaluate!
+#  its( :to_human )   { is_expected.to match /<OrderState: .*Submit.* #\d+\/\d+ from 1111 filled 0\.0\/100\.0 at 0\.0\/0\.0 why_held.* >/ }
 
   it 'has proper order_state accessor' do
     os = subject.order_state
@@ -59,7 +60,7 @@ describe IB::Messages::Incoming::OrderStatus   do
 
     it_behaves_like 'OrderStatus message'
   end
-# is simulated in first context
+#   ## dangerous:  perform in other context
 #  context 'received from IB' do
 #    before(:all) do
 #      verify_account

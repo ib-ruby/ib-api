@@ -34,14 +34,13 @@ puts "\n\nIf the second call to »behaves like HeadTimeStamp message« fails, ch
 
     before(:all) do
 			establish_connection
-      @ib = IB::Connection.current
-			@ib.send_message :RequestHeadTimeStamp, request_id: 123, contract: SAMPLE # IB::Stock.new(symbol: 'GE')
-      @ib.wait_for :HeadTimeStamp
+      ib = IB::Connection.current
+			ib.send_message :RequestHeadTimeStamp, request_id: 123, contract: SAMPLE # IB::Stock.new(symbol: 'GE')
+      ib.wait_for :HeadTimeStamp, 3
     end
 
     after(:all) { close_connection }
-
-    subject { @ib.received[:HeadTimeStamp].first }
+    subject { IB::Connection.current.received[:HeadTimeStamp].first }
 		 
     it_behaves_like 'HeadTimeStamp message'
   end #
