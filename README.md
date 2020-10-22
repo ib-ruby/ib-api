@@ -66,13 +66,14 @@ or occationally
 			# do something
 	
 		end  # case
-         # perform request
-         ib.send_message :RequestContractData, :contract => #{some contract}
+	end
+        # perform request
+        ib.send_message :RequestContractData, :contract => #{some contract}
          
-         # wait until the :ContractDataEnd message returned
-         ib.wait_for :ContractDataEnd
+        # wait until the :ContractDataEnd message returned
+        ib.wait_for :ContractDataEnd
          
-         ib.unsubscribe a    # release subscriptions
+        ib.unsubscribe a    # release subscriptions
          
 ```
 ## Minimal TWS-Version
