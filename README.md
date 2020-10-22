@@ -39,7 +39,9 @@ puts ib.recieved[:OrderStatus].to_human
 # => ["<OrderState: Submitted #17/1528367295 from 2000 filled 0.0/100.0 at 0.0/0.0 why_held >"]
 
 ```
+## Minimal TWS-Version
 
+`ib-api` is tested via the _stable ib-Gateway_ (Version 9.72) 
 
 ## Tests
 
@@ -53,7 +55,6 @@ bundle exec rake spec
 Integration tests on order-placements are not included. To run the test suite its thus safe to use a _real Account_.
 You have to edit `spec/spec.yml` and replace the `:account`-Setting with your own `AccountID`, even if you connect to a single account. 
  
-
 
 ## Contributing
 
