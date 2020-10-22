@@ -11,8 +11,7 @@ Reimplementation of the basic functions of ib-ruby
 
 ----
 
-In its plain vanilla usage, it just exchanges messages with the TWS. The user is responsible for any further data processing.
-
+In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
 
 Even then, it needs just a few lines of code to place an order
 
@@ -39,9 +38,46 @@ puts ib.recieved[:OrderStatus].to_human
 # => ["<OrderState: Submitted #17/1528367295 from 2000 filled 0.0/100.0 at 0.0/0.0 why_held >"]
 
 ```
+
+##### User-specific Actions
+Besides storing any TWS-response in an array, callbacks are implemented.
+
+The user subscribes to a certain response and defines the actions in a typically ruby manner. These actions
+can be defined globaly
+```ruby
+ib =  IB::Connection.new do |tws|
+      # Subscribe to TWS alerts/errors and order-related messages
+	tws.subscribe(:Alert, :OpenOrder, :OrderStatus, :OpenOrderEnd) { |msg| puts msg.to_human }
+     end
+
+```
+
+or occationally
+
+```ruby
+        # first define actions
+	a = ib.subscribe(:Alert, :ContractData ) do |msg| 
+		case msg
+		when Messages::Incoming::Alert
+			if msg.code == 200   # No security found 
+				# do someting
+			end
+		when Messages::Incoming::ContractData  # security returned
+			# do something
+	
+		end  # case
+         # perform request
+         ib.send_message :RequestContractData, :contract => #{some contract}
+         
+         # wait until the :ContractDataEnd message returned
+         ib.wait_for :ContractDataEnd
+         
+         ib.unsubscribe a    # release subscriptions
+         
+```
 ## Minimal TWS-Version
 
-`ib-api` is tested via the _stable ib-Gateway_ (Version 9.72) 
+`ib-api` is tested via the _stable IB-Gateway_ (Version 9.72) and should work with any current tws-installation. 
 
 ## Tests
 
