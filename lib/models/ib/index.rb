@@ -7,7 +7,7 @@ module IB
       super.merge :sec_type => :ind
     end
     def to_human
-      "<Index: " + [symbol, currency].join(" ") + ">"
+      "<Index: " + [symbol, currency].join(" ") + " (#{description}) >"
     end
 
   end

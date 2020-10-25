@@ -56,8 +56,6 @@ module IB
           @contract_detail = IB::ContractDetail.new @data[:contract_detail]
         end
 
-        alias contract_details contract_detail
-
 				def to_human
 					"<Contract #{contract.to_human}   #{contract_detail.to_human}>"
 				end

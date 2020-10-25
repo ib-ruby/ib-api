@@ -19,11 +19,10 @@ module IB
 
     # Comparison support
     def content_attributes
-      #HashWithIndifferentAccess[attributes.reject do |(attr, _)|
 			#NoMethodError if a Hash is assigned to an attribute
       Hash[attributes.reject do |(attr, _)|
                                   attr.to_s =~ /(_count)\z/ ||
-                                    [:created_at, :updated_at, :type,
+                                    [:created_at, :type, # :updated_at, 
                                      :id, :order_id, :contract_id].include?(attr.to_sym)
       end]
     end
@@ -151,9 +150,9 @@ Remove all Time-Stamps from the list of Attributes
       end
 
       # Timestamps in lightweight models
-      unless defined?(ActiveRecord::Base) && ancestors.include?(ActiveRecord::Base)
+ #     unless defined?(ActiveRecord::Base) && ancestors.include?(ActiveRecord::Base)
         prop :created_at #, :updated_at
-      end
+ #     end
 
     end # included
   end # module BaseProperties

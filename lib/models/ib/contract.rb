@@ -211,17 +211,24 @@ module IB
 		# the link to contract-details is __not__ maintained.
 		def  essential
 
-			self_attributes = [ :right, :sec_type]
-			the_attributes = [ :symbol , :con_id,   :exchange, 
+			self_attributes = [ :sec_type]
+			the_attributes = [ :symbol , :con_id,   :exchange, :right, 
 									  :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
 								:multiplier,  :primary_exchange, :trading_class ]
-			the_hash= the_attributes.map{|x| y= attributes[x];  [x,y] if y.present?  }.compact.to_h
-			the_hash[:description] = @description if @description.present?
-			self.class.new   the_hash.merge( self_attributes.map{|x| y = self.send(x);  [x,y] unless y == :none}.compact.to_h )
+			the_hash= the_attributes.map{|x| y= self.send(x);  [x,y] if y.present? }.compact.to_h
+			the_hash[:description] = 
+				 if @description.present? 
+					  @description 
+				 elsif contract_detail.present?
+					 contract_detail.long_name
+				 else 
+					 ""
+				 end
+			self.class.new   the_hash.merge( self_attributes.map{|x| y = self.send(x);  [x,y] unless y == :none }.compact.to_h )
 		end
 
 
-		# creates a new Contract substituting attributes by the provied key-value pairs.
+		# creates a new Contract substituting attributes by the provided key-value pairs.
 		#
 		# con_id is resetted
 		def merge **new_attributes
