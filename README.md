@@ -3,6 +3,7 @@ Ruby interface to Interactive Brokers' TWS API
 
 Reimplementation of the basic functions of ib-ruby
 
+__Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)  (_work in progress_)
 
 ----
 `ib-ruby`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
