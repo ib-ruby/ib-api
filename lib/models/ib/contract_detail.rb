@@ -95,13 +95,19 @@ module IB
     end
 
 		def to_human
-			ret = "<ContractDetails  #{long_name}, market-name:#{market_name}, "
-			ret << "category:#{category}, industry:#{industry} / #{subcategory}, " if category.present?
-			ret << "underlying: con_id:#{under_con_id} , sec_type:#{under_sec_type}, symbol:#{under_symbol} " unless under_con_id.zero?
-      ret << "ev_multiplier:#{ev_multiplier}, convertible:#{convertible}, cupon:#{coupon}, "
-			ret << "md_size_multiplier:#{md_size_multiplier}, min_tick:#{min_tick}, next_option_partial:#{next_option_partial} "
-			ret <<"price_magnifier:#{price_magnifier}, puttable:#{puttable}, sec_id-list:#{sec_id_list}, "
-			ret <<"valid exchanges: #{ valid_exchanges}, order types: #{order_types} >"
+			ret = "<ContractDetails  #{long_name}, "
+			ret << "--> #{market_name}, " if market_name.present?
+			ret << "/C/ #{category}, /I/ #{industry} /SC/ #{subcategory}, " if category.present?
+			ret << "Underlying:#{under_symbol}[#{under_sec_type}](#{under_con_id}), " unless under_con_id.zero?
+      ret << "ev_multiplier:#{ev_multiplier}, " if ev_multiplier.present?
+			ret << "convertible:#{convertible}, " if convertible
+			ret << "coupon:#{coupon}, " if coupon.present?  && coupon > 0 
+			ret << "md_size_multiplier:#{md_size_multiplier}, min_tick:#{min_tick}, "
+			ret << "next_option_partial:#{next_option_partial}, " if next_option_partial.present?
+			ret << "price_magnifier:#{price_magnifier}, " 
+			ret << "puttable:#{puttable}, " if puttable.present? 
+			ret << "sec_id-list:#{sec_id_list}, " unless sec_id_list.empty?
+			ret <<"valid exchanges: #{ valid_exchanges}; order types: #{order_types} >"
 		end
 
   end # class ContractDetail

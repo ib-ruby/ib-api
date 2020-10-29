@@ -13,7 +13,7 @@ module IB
 			att =  [ symbol, 
 						  currency, ( exchange == 'SMART' ? nil: exchange ), 
 							(primary_exchange.present? && !primary_exchange.empty? ? primary_exchange : nil),
-							description.present? ? " (#{description}) " : nil,
+							@description.present? ? " (#{@description}) " : nil,
 			       ].compact
 						"<Stock: " + att.join(" ") + ">"
 		end
