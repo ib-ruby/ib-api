@@ -17,7 +17,8 @@ module IB
 	 :next_strike,
 	 :prev_expiry,
 	 :next_expiry,
-	 :option_price
+	 :option_price,
+	 :updated_at
     belongs_to :option
 
     # returns true if all datafields are filled with reasonal data
@@ -32,11 +33,24 @@ module IB
 
     def greeks?
      fields= [ :delta,  :gamma, :vega, :theta,
-         :implied_volatility, :pv_dividend]
+         :implied_volatility]
 
       !fields.detect{|y| self.send(y).nil?}
 
     end
+
+		def prices?
+			fields = [:implied_volatility, :under_price, :option_price]
+      !fields.detect{|y| self.send(y).nil?}
+		end
+
+		def iv
+			implied_volatility
+		end
+
+		def spread
+			bid_price - ask_price
+		end 
 
     def to_human
       outstr= ->( item ) { if item.nil? then "--" else  sprintf("%g" , item)  end  }
@@ -44,7 +58,9 @@ module IB
       greeks = "Greeks::  delta:  #{ outstr[ delta ] }; gamma: #{ outstr[ gamma ]}, vega: #{ outstr[ vega ] }; theta: #{ outstr[ theta ]}" 
       prices= " close: #{ outstr[ close_price ]}; bid: #{ outstr[ bid_price ]}; ask: #{ outstr[ ask_price ]} "
       if	complete?
-	"< "+ prices + "\n" + att + "\n" + greeks + " >"
+				"< "+ prices + "\n" + att + "\n" + greeks + " >"
+			elsif prices?
+				"< " + att + greeks + " >"
       else
 	"< " + greeks + " >"
       end

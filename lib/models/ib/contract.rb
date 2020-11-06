@@ -385,6 +385,7 @@ In places where these terms are used to indicate a concept, we have left them as
     Subclasses = Hash.new(Contract)
     Subclasses[:bag] = IB::Bag
     Subclasses[:option] = IB::Option
+    Subclasses[:future_option] = IB::FutureOption
     Subclasses[:future] = IB::Future
     Subclasses[:stock] = IB::Stock
     Subclasses[:forex] =  IB::Forex

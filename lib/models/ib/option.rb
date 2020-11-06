@@ -75,4 +75,8 @@ module IB
     end
 
   end # class Option
+
+	class FutureOption   < Option 
+
+	end
 end # module IB
