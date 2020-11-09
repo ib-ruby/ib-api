@@ -139,7 +139,7 @@ module IB
       TickRequestParameters = def_message [81, 0], [ :ticker_id, :int ],
 					      [ :min_tick, :decimal],
 					      [ :exchange, :string ],
-					      [ :snapshot_prermissions, :int ]
+					      [ :snapshot_permissions, :int ]
 #      class TickRequestParameters 
 #	def load
 #	  simple_load

@@ -13,7 +13,7 @@ module IB
           "<#{self.message_type} #{type}:" +
               @data.map do |key, value|
                 " #{key} #{value}" unless [:version, :ticker_id, :tick_type].include?(key)
-              end.compact.join(',') + " >"
+              end.compact.join('",') + " >"
         end
 
 				def the_data
@@ -129,71 +129,32 @@ module IB
                       [:theta, :decimal_limit_2],					#      -2   -"-
                       [:under_price, :decimal_limit_1]) do
 
-            "<TickOption #{type} for #{ticker_id}: underlying @ #{under_price}, "+
-                "option @ #{option_price}, IV #{implied_volatility}%, delta #{delta}, " +
-                "gamma #{gamma}, vega #{vega}, theta #{theta}, pv_dividend #{pv_dividend}>"
+            "<TickOption #{type}   " + 
+                "option @ #{"%8.3f" % (option_price || -1)}, IV: #{"%4.3f" % (implied_volatility || -1)}, " +
+						    "delta: #{"%5.3f" % (delta || -1)}, " +
+                "gamma: #{"%6.4f" % (gamma || -1)}, vega: #{ "%6.5f" % (vega || -1)}, " + 
+								"theta: #{"%7.6f" % (theta || -1)}, pv_dividend: #{"%5.3f" % (pv_dividend || -1)}, " +
+							  "underlying @ #{"% 8.3f" % (under_price || -1)} >"
           end
 
+			 class TickOption		
+				 def greeks
+					 { delta: delta, gamma: gamma, vega: vega, theta: theta }
+				 end
+
+				 def iv
+					 implied_volatility
+				 end
+			
+				 
+				 def greeks? 
+					 greeks.values.any? &:present?
+				 end
+
+			 end
+
       TickSnapshotEnd = def_message 57, [:ticker_id, :int]
-=begin
-    def processTickByTickMsg(self, fields):
-        next(fields)
-        reqId = decode(int, fields)
-        tickType = decode(int, fields)
-        time = decode(int, fields)
 
-        if tickType == 0:
-            # None
-            pass
-        elif tickType == 1 or tickType == 2:
-            # Last or AllLast
-            price = decode(float, fields)
-            size = decode(int, fields)
-            mask = decode(int, fields)
-class TickAttribLast(Object):
-    def __init__(self):
-        self.pastLimit = False
-        self.unreported = False
-
-    def __str__(self):
-        return "PastLimit: %d, Unreported: %d" % (self.pastLimit, self.unreported)
-
-            tickAttribLast = TickAttribLast()
-            tickAttribLast.pastLimit = mask & 1 != 0
-            tickAttribLast.unreported = mask & 2 != 0
-            exchange = decode(str, fields)
-            specialConditions = decode(str, fields)
-
-            self.wrapper.tickByTickAllLast(reqId, tickType, time, price, size, tickAttribLast,
-                                           exchange, specialConditions)
-        elif tickType == 3:
-            # BidAsk
-            bidPrice = decode(float, fields)
-            askPrice = decode(float, fields)
-            bidSize = decode(int, fields)
-            askSize = decode(int, fields)
-            mask = decode(int, fields)
-	class TickAttribBidAsk(Object):
-    def __init__(self):
-        self.bidPastLow = False
-        self.askPastHigh = False
-
-    def __str__(self):
-        return "BidPastLow: %d, AskPastHigh: %d" % (self.bidPastLow, self.askPastHigh)
-
-
-            tickAttribBidAsk = TickAttribBidAsk()
-            tickAttribBidAsk.bidPastLow = mask & 1 != 0
-            tickAttribBidAsk.askPastHigh = mask & 2 != 0
-
-            self.wrapper.tickByTickBidAsk(reqId, time, bidPrice, askPrice, bidSize,
-                                          askSize, tickAttribBidAsk)
-        elif tickType == 4:
-            # MidPoint
-            midPoint = decode(float, fields)
-
-            self.wrapper.tickByTickMidPoint(reqId, time, midPoint)
-=end
 			TickByTick =  def_message [99, 0], [:ticker_id, :int ],
 			[ :tick_type, :int],
 			[ :time, :int_date ]

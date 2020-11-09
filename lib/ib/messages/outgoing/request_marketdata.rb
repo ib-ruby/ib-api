@@ -4,7 +4,8 @@ module IB
     module Outgoing
       extend Messages # def_message macros
 
-
+			#  ==> details:  https://interactivebrokers.github.io/tws-api/tick_types.html
+			#
       # @data={:id => int: ticker_id - Must be a unique value. When the market data
       #                                returns, it will be identified by this tag,
 			#                                if omitted, id-autogeneration process is performed
@@ -32,7 +33,7 @@ module IB
       #        292 - (Wide News)                          
       #        293 - (TradeCount)                          
       #        295 - (VolumeRate)                          
-      #        318 - (iLastRTHT-Trade)                          
+      #        318 - (LastRTHT-Trade)                          
       #        370 - (Participation Monitor)
       #        375 - RTTrdVolumne
       #        377 - CttTickTag
@@ -46,7 +47,11 @@ module IB
       #        411 - Realtime Historical Volatility - 58
       #        428 - Monetary Close
       #        439 - MonitorTicTag
-      #        456/59 - IB Dividends
+      #        456/59 - IB Dividends, 4 comma separated values: 12 Month dividend, 
+			#                                                         projected 12 Month dividend,
+			#                                                         next dividend date,
+			#                                                         next dividend value
+			#                                                         (use primary exchange instead of smart)
       #        459 - RTCLOSE
       #        460 - Bond Factor Multiplier
       #        499 - Fee and Rebate Ratge
@@ -79,7 +84,7 @@ module IB
       #                   :tick_list values if you use snapshot. 
       #
       #      :regulatory_snapshot => bool - With the US Value Snapshot Bundle for stocks,
-      #                   regulatory snapshots are available for 0.01 USD each.
+      #                   regulatory snapshots are available for 0.01 USD each. (applies on demo accounts as well)
       #      :mktDataOptions => (TagValueList)  For internal use only.
       #                    Use default value XYZ. 
       #
@@ -88,9 +93,7 @@ module IB
                       [:contract, :serialize_short, :primary_exchange],  # include primary exchange in request
                       [:contract, :serialize_legs, []],
                       [:contract, :serialize_under_comp, []],
-                      [:tick_list, lambda do |tick_list|
-                        tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')
-                      end, []],
+                      [:tick_list, ->(tick_list){ tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')}, []],
                       [:snapshot, false],
 		      [:regulatory_snapshot, false],
 		      [:mkt_data_options, "XYZ"]
