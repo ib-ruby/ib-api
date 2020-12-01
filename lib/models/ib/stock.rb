@@ -1,4 +1,4 @@
-require_relative 'contract'
+#require_relative 'contract'
 module IB
 	class Stock < IB::Contract
 		validates_format_of :sec_type, :with => /\Astock\z/,

@@ -1,4 +1,3 @@
-  require 'ib/model'
 
   require 'models/ib/account'
   require 'models/ib/account_value'
@@ -11,4 +10,5 @@
   require 'models/ib/combo_leg'
   require 'models/ib/execution'
   require 'models/ib/bar'
+  require 'models/ib/spread'
 	require 'models/ib/condition'

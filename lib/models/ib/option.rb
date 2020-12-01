@@ -1,5 +1,5 @@
-require 'models/ib/contract'
-require 'models/ib/option_detail'
+#require_relative 'contract'
+require_relative 'option_detail'
 
 module IB
   class Option < Contract

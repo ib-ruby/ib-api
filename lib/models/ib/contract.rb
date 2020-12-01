@@ -4,7 +4,13 @@ require 'models/ib/underlying'
 
 
 module IB
-  class Contract < IB::Model
+
+  if defined?(Contract) 
+		puts "Contract already a #{defined?(Contract)}"
+		puts Contract.ancestors
+#		IB.send(:remove_const, 'Contract')
+	end
+  class Contract <  IB::Model
     include BaseProperties
 
     # Fields are Strings unless noted otherwise
@@ -334,6 +340,10 @@ module IB
       self[:sec_type] == 'IND'
     end
 
+
+		def verify  # :nodoc:
+			error "verify must be overloaded. Please require at least `ib/verify` from the `ib-extenstions` gem "
+		end
 =begin
 From the release notes of TWS 9.50
 
@@ -372,7 +382,7 @@ In places where these terms are used to indicate a concept, we have left them as
 
   ### Now let's deal with Contract subclasses
 
-  require 'models/ib/option'
+  require_relative 'option'
   require 'models/ib/bag'
   require 'models/ib/forex'
   require 'models/ib/future'

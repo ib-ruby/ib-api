@@ -1,4 +1,4 @@
-require 'models/ib/contract'
+#require 'models/ib/contract'
 
 module IB
 
