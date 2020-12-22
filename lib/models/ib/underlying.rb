@@ -1,4 +1,7 @@
 module IB
+  if defined?(Underlying) 
+		puts "Underlying already a #{defined?(Underlying)}"
+	else
 
   # Calculated characteristics of underlying Contract (volatile)
   class Underlying < IB::Model
@@ -30,5 +33,5 @@ module IB
 
   end # class Underlying
   UnderComp = Underlying
-
+	end
 end # module IB

@@ -7,7 +7,7 @@ module IB
 
   if defined?(Contract) 
 		puts "Contract already a #{defined?(Contract)}"
-		puts Contract.ancestors
+#		puts Contract.ancestors
 #		IB.send(:remove_const, 'Contract')
 	end
   class Contract <  IB::Model
