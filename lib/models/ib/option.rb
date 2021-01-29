@@ -77,6 +77,8 @@ module IB
   end # class Option
 
 	class FutureOption   < Option 
-
+    def default_attributes
+      super.merge :sec_type => :futures_option
+		end
 	end
 end # module IB

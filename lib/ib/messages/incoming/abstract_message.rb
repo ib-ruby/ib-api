@@ -30,12 +30,12 @@ module IB
 					@created_at = Time.now
 					if source.is_a?(Hash)  # Source is a @data Hash
 						@data = source
-						@buffer =[] # initialize empty buffer, indicates a successfull initializing
+						@buffer =[] # initialize empty buffer, indicates a successful initializing
 					else
 						@buffer = source
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 			#  if uncommented, the raw-input from the tws is included in the logging
-		  #		  puts "BUFFER :> #{buffer.inspect} "
+		  ##		  puts "BUFFER :> #{buffer.inspect} "
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 						@data = Hash.new
 						self.load
@@ -43,11 +43,11 @@ module IB
 				end
 
 				def valid?
-					@buffer.empty? 
+					@buffer.empty?
 				end
 
 				## more recent messages omit the transmission of a version
-				## thus just load the parameter-map 
+				## thus just load the parameter-map
 				def simple_load
 					load_map *self.class.data_map
 				rescue IB::Error  => e
@@ -87,7 +87,7 @@ module IB
 
 						when Symbol # Normal map
 							group, name, type, block =
-								if  instruction[2].nil? || instruction[2].is_a?(Proc)  # lambda's are Proc's 
+								if  instruction[2].nil? || instruction[2].is_a?(Proc)  # lambda's are Proc's
 									[nil] + instruction # No group, [ :name, :type, (:block) ]
 								else
 									instruction # [ :group, :name, :type, (:block)]
@@ -95,14 +95,14 @@ module IB
 							begin
 								data = @buffer.__send__("read_#{type}", &block)
 							rescue IB::LoadError, NoMethodError => e
-								error "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}" , :reader, false 
+								error "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}" , :reader, false
 							end
 							# debug	      puts data.inspect
 							if group
 								@data[group] ||= {}
 								@data[group][name] = data
 							else
-								@data[name] = data    
+								@data[name] = data
 							end
 						else
 							error "Unrecognized instruction #{instruction}"
