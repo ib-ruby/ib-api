@@ -15,4 +15,5 @@ Changelog
 | 1.12.2020 | creating a dummy Contract#verify to guaranty safe operation of spreads |
 
 |           | Preparation of a Gem-Release  |
-
+| 23.2.2021 | Fixed retrieving of ContractDetail requests of Options with strikes < 1 
+|           | Gem Release                   |

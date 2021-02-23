@@ -111,16 +111,20 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 
 
 		def essential
-				legs.each{ |x| x.essential }
-				self
+				invariant_attributes
 		end
+
 		def  multiplier
 			(legs.map(&:multiplier).sum/legs.size).to_i
 		end
 		
-		# provide a negative con_id 
+		# provide a negative con_id
 		def con_id
-			-legs.map(&:con_id).sum
+			if attributes[:con_id].present? && attributes[] < 0
+				attributes[:con_id]
+			else
+				-legs.map{ |x| x.is_a?(String) ? x.expand.con_id : x.con_id}.sum
+			end
 		end
 
 
