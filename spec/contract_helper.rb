@@ -26,7 +26,7 @@ def request_con_id  sample: SAMPLE
 end
 
 RSpec.shared_examples 'a complete Contract Object' do 
-	subject{ the_contract }
+#	subject{ the_contract }
 	it_behaves_like 'a valid Contract Object'
   it { is_expected.to be_an IB::Contract }
 	its( :contract_detail ){ is_expected.to be_a  IB::ContractDetail }

@@ -136,13 +136,15 @@ module IB
 
     def serialize *fields  # :nodoc:
       print_default = ->(field, default="") { field.blank? ? default : field }
-      print_not_zero = ->(field, default="") { field.to_i.zero? ? default : field }
+			## Non numeric entries are passed untouched, only 0 is converted to the default value
+			## Thus: a Zero-Strike-Option  has to be defined with  «strike: "0"»
+      print_not_zero = ->(field, default="") { field.is_a?(Numeric) && field.zero? ? default : field }
       [(con_id.present? && !con_id.is_a?(Symbol) && con_id.to_i > 0 ? con_id : ""),
        print_default[symbol],
        print_default[self[:sec_type]],
        ( fields.include?(:option) ?
        [ print_default[expiry], 
-				 print_not_zero[strike], 
+				 print_default[strike], 
 				 print_default[self[:right]], 
 				 print_default[multiplier]] : nil ),
        print_default[exchange],
