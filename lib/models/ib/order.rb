@@ -514,6 +514,11 @@ Format of serialisation
         (account ? "/#{account}" : '') +
         (commission ? " fee #{commission}" : '') + ">"
     end
+		def serialize_rabbit
+			{ 'Contract' => contract.present? ? contract.serialize( :option, :trading_class ): '' ,
+		 'Order' =>  self,
+		 'OrderState' => order_state}
+		end
 
   end # class Order
 end # module IB
