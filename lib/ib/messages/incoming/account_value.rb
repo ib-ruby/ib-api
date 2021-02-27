@@ -26,7 +26,11 @@ module IB
 
 				class ReceiveFA
 					def accounts
-						xml[:ListOfAccountAliases][:AccountAlias].map{|x| Account.new x }
+						if( a= xml[:ListOfAccountAliases][:AccountAlias]).is_a? Array
+							a.map{|x| Account.new x }
+						elsif a.is_a? Hash			## only one account (soley financial advisor)
+							[ Account.new( a ) ]
+						end
 					end
 
 					def to_human

@@ -383,6 +383,7 @@ In places where these terms are used to indicate a concept, we have left them as
 
 
   ### Now let's deal with Contract subclasses
+	begin
 
   require_relative 'option'
   require 'models/ib/bag'
@@ -390,6 +391,16 @@ In places where these terms are used to indicate a concept, we have left them as
   require 'models/ib/future'
   require 'models/ib/stock'
   require 'models/ib/index'
+	### walkaraound to enable spreads with orientdb 
+	if IB::const_defined? :Spread
+		IB::send(:remove_const, :Spread)
+		#puts "Spread already defined"
+		#puts "erasing"
+  end
+  require 'models/ib/spread.rb'
+	end
+
+
 
   class Contract
     # Contract subclasses representing specialized security types.

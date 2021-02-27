@@ -90,7 +90,7 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 					the_leg= ComboLeg.new( nc.attributes.slice( :con_id, :exchange )
 																					.merge( leg_params ))
 					self.combo_legs << the_leg 
-					self.description = description + " added #{nc.to_human}" rescue "Spread: #{nc.to_human}"
+					self.description = "#{description.nil? ? "": description} added #{nc.to_human}" rescue "Spread: #{nc.to_human}"
 					self.legs << nc
 			end
 			self  # return value to enable chaining
