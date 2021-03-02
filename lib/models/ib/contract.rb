@@ -6,7 +6,8 @@ require 'models/ib/underlying'
 module IB
 
   if defined?(Contract) 
-		puts "Contract already a #{defined?(Contract)}"
+		#Connection.current.logger.warn "Contract already a #{defined?(Contract)}"
+
 #		puts Contract.ancestors
 #		IB.send(:remove_const, 'Contract')
 	end
@@ -119,7 +120,7 @@ module IB
 
     def default_attributes  # :nodoc:
       super.merge :con_id => 0,
-        :strike => 0.0,
+        :strike => "",
         :right => :none, # Not an option
        # :exchange => 'SMART',
         :include_expired => false
@@ -136,15 +137,13 @@ module IB
 
     def serialize *fields  # :nodoc:
       print_default = ->(field, default="") { field.blank? ? default : field }
-			## Non numeric entries are passed untouched, only 0 is converted to the default value
-			## Thus: a Zero-Strike-Option  has to be defined with  «strike: "0"»
-      print_not_zero = ->(field, default="") { field.is_a?(Numeric) && field.zero? ? default : field }
       [(con_id.present? && !con_id.is_a?(Symbol) && con_id.to_i > 0 ? con_id : ""),
        print_default[symbol],
        print_default[self[:sec_type]],
        ( fields.include?(:option) ?
        [ print_default[expiry], 
-				 print_default[strike], 
+			##  a Zero-Strike-Option  has to be defined with  «strike: -1 »
+				 strike.present? && ( strike.is_a?(Numeric) && !strike.zero? && strike > 0 )  ?  strike : strike<0 ?  0 : "",
 				 print_default[self[:right]], 
 				 print_default[multiplier]] : nil ),
        print_default[exchange],
