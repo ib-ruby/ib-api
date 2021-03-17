@@ -422,6 +422,17 @@ In places where these terms are used to indicate a concept, we have left them as
       Contract::Subclasses[subclass].new opts
     end
 
+
+    ## format of the json file
+    # 	{ 'Contract' => serialize( :option, :trading_class ) }
+
+		def self.build_from_json container
+      IB::Contract.build( container['Contract'].clone.read_contract)
+		end
+
+
+
+
     # This returns a Contract initialized from the serialize_ib_ruby format string.
     def self.from_ib_ruby 
       keys = [:con_id, :symbol, :sec_type, :expiry, :strike, :right, :multiplier,

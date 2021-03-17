@@ -1,6 +1,6 @@
-#require 'ib/verify'
+# require 'ib/verify'
 module IB
-	class Spread  < Bag
+  class Spread  < Bag
 		has_many :legs
 
 		using IBSupport
@@ -63,7 +63,6 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 		end
 
 
-
 		def serialize_rabbit
 			{ "Spread" => serialize( :option, :trading_class ),
 				'legs' => legs.map{ |y| y.serialize :option, :trading_class }, 'combo_legs' => combo_legs.map(&:serialize),
@@ -109,9 +108,15 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 			self
 		end
 
-
+# essentail
+# effectivley clones the object
+# 
 		def essential
-				invariant_attributes
+      the_es = self.class.new invariant_attributes
+      the_es.legs = legs.map{|y| IB::Contract.build y.invariant_attributes}
+      the_es.combo_legs = combo_legs.map{|y| IB::ComboLeg.new y.invariant_attributes }
+      the_es.description = description
+      the_es  # return
 		end
 
 		def  multiplier
@@ -150,13 +155,15 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
                            :exchange => a.read_string
 
 			end
-			object= self.new  container['Spread'].read_contract
-			object.legs = container['legs'].map{|x| IB::Contract.build x.read_contract}
-			object.combo_legs = container['combo_legs'].map{ |x| read_leg[ x ] } 
-			object.description = container['misc'].read_string
+      puts "container: #{container}"
+      object= self.new  container['Spread'].clone.read_contract
+      object.legs = container['legs'].map{|x| IB::Contract.build x.clone.read_contract}
+      object.combo_legs = container['combo_legs'].map{ |x| read_leg[ x.clone ] } 
+      object.description = container['misc'].clone.read_string
 			object
 
 		end
+
 	end
 
 
