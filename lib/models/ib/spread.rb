@@ -63,13 +63,6 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 		end
 
 
-		def serialize_rabbit
-			{ "Spread" => serialize( :option, :trading_class ),
-				'legs' => legs.map{ |y| y.serialize :option, :trading_class }, 'combo_legs' => combo_legs.map(&:serialize),
-				'misc' => [description]
-			}	
-		end
-
 		# adds a leg to any spread
 		#
 		# Parameter: 
@@ -155,7 +148,6 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
                            :exchange => a.read_string
 
 			end
-      puts "container: #{container}"
       object= self.new  container['Spread'].clone.read_contract
       object.legs = container['legs'].map{|x| IB::Contract.build x.clone.read_contract}
       object.combo_legs = container['combo_legs'].map{ |x| read_leg[ x.clone ] } 

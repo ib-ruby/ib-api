@@ -426,8 +426,13 @@ In places where these terms are used to indicate a concept, we have left them as
     ## format of the json file
     # 	{ 'Contract' => serialize( :option, :trading_class ) }
 
-		def self.build_from_json container
-      IB::Contract.build( container['Contract'].clone.read_contract)
+    def self.build_from_json container
+      if container.is_a?(Hash) && container['Contract'].present?
+        IB::Contract.build container['Contract'].clone.read_contract
+      else
+        IB::Contract.build container.clone.read_contract
+      end
+
 		end
 
 
