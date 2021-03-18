@@ -403,6 +403,7 @@ In places where these terms are used to indicate a concept, we have left them as
 
   class Contract
     # Contract subclasses representing specialized security types.
+		using IBSupport
 
     Subclasses = Hash.new(Contract)
     Subclasses[:bag] = IB::Bag
