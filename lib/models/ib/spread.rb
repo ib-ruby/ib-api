@@ -1,5 +1,11 @@
 # require 'ib/verify'
 module IB
+  if defined?(Spread) 
+		puts "Bag already a #{defined?(Spread)}"
+
+#		puts Spread.ancestors
+		IB.send(:remove_const, 'Spread')
+	end
   class Spread  < Bag
 		has_many :legs
 

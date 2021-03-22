@@ -2,6 +2,12 @@
 
 module IB
 
+  if defined?(Bag) 
+		puts "Bag already a #{defined?(Bag)}"
+
+#		puts Bag.ancestors
+		IB.send(:remove_const, 'Bag')
+	end
   # "BAG" is not really a contract, but a combination (combo) of securities.
   # AKA basket or bag of securities. Individual securities in combo are represented
   # by ComboLeg objects.

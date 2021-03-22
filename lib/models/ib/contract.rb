@@ -403,7 +403,7 @@ In places where these terms are used to indicate a concept, we have left them as
 
   class Contract
     # Contract subclasses representing specialized security types.
-		using IBSupport
+    using IBSupport
 
     Subclasses = Hash.new(Contract)
     Subclasses[:bag] = IB::Bag
@@ -416,27 +416,12 @@ In places where these terms are used to indicate a concept, we have left them as
 
 
     # This builds an appropriate Contract subclass based on its type
-		#
-		# the method is also used to copy Contract.values to new instances
+    #
+    # the method is also used to copy Contract.values to new instances
     def self.build opts = {}
       subclass =( VALUES[:sec_type][opts[:sec_type]] || opts['sec_type'] || opts[:sec_type]).to_sym
       Contract::Subclasses[subclass].new opts
     end
-
-
-    ## format of the json file
-    # 	{ 'Contract' => serialize( :option, :trading_class ) }
-
-    def self.build_from_json container
-      if container.is_a?(Hash) && container['Contract'].present?
-        IB::Contract.build container['Contract'].clone.read_contract
-      else
-        IB::Contract.build container.clone.read_contract
-      end
-
-		end
-
-
 
 
     # This returns a Contract initialized from the serialize_ib_ruby format string.
