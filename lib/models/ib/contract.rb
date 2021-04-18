@@ -424,24 +424,6 @@ In places where these terms are used to indicate a concept, we have left them as
     end
 
 
-    # This returns a Contract initialized from the serialize_ib_ruby format string.
-    def self.from_ib_ruby 
-      keys = [:con_id, :symbol, :sec_type, :expiry, :strike, :right, :multiplier,
-              :exchange, :primary_exchange, :currency, :local_symbol]
-      props = Hash[keys.zip(string.split(":"))]
-      props.delete_if { |k, v| v.nil? || v.empty? }
-      Contract.build props
-    end
   end # class Contract
 end # module IB
 
-class String
-	def to_contract
-      keys = [:con_id, :symbol, :sec_type, :expiry, :strike, :right, :multiplier,
-              :exchange, :primary_exchange, :currency, :local_symbol]
-      props = Hash[keys.zip(split(":"))]
-      props.delete_if { |k, v| v.nil? || v.empty? }
-      IB::Contract.build props
-
-	end
-end

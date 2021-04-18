@@ -18,11 +18,10 @@ module IB
           # unless  BAR_SIZES.keys.include?(bar_size)
             # error ":bar_size must be one of #{BAR_SIZES.inspect}", :args
           # end
-
-          contract = data[:contract].is_a?(IB::Contract) ?
-              data[:contract] : IB::Contract.from_ib_ruby(data[:contract])
-
-          [data_type, nil, contract]
+          unless data[:contract].is_a? IB::Contract
+            error "contract must be a valid IB::Contract" , :args
+          end
+          [data_type, nil, data[:contract]]
         end
       end
 
