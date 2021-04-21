@@ -218,20 +218,18 @@ module IB
 		# the link to contract-details is __not__ maintained.
 		def  essential
 
-			self_attributes = [ :sec_type]
-			the_attributes = [ :symbol , :con_id,   :exchange, :right, 
+			the_attributes = [ :sec_type, :symbol , :con_id,   :exchange, :right, 
 									  :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
-								:multiplier,  :primary_exchange, :trading_class ]
-			the_hash= the_attributes.map{|x| y= self.send(x);  [x,y] if y.present? }.compact.to_h
-			the_hash[:description] = 
-				 if @description.present? 
-					  @description 
-				 elsif contract_detail.present?
-					 contract_detail.long_name
-				 else 
-					 ""
-				 end
-			self.class.new   the_hash.merge( self_attributes.map{|x| y = self.send(x);  [x,y] unless y == :none }.compact.to_h )
+								:multiplier,  :primary_exchange, :trading_class, :description ]
+			new_contract= self.class.new invariant_attributes.select{|k,_| the_attributes.include? k }.compact
+      new_contract[:description] = if @description.present? 
+                                     @description 
+                                   elsif contract_detail.present?
+                                     contract_detail.long_name
+                                   else 
+                                     ""
+                                   end
+      new_contract # return contract
 		end
 
 
