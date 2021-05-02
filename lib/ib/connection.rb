@@ -4,6 +4,11 @@ require 'ib/socket'
 require 'ib/logger'
 require 'ib/messages'
 
+module TechnicalAnalysis
+  module Signals
+  end
+end
+
 module IB
   # Encapsulates API connection to TWS or Gateway
   class Connection
@@ -100,7 +105,7 @@ module IB
 		def update_next_order_id
 			i,finish = 0, false
 			sub = self.subscribe(:NextValidID) { finish =  true }
-			connected? ?  self.send_message( :RequestIds )  : open()
+			connected? ? self.send_message( :RequestIds ) : open()
 			Timeout::timeout(1, IB::TransmissionError,"Could not get NextValidId" ) do
 				loop { sleep 0.1; break if finish  }
 			end
@@ -186,7 +191,13 @@ module IB
           when what.is_a?(Class) && what < Messages::Incoming::AbstractMessage
             [what]
           when what.is_a?(Symbol)
-            [Messages::Incoming.const_get(what)]
+            if Messages::Incoming.const_defined?(what)
+              [Messages::Incoming.const_get(what)]
+            elsif TechnicalAnalysis::Signals.const_defined?(what)
+              [TechnicalAnalysis::Signals.const_get?(what)]
+            else
+              error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
+            end
           when what.is_a?(Regexp)
             Messages::Incoming::Classes.values.find_all { |klass| klass.to_s =~ what }
           else
