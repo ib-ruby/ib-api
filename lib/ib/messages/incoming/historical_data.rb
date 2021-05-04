@@ -41,12 +41,12 @@ module IB
             IB::Bar.new :time => buffer.read_int_date, # conversion of epoche-time-integer to Dateime
 																											 # requires format_date in request to be "2"
 																											 # (outgoing/bar_requests # RequestHistoricalData#Encoding)
-                        :open => buffer.read_decimal,
-                        :high => buffer.read_decimal,
-                        :low => buffer.read_decimal,
-                        :close => buffer.read_decimal,
+                        :open => buffer.read_float,
+                        :high => buffer.read_float,
+                        :low => buffer.read_float,
+                        :close => buffer.read_float,
                         :volume => buffer.read_int,
-                        :wap => buffer.read_decimal,   
+                        :wap => buffer.read_float,   
 #                        :has_gaps => buffer.read_string,  # only in ServerVersion  < 124
                         :trades => buffer.read_int  
           end
@@ -78,6 +78,26 @@ module IB
 					end
 				end
 			end
+
+      HistoricalDataUpdate = def_message [90, 0] ,
+                             [:request_id, :int] ,
+                             [:count, :int],
+                             [:bar, :bar]  # defined in support.rb
+
+      class HistoricalDataUpdate
+        attr_accessor :results
+				using IBSupport  # extended Array-Class  from abstract_message
+
+        def bar
+            @bar = IB::Bar.new @data[:bar]
+          end
+
+        def to_human
+          "<HistDataUpdate #{request_id} #{bar}>"
+        end
+      end
+
+
 
     end # module Incoming
   end # module Messages

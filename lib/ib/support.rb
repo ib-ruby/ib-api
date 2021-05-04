@@ -62,7 +62,7 @@ module IBSupport
 
 		def read_int_date
 			t= read_int
-				s= Time.at(t)
+      s= Time.at(t.to_i)
 	#			s.year == 1970  --> data is most likely a date-string
 				s.year == 1970 ? Date.parse(t.to_s) : s
 		end
@@ -139,20 +139,35 @@ module IBSupport
 		end
 		#
 
-		def read_contract  # read a standard contract and return als hash
-			{	 con_id: read_int,
-				 symbol: read_string,
-				 sec_type: read_string,
-				 expiry: read_string,
-				 strike: read_decimal,
-				 right: read_string,
-				 multiplier: read_int,		
-				 exchange: read_string,
-				 currency: read_string,
-				 local_symbol: read_string,
-				 trading_class: read_string }  # new Version 8
+    def read_contract  # read a standard contract and return als hash
+      {	 con_id: read_int,
+         symbol: read_string,
+         sec_type: read_string,
+         expiry: read_string,
+         strike: read_decimal,
+         right: read_string,
+         multiplier: read_int,		
+         exchange: read_string,
+         currency: read_string,
+         local_symbol: read_string,
+         trading_class: read_string }  # new Version 8
+    end
 
-		end
+
+    def read_bar  # read a standard bar (Historical data bars)
+      { :time => read_int_date, # conversion of epoche-time-integer to Dateime
+                                # requires format_date in request to be "2"
+                                # (outgoing/bar_requests # RequestHistoricalData#Encoding)
+        :open => read_float,
+        :high => read_float,
+        :low => read_float,
+        :close => read_float,
+        :wap => read_float,   
+        :volume => read_int,
+        #  :has_gaps => read_string,  # only in ServerVersion  < 124
+        :trades => read_int  }
+
+    end
 
 
 		alias read_bool read_boolean

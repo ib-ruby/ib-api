@@ -22,7 +22,7 @@ module IB
       validates_numericality_of :open, :high, :low, :close, :volume
 
    def to_human
-      "<Bar: #{time} wap #{wap} OHLC #{open} #{high} #{low} #{close} " +
+     "<Bar: #{time.strftime("(%d.%m.%y)%X")} wap #{wap.round(3)} OHLC #{open} #{high} #{low} #{close} " +
         (trades ? "trades #{trades}" : "") + " vol #{volume}>"
     end
 
