@@ -154,14 +154,16 @@ module IBSupport
     end
 
 
-    def read_bar  # read a standard bar (Historical data bars)
+    def read_bar  # read a Historical data bar  
+#                  ** historicalDataUpdate: time open close high low  **  covered hier 
+#                     historicalData        time open high low close  <- covered in messages/incomming
       { :time => read_int_date, # conversion of epoche-time-integer to Dateime
                                 # requires format_date in request to be "2"
                                 # (outgoing/bar_requests # RequestHistoricalData#Encoding)
         :open => read_float,
+        :close => read_float,
         :high => read_float,
         :low => read_float,
-        :close => read_float,
         :wap => read_float,   
         :volume => read_int,
         #  :has_gaps => read_string,  # only in ServerVersion  < 124
