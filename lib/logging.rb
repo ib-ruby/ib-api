@@ -1,3 +1,13 @@
+#module Kernel
+#  private
+#  def this_method_name
+#    caller[0] =~ /`([^']*)'/  and $1
+#  end
+#   see also __method__  and __callee__
+#end
+
+
+
 module Support
 	module Logging
 		def self.included(base)
@@ -26,8 +36,8 @@ module Support
 					#	"#{datetime.strftime("%d.%m.(%X)")}#{"%5s" % severity}->#{msg}\n"
 						"#{"%5s" % severity}::#{msg}\n"
 					end
+            @logger.debug "------------------------------ start logging ----------------------------"
 				end # branch
-        @logger.info "------------------------------ start logging ----------------------------"
 			end # def
 		end # module ClassMethods
 	end # module Logging
