@@ -1,13 +1,9 @@
 require 'thread'
 #require 'active_support'
 require 'ib/socket'
-require 'ib/logger'
+require 'logger'
+require 'logging'
 require 'ib/messages'
-
-module TechnicalAnalysis
-  module Signals
-  end
-end
 
 module IB
   # Encapsulates API connection to TWS or Gateway
@@ -23,10 +19,9 @@ module IB
   ## public data-queue: received,  received?, wait_for, clear_received
   ## misc:	      reader_running?
 
-  include LogDev   # provides default_logger
+  include Support::Logging   # provides default_logger
 
     mattr_accessor :current
-    mattr_accessor :logger  ## borrowed from active_support
     # Please note, we are realizing only the most current TWS protocol versions,
     # thus improving performance at the expense of backwards compatibility.
     # Older protocol versions support can be found in older gem versions.
@@ -45,7 +40,7 @@ module IB
                    connect: true, # Connect at initialization
                    received:  true, # Keep all received messages in a @received Hash
 #									 redis: false,    # future plans
-                   logger: default_logger,
+                   logger: nil,
                    client_id:  rand( 1001 .. 9999 ) ,
                    client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
 									 optional_capacities: "", # TWS-Version 974: "+PACEAPI"
@@ -54,17 +49,13 @@ module IB
 			 # V 974 release motes
 # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
-
+    self.class.configure_logger logger
     # convert parameters into instance-variables and assign them
-		method(__method__).parameters.each do |type, k|
-			next unless type == :key
-			case k
-			when :logger
-				self.logger = logger
-			else
+    method(__method__).parameters.each do |type, k|
+			next unless type == :key  ##  available: key , keyrest
+      next if k.to_s == 'logger'
 				v = eval(k.to_s)
 				instance_variable_set("@#{k}", v) unless v.nil?
-			end
 		end
 
 		# A couple of locks to avoid race conditions in JRuby
@@ -84,9 +75,9 @@ module IB
 		yield self if block_given?
 
 		self.subscribe(:NextValidId) do |msg|
-			logger.progname = "Connection#connect"
+      self.logger.progname = "Connection#connect"
 			self.next_local_id = msg.local_id
-			logger.info { "Got next valid order id: #{next_local_id}." }
+      self.logger.info { "Got next valid order id: #{next_local_id}." }
 		end
 
 		# Ensure the transmission of NextValidId.

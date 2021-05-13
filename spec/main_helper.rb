@@ -37,7 +37,7 @@ end
 ## Connection helpers
 def establish_connection
 
-		ib = IB::Connection.new OPTS[:connection].merge(:logger => mock_logger)
+		ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
 		if ib
 			ib.wait_for :ManagedAccounts, 5
 
@@ -46,7 +46,7 @@ def establish_connection
 			received = ib.received[:ManagedAccounts].first.accounts_list.split(',')
 			unless received.include?(ACCOUNT)
 				close_connection
-				raise "Connected to wrong account #{received}, expected #{account}" 
+				raise "Connected to wrong account #{received}, expected #{ACCOUNT}" 
 			end
 			puts "Performing tests with ClientId: #{ib.client_id}"
 			OPTS[:account_verified] = true
