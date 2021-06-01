@@ -418,7 +418,7 @@ module IB
 				@subscribe_lock.synchronize do
 					subscribers[msg.class].each { |_, subscriber| subscriber.call(msg) }
 				end
-				logger.warn { "No subscribers for message #{msg.class}!" } if subscribers[msg.class].empty?
+				logger.info { "No subscribers for message #{msg.class}!" } if subscribers[msg.class].empty?
 
 				# Collect all received messages into a @received Hash
 				if @received
