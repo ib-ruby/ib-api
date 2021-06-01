@@ -18,7 +18,7 @@ module LogDev
 	end
 
 	# Add universally accessible log method/accessor into Object
-	def log *args
+	def logger *args
 		default_logger.tap do |logger|
 			logger.fatal *args unless args.empty?
 		end
