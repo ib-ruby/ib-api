@@ -5,10 +5,19 @@ module CoreExtensions
         self.each_with_object(Hash.new(0)) { |element, counter| counter[element] += 1 }.sort_by{|k,v| -v}.to_h
       end
     end
+
+    module TablePresenter
+      def as_table
+        the_table_header = first.table_header
+        the_table_rows = map &:table_row
+        Terminal::Table.new headings: the_table_header, rows: the_table_rows , style: { border: :unicode }
+      end
+    end
   end
 end
 
 Array.include CoreExtensions::Array::DuplicatesCounter
+Array.include CoreExtensions::Array::TablePresenter
 
 
 

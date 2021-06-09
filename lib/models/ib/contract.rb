@@ -304,6 +304,23 @@ module IB
          ].compact.join(" ") + ">"
     end
 
+    def table_header
+      [ '', 'symbol',  'con_id', 'exchange', 'expiry','multiplier', 'trading-class' , 'right', 'strike', 'currency' ]
+    end
+ 
+    def table_row
+      [ self.class.to_s.demodulize, symbol, 
+         con_id.zero? ? '' : con_id ,
+         { value: exchange, alignment: :center}, 
+         expiry, 
+         { value: multiplier.zero??  "" : multiplier, alignment: :center}, 
+         { value: trading_class, alignment: :center},
+         {value: right == :none ? "": right, alignment: :center }, 
+         { value: strike.zero? ? "": strike, alignment: :right}, 
+         { value: currency, alignment: :center} ]
+
+    end
+
     def to_short
       if expiry.blank? && last_trading_day.blank? 
       "#{symbol}# {exchange}# {currency}"

@@ -17,12 +17,24 @@ module IB
       end.compact.sort.join(' ') + ">"
     end
 
+    def table_header
+     [ self.class.to_s.demodulize ] +  content_attributes.keys
+    end
+    def table_row
+     [ self.class.to_s.demodulize ] +  content_attributes.values
+    end
+
+
+    def as_table
+      Terminal::Table.new headings: table_header, rows: [table_row ], style: { border: :unicode }
+    end
+
     # Comparison support
     def content_attributes
 			#NoMethodError if a Hash is assigned to an attribute
       Hash[attributes.reject do |(attr, _)|
                                   attr.to_s =~ /(_count)\z/ ||
-                                    [:created_at, :type, # :updated_at, 
+                                    [:created_at, :type,  :updated_at,
                                      :id, :order_id, :contract_id].include?(attr.to_sym)
       end]
     end
