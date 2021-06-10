@@ -67,5 +67,16 @@ module IB
 
     end
 
+    def table_header
+      [ 'Greeks', 'price',  'implied vola', 'dividend', 'delta','gamma', 'vega' , 'theta']
+    end
+ 
+    def table_row
+      outstr= ->( item ) { { value: item.nil? ? "--" : sprintf("%g" , item) , alignment: :right } } 
+      [ option.to_human, outstr[ option_price ], outstr[ implied_volatility ],
+        outstr[ pv_dividend ], 
+        outstr[ delta.to_f ], outstr[ gamma.to_f ], outstr[ vega.to_f ] , outstr[ theta.to_f ] ]
+    end
+
   end  # class
 end # module
