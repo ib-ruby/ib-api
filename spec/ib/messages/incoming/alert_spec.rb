@@ -40,6 +40,8 @@ describe IB::Messages::Incoming::Alert do
 
     before(:all) do
 			establish_connection
+      sleep 0.1  #  wait for alerts to appear
+      # puts IB::Connection.current.received.inspect  # in case of failing tests   look for alert messasges
     end
 
     after(:all) { close_connection }

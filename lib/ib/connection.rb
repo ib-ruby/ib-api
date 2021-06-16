@@ -54,8 +54,8 @@ module IB
     method(__method__).parameters.each do |type, k|
 			next unless type == :key  ##  available: key , keyrest
       next if k.to_s == 'logger'
-				v = eval(k.to_s)
-				instance_variable_set("@#{k}", v) unless v.nil?
+      v = eval(k.to_s)
+      instance_variable_set("@#{k}", v) unless v.nil?
 		end
 
 		# A couple of locks to avoid race conditions in JRuby
@@ -71,40 +71,48 @@ module IB
 		#     end
 
 		# TWS always sends NextValidId message at connect -subscribe save this id
-		## this block is executed before tws-communication is established
-		yield self if block_given?
+    
 
-		self.subscribe(:NextValidId) do |msg|
+    self.subscribe(:NextValidId) do |msg|
       self.logger.progname = "Connection#connect"
-			self.next_local_id = msg.local_id
+      self.next_local_id = msg.local_id
       self.logger.info { "Got next valid order id: #{next_local_id}." }
-		end
+    end
+    #
+		# this block is executed before tws-communication is established
+    # Its intended for globally available subscriptions of tws-messages
+    yield self if block_given?
 
-		# Ensure the transmission of NextValidId.
-		# works even if no reader_thread is established
 		if connect
 			disconnect if connected?
-			 update_next_order_id
-			Kernel.exit if self.next_local_id.nil?
+      update_next_order_id
+      Kernel.exit if self.next_local_id.nil?  # emergency exit. 
+                                              # update_next_order_id should have raised an error
 		end
-		#start_reader if @received && connected?
 		Connection.current = self
 		end
 
 		# read actual order_id and
 		# connect if not connected
 		def update_next_order_id
-			i,finish = 0, false
-			sub = self.subscribe(:NextValidID) { finish =  true }
-			connected? ? self.send_message( :RequestIds ) : open()
-			Timeout::timeout(1, IB::TransmissionError,"Could not get NextValidId" ) do
-				loop { sleep 0.1; break if finish  }
-			end
-			self.unsubscribe sub
+      connect() unless connected? 
+      q = Queue.new
+      subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
+			send_message :RequestIds  
+      th = Thread.new{ sleep 5; q.close }
+      m= q.pop
+      if q.closed?
+        error "Could not get NextValidID", :reader, true
+      else
+        th.kill
+      end
+      unsubscribe subscription
+      m  # return next_id
 		end
 
 		### Working with connection
-
+    #
+    ### connect can be called directly. but is mostly called through update_next_order_id
 		def connect
 			logger.progname='IB::Connection#connect'
 			if connected?
@@ -123,10 +131,6 @@ module IB
 				@local_connect_time = Time.now
 			end
 
-			# Sending (arbitrary) client ID to identify subsequent communications.
-			# The client with a client_id of 0 can manage the TWS-owned open orders.
-			# Other clients can only manage their own open orders.
-
 			# V100 initial handshake
 			# Parameters borrowed from the python client
 			start_api = 71
@@ -134,14 +138,10 @@ module IB
 			#			optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
 			socket.send_messages start_api, version, @client_id  , @optional_capacities
 			@connected = true
-			logger.info { "Connected to server, version: #{@server_version},\n connection time: " +
+			logger.fatal{ "Connected to server, version: #{@server_version},\n connection time: " +
 								 "#{@local_connect_time} local, " +
 									 "#{@remote_connect_time} remote."}
 
-			# if the client_id is wrong or the port is not accessible the first read attempt fails
-			# get the first message and proceed if something reasonable is recieved
-			the_message = process_message   # recieve next_order_id
-			error "Check Port/Client_id ", :reader if the_message == " "
 			start_reader
 		end
 
@@ -258,6 +258,7 @@ module IB
 		#
 		# wait_for depends heavyly on Connection#received. If collection of messages through recieved
 		# is turned off, wait_for loses most of its functionality
+
     def wait_for *args, &block
       timeout = args.find { |arg| arg.is_a? Numeric } # extract timeout from args
       end_time = Time.now + (timeout || 1) # default timeout 1 sec
@@ -374,15 +375,15 @@ module IB
     # If you don't start reader, you should manually poll @socket for messages
     # or use #process_messages(msec) API.
     def start_reader
-			return(@reader_thread) if @reader_running
-			if connected?
-				Thread.abort_on_exception = true
-				@reader_running = true
-				@reader_thread = Thread.new { process_messages while @reader_running }
-			else
-				logger.fatal {"Could not start reader, not connected!"}
-				nil  # return_value
-			end
+      if @reader_running
+        @reader_thread
+      elsif connected?
+        Thread.abort_on_exception = true
+        @reader_running = true
+        @reader_thread = Thread.new { process_messages while @reader_running }
+      else
+        error "Could not start reader, not connected!", :reader, true
+      end
     end
 
 		protected
@@ -409,7 +410,7 @@ module IB
 				# and have it read the message from socket.
 				# NB: Failure here usually means unsupported message type received
 				logger.error { "Got unsupported message #{msg_id}" } unless Messages::Incoming::Classes[msg_id]
-				error "Something strange happened - Reader has to be restarted" , :reader if msg_id.to_i.zero?
+				error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
 				msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
 
 				# Deliver message to all registered subscribers, alert if no subscribers
