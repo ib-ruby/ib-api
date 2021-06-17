@@ -34,7 +34,7 @@ module Support
 					@logger.level = Logger::INFO
 					@logger.formatter = proc do |severity, datetime, progname, msg|
 					#	"#{datetime.strftime("%d.%m.(%X)")}#{"%5s" % severity}->#{msg}\n"
-						"#{"%5s" % severity}::#{msg}\n"
+						"#{"%1s" % severity[0]}: #{msg}\n"
 					end
             @logger.debug "------------------------------ start logging ----------------------------"
 				end # branch

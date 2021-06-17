@@ -83,7 +83,7 @@ module IB
       TickGeneric = def_message [45, 6], AbstractTick,
                                 [:ticker_id, :int],
                                 [:tick_type, :int],
-                                [:value, :decimal]
+                                [:value, :float]
 
       TickString = def_message [46, 6], AbstractTick,
                                [:ticker_id, :int],

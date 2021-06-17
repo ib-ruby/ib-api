@@ -514,6 +514,23 @@ Format of serialisation
         (account ? "/#{account}" : '') +
         (commission ? " fee #{commission}" : '') + ">"
     end
+
+
+    def table_header
+      [ 'account','status' ,'', 'Type', 'tif', 'action', 'amount','price' , 'id/fee' ]
+    end
+
+    def table_row
+      [ account,  order_ref.present? ? order_ref.to_s : status,
+        contract.to_human[1..-2],
+        self[:order_type] ,
+        self[:tif],
+        action,
+        total_quantity,
+        (limit_price ? "#{limit_price} " : '') + ((aux_price && aux_price != 0) ? "/#{aux_price}" : '') ,
+        commission ? " fee #{commission}" : local_id ]
+    end
+
 		def serialize_rabbit
 			{ 'Contract' => contract.present? ? contract.serialize( :option, :trading_class ): '' ,
 		 'Order' =>  self,

@@ -95,19 +95,22 @@ module IB
 		# read actual order_id and
 		# connect if not connected
 		def update_next_order_id
-      connect() unless connected? 
       q = Queue.new
       subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
-			send_message :RequestIds  
+      unless connected?
+        connect() # connect implies requesting NextValidId
+      else
+        send_message :RequestIds
+      end
       th = Thread.new{ sleep 5; q.close }
-      m= q.pop
+      local_id = q.pop
       if q.closed?
         error "Could not get NextValidID", :reader, true
       else
         th.kill
       end
       unsubscribe subscription
-      m  # return next_id
+      local_id  # return next_id
 		end
 
 		### Working with connection
@@ -404,7 +407,7 @@ module IB
 				msg_id = the_decoded_message.shift.to_i
 
 				# Debug:
-				logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
+		#		logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
 
 				# Create new instance of the appropriate message type,
 				# and have it read the message from socket.
@@ -415,7 +418,7 @@ module IB
 
 				# Deliver message to all registered subscribers, alert if no subscribers
 				# Ruby 2.0 and above: Hashes are ordered.
-				# Thus first declared subscribers of  a class are executed first
+				# Thus first declared subscribers of a class are executed first
 				@subscribe_lock.synchronize do
 					subscribers[msg.class].each { |_, subscriber| subscriber.call(msg) }
 				end
