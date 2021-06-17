@@ -76,7 +76,7 @@ read_yml = -> (key) do
 
     c.subscribe( :OpenOrder){ |msg|  "Open Order detected and stored: C.received[:OpenOrders] " }
 	end 
-  C.logger.level = Logger::INFO 
+  #C.logger.level = Logger::FATAL
   unless  C.received[:OpenOrder].blank?
         puts "------------------------------- OpenOrders ----------------------------------"
     puts C.received[:OpenOrder].to_human.join "\n"

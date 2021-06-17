@@ -47,18 +47,34 @@ class PortfolioValue < IB::Model
     end
     alias to_s to_human
 
+    def table_header
+      [ '' ,   '', 'pos',  'avr', 'market', 'value', 'unrealized', 'realized'  ]
+    end
 
-#	def to_invest
-#		a=attributes
-#		a.delete "created_at"
-#		a.delete "updated_at"
-#		a.delete "id"
-#		a.delete "account_id"
-#		a.delete "currency_id"
-#		a[:currency] = currency.symbol.presence || currency.name.presence  || nil   unless currency.nil?
-#		a  #return_value
-#
-#
-#	end
+    def table_row
+      outprice= ->( item ) { { value: item.nil? ? "--" :  item , alignment: :right } } 
+
+			the_account = if account.present? 
+											if account.is_a?(String)
+												account + " "
+											else
+												account.account+" "
+											end
+										else 
+											""
+										end
+
+      [ the_account,
+        contract.to_human[1..-2],
+       outprice[position.to_i],
+       outprice[average_cost.to_f.round(3)],
+       outprice[market_price.to_f.round(3)],
+       outprice[market_value.to_f.round(2)],
+			 unrealized_pnl.to_i.zero? ? "": outprice[unrealized_pnl], 
+       realized_pnl.to_i.zero? ? "" : outprice[realized_pnl] 
+      ]
+    end
+
+
 end # class
 end # module

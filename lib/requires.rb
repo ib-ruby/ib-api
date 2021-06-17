@@ -1,6 +1,7 @@
 require 'active_support/core_ext/module/attribute_accessors.rb'
 require 'extensions/class-extensions'
 
+require 'terminal-table'
 
 require 'ib/version'
 require 'ib/errors'

@@ -67,5 +67,18 @@ module IB
 
     end
 
+    def table_header
+      [ 'Greeks', 'price',  'impl. vola', 'dividend', 'delta','gamma', 'vega' , 'theta']
+    end
+ 
+    def table_row
+      outstr= ->( item ) { { value: item.nil? ? "--" : sprintf("%g" , item) , alignment: :right } } 
+      outprice= ->( item ) { { value: item.nil? ? "--" : sprintf("%7.2f" , item) , alignment: :right } } 
+      option_short = ->{"#{option.right}  #{option.symbol}#{ "/"+ option.trading_class unless option.trading_class == option.symbol } #{option.expiry}  #{option.strike}"}
+      [ option_short[], outprice[ option_price ], outprice[ implied_volatility ],
+        outprice[ pv_dividend ], 
+        outprice[ delta ], outprice[ gamma ], outprice[ vega ] , outprice[ theta ] ]
+    end
+
   end  # class
 end # module
