@@ -80,17 +80,14 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 		#	Default:  action: :buy, 	weight: 1
 
 		def add_leg contract,  **leg_params
-			evaluated_contracts =  []
-			nc =	contract.verify.first.essential
+      error "need a IB::Contract as first argument" unless contract.is_a? IB::Contract
+      self.legs <<  contract
+      error "cannot add leg if no con_id is provided" if contract.con_id.blank?
 			#			weigth = 1 --> sets Combo.side to buy and overwrites the action statement
 #			leg_params[:weight] = 1 unless leg_params.key?(:weight) || leg_params.key?(:ratio)
-			if nc.is_a?( IB::Contract) && nc.con_id.present?
-					the_leg= ComboLeg.new( nc.attributes.slice( :con_id, :exchange )
-																					.merge( leg_params ))
-					self.combo_legs << the_leg 
-					self.description = "#{description.nil? ? "": description} added #{nc.to_human}" rescue "Spread: #{nc.to_human}"
-					self.legs << nc
-			end
+      self.combo_legs <<  ComboLeg.new( contract.attributes.slice( :con_id, :exchange ).merge( leg_params ))
+      self.description = "#{description.nil? ? "": description} added #{contract.to_human}" rescue "Spread: #{contract.to_human}"
+
 			self  # return value to enable chaining
 
 
