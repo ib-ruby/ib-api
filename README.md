@@ -3,6 +3,11 @@ Ruby interface to Interactive Brokers' TWS API
 
 Reimplementation of the basic functions of ib-ruby
 
+---
+__STATUS:  Preparing for a new GEM-Release, scheduled for the first week of July__
+---
+
+
 __Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__  (_work in progress_)
 
 ----
