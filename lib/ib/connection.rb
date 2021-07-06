@@ -35,62 +35,56 @@ module IB
     alias next_order_id= next_local_id=
 
     def initialize host: '127.0.0.1',
-                   port: '4002', # IB Gateway connection (default --> demo) 4001:  production
-                       #:port => '7497', # TWS connection  --> demo				  7496:  production
-                   connect: true, # Connect at initialization
-                   received:  true, # Keep all received messages in a @received Hash
-#									 redis: false,    # future plans
-                   logger: nil,
-                   client_id:  rand( 1001 .. 9999 ) ,
-                   client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
-									 optional_capacities: "", # TWS-Version 974: "+PACEAPI"
-                   #server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
-		   **any_other_parameters_which_are_ignored
-			 # V 974 release motes
-# API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
+      port: '4002', # IB Gateway connection (default --> demo) 4001:  production
+      #:port => '7497', # TWS connection  --> demo				  7496:  production
+      connect: true, # Connect at initialization
+      received:  true, # Keep all received messages in a @received Hash
+      #									 redis: false,    # future plans
+      logger: nil,
+      client_id:  rand( 1001 .. 9999 ) ,
+      client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
+      optional_capacities: "", # TWS-Version 974: "+PACEAPI"
+      #server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
+      **any_other_parameters_which_are_ignored
+    # V 974 release motes
+    # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
-    self.class.configure_logger logger
-    # convert parameters into instance-variables and assign them
-    method(__method__).parameters.each do |type, k|
-			next unless type == :key  ##  available: key , keyrest
-      next if k.to_s == 'logger'
-      v = eval(k.to_s)
-      instance_variable_set("@#{k}", v) unless v.nil?
-		end
+      self.class.configure_logger logger
+      # convert parameters into instance-variables and assign them
+      method(__method__).parameters.each do |type, k|
+        next unless type == :key  ##  available: key , keyrest
+        next if k.to_s == 'logger'
+        v = eval(k.to_s)
+        instance_variable_set("@#{k}", v) unless v.nil?
+      end
 
-		# A couple of locks to avoid race conditions in JRuby
-		@subscribe_lock = Mutex.new
-		@receive_lock = Mutex.new
-		@message_lock = Mutex.new
+      # A couple of locks to avoid race conditions in JRuby
+      @subscribe_lock = Mutex.new
+      @receive_lock = Mutex.new
+      @message_lock = Mutex.new
 
-		@connected = false
-		self.next_local_id = nil
+      @connected = false
+      self.next_local_id = nil
 
-		#     self.subscribe(:Alert) do |msg|
-		#       puts msg.to_human
-		#     end
+      # TWS always sends NextValidId message at connect -subscribe save this id
+      self.subscribe(:NextValidId) do |msg|
+        self.logger.progname = "Connection#connect"
+        self.next_local_id = msg.local_id
+        self.logger.info { "Got next valid order id: #{next_local_id}." }
+      end
+      #
+      # this block is executed before tws-communication is established
+      # Its intended for globally available subscriptions of tws-messages
+      yield self if block_given?
 
-		# TWS always sends NextValidId message at connect -subscribe save this id
-    
-
-    self.subscribe(:NextValidId) do |msg|
-      self.logger.progname = "Connection#connect"
-      self.next_local_id = msg.local_id
-      self.logger.info { "Got next valid order id: #{next_local_id}." }
+      if connect
+        disconnect if connected?
+        update_next_order_id
+        Kernel.exit if self.next_local_id.nil?  # emergency exit. 
+        # update_next_order_id should have raised an error
+      end
+      Connection.current = self
     end
-    #
-		# this block is executed before tws-communication is established
-    # Its intended for globally available subscriptions of tws-messages
-    yield self if block_given?
-
-		if connect
-			disconnect if connected?
-      update_next_order_id
-      Kernel.exit if self.next_local_id.nil?  # emergency exit. 
-                                              # update_next_order_id should have raised an error
-		end
-		Connection.current = self
-		end
 
 		# read actual order_id and
 		# connect if not connected
@@ -102,16 +96,16 @@ module IB
       else
         send_message :RequestIds
       end
-      th = Thread.new{ sleep 5; q.close }
+      th = Thread.new { sleep 5; q.close }
       local_id = q.pop
       if q.closed?
-        error "Could not get NextValidID", :reader, true
+        error "Could not get NextValidID", :reader
       else
         th.kill
       end
       unsubscribe subscription
       local_id  # return next_id
-		end
+    end
 
 		### Working with connection
     #
@@ -141,9 +135,10 @@ module IB
 			#			optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
 			socket.send_messages start_api, version, @client_id  , @optional_capacities
 			@connected = true
-			logger.fatal{ "Connected to server, version: #{@server_version},\n connection time: " +
+			logger.fatal{ "Connected to server, version: #{@server_version}, " +
+                 "using client-id: #{client_id},\n   connection time: " +
 								 "#{@local_connect_time} local, " +
-									 "#{@remote_connect_time} remote."}
+									 "#{@remote_connect_time} remote." }
 
 			start_reader
 		end
@@ -286,12 +281,12 @@ module IB
     # Process incoming messages during *poll_time* (200) msecs, nonblocking
     def process_messages poll_time = 50 # in msec
       time_out = Time.now + poll_time/1000.0
+      begin
       while (time_left = time_out - Time.now) > 0
         # If socket is readable, process single incoming message
 				#process_message if select [socket], nil, nil, time_left
 				# the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
 				# unfortunately, it raises Errors in windows environment
-				# disabled for now
         if select [socket], nil, nil, time_left
         #  # Peek at the message from the socket; if it's blank then the
         #  # server side of connection (TWS) has likely shut down.
@@ -305,6 +300,16 @@ module IB
         #  # comes back up (gets reconnedted), normal processing
         #  # (without the 100ms wait) should happen.
          sleep(0.1) if socket_likely_shutdown
+        end
+      end
+      rescue Errno::ECONNRESET => e
+        logger.fatal e.message
+        if e.message =~ /Connection reset by peer/
+          logger.fatal "Is another client listening on the same port?"
+          error "try reconnecting with a different client-id", :reader
+        else 
+          logger.fatal "Aborting"
+          Kernel.exit
         end
       end
     end
@@ -381,9 +386,14 @@ module IB
       if @reader_running
         @reader_thread
       elsif connected?
+        begin
         Thread.abort_on_exception = true
         @reader_running = true
         @reader_thread = Thread.new { process_messages while @reader_running }
+      rescue Errno::ECONNRESET => e
+          logger.fatal e.message
+          Kernel.exit
+        end
       else
         error "Could not start reader, not connected!", :reader, true
       end

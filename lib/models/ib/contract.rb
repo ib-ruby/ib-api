@@ -235,10 +235,42 @@ module IB
 
 		# creates a new Contract substituting attributes by the provided key-value pairs.
 		#
-		# con_id is resetted
-		def merge **new_attributes
-			self.con_id =  0
-			self.class.new attributes.merge new_attributes
+    # for convenience
+		# con_id, local_symbol and last_trading_day are resetted, 
+    # the link to contract-details is  savaged
+    #
+    # Example
+    #   ge =  Stock.new( symbol: :ge).verify.first
+    #   f = ge.merge symbol: :f
+    #
+    #   c =  Contract.new( con_id: 428520002,  exchange: 'Globex')
+    #puts c.verify.as_table
+#┌────────┬────────┬───────────┬──────────┬──────────┬────────────┬───────────────┬───────┬────────┬──────────┐
+#│        │ symbol │ con_id    │ exchange │ expiry   │ multiplier │ trading-class │ right │ strike │ currency │
+#╞════════╪════════╪═══════════╪══════════╪══════════╪════════════╪═══════════════╪═══════╪════════╪══════════╡
+#│ Future │ NQ     │ 428520002 │  GLOBEX  │ 20210917 │     20     │      NQ       │       │        │   USD    │
+#└────────┴────────┴───────────┴──────────┴──────────┴────────────┴───────────────┴───────┴────────┴──────────┘
+    # d= c.merge symbol: :es, trading_class: '', multiplier: 50
+    # puts d.verify.as_table
+#┌────────┬────────┬───────────┬──────────┬──────────┬────────────┬───────────────┬───────┬────────┬──────────┐
+#│        │ symbol │ con_id    │ exchange │ expiry   │ multiplier │ trading-class │ right │ strike │ currency │
+#╞════════╪════════╪═══════════╪══════════╪══════════╪════════════╪═══════════════╪═══════╪════════╪══════════╡
+#│ Future │ ES     │ 428520022 │  GLOBEX  │ 20210917 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 446091461 │  GLOBEX  │ 20211217 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 461318816 │  GLOBEX  │ 20220318 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 477836957 │  GLOBEX  │ 20220617 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512551 │  GLOBEX  │ 20221216 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512552 │  GLOBEX  │ 20231215 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512557 │  GLOBEX  │ 20241220 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512563 │  GLOBEX  │ 20251219 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512566 │  GLOBEX  │ 20220916 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512569 │  GLOBEX  │ 20230616 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 495512572 │  GLOBEX  │ 20230317 │     50     │      ES       │       │        │   USD    │
+#│ Future │ ES     │ 497222760 │  GLOBEX  │ 20230915 │     50     │      ES       │       │        │   USD    │
+#└────────┴────────┴───────────┴──────────┴──────────┴────────────┴───────────────┴───────┴────────┴──────────┘
+    
+    def merge **new_attributes
+      self.class.new attributes.merge **{ con_id: 0, local_symbol: "", last_trading_day: nil, contract_detail: nil }.merge(new_attributes)
 		end
 
     # Contract comparison
@@ -302,23 +334,6 @@ module IB
          exchange,
          currency
          ].compact.join(" ") + ">"
-    end
-
-    def table_header
-      [ '', 'symbol',  'con_id', 'exchange', 'expiry','multiplier', 'trading-class' , 'right', 'strike', 'currency' ]
-    end
- 
-    def table_row
-      [ self.class.to_s.demodulize, symbol, 
-         con_id.zero? ? '' : con_id ,
-         { value: exchange, alignment: :center}, 
-         expiry, 
-         { value: multiplier.zero??  "" : multiplier, alignment: :center}, 
-         { value: trading_class, alignment: :center},
-         {value: right == :none ? "": right, alignment: :center }, 
-         { value: strike.zero? ? "": strike, alignment: :right}, 
-         { value: currency, alignment: :center} ]
-
     end
 
     def to_short
@@ -392,6 +407,25 @@ In places where these terms are used to indicate a concept, we have left them as
 		def order_requirements
 			Hash.new
 		end
+
+
+    def table_header
+      [ '', 'symbol',  'con_id', 'exchange', 'expiry','multiplier', 'trading-class' , 'right', 'strike', 'currency' ]
+    end
+ 
+    def table_row
+      [ self.class.to_s.demodulize, symbol, 
+         con_id.zero? ? '' : con_id ,
+         { value: exchange, alignment: :center}, 
+         expiry, 
+         { value: multiplier.zero??  "" : multiplier, alignment: :center}, 
+         { value: trading_class, alignment: :center},
+         {value: right == :none ? "": right, alignment: :center }, 
+         { value: strike.zero? ? "": strike, alignment: :right}, 
+         { value: currency, alignment: :center} ]
+
+    end
+
 
   end # class Contract
 

@@ -38,7 +38,9 @@ def error message, type=:standard, backtrace=nil
     IB::FlexError.new message
   when :reader
     IB::TransmissionError.new message
+  when :verify
+    IB::VerifyError.new message
   end
-  e.set_backtrace(backtrace) if backtrace
+  e.set_backtrace(caller) if backtrace
   raise e
 end
