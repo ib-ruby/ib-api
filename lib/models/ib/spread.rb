@@ -1,4 +1,3 @@
-# require 'ib/verify'
 module IB
   if defined?(Spread) 
 		puts "Bag already a #{defined?(Spread)}"
@@ -21,7 +20,7 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 	front: 20180908 back:  1w (-1w) --> 20180918 (20180902)
 =end
 
-		def transform_distance front, back
+    def self.transform_distance front, back
 			# Check Format of back: 201809 --> > 200.000
 			#	                      20180989 ---> 20.000.000
 			start_date = front.to_i < 20000000 ?  Date.strptime(front.to_s,"%Y%m") :  Date.strptime(front.to_s,"%Y%m%d") 
@@ -95,13 +94,20 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 
 		# removes the contract from the spread definition
 		#
-		def remove_leg contract
-			contract.verify do |c|
-				legs.delete_if { |x| x.con_id == c.con_id }
-				combo_legs.delete_if { |x| x.con_id == c.con_id }
-				self.description = description + " removed #{c.to_human}"
-			end
-			self
+		def remove_leg contract_or_position = nil
+      contract = if contract_or_position.is_a? (IB::Contract)
+                   contract_or_position
+                 elsif contract_or_position.is_a? Numeric
+                   legs.at contract_or_position
+                 else
+                   error "Specify a contract to be removed or the position in the legs-array as parameter to remove a leg"
+      end
+      the_con_id = contract.verify.first &.con_id
+      error "Invalid Contract specified" unless the_con_id.is_a? Numeric
+      legs.delete_if { |x| x.con_id == the_con_id }
+      combo_legs.delete_if { |x| x.con_id == the_con_id }
+      self.description = description + " removed #{contract.to_human}"
+      self   # make method chainable
 		end
 
 # essentail
