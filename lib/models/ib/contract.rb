@@ -270,7 +270,11 @@ module IB
 #└────────┴────────┴───────────┴──────────┴──────────┴────────────┴───────────────┴───────┴────────┴──────────┘
     
     def merge **new_attributes
-      self.class.new attributes.merge **{ con_id: 0, local_symbol: "", last_trading_day: nil, contract_detail: nil }.merge(new_attributes)
+
+      resetted_attributes = [:con_id, :local_symbol, :contract_detail]
+      ## last_trading_day / expiry needs special treatment
+      resetted_attributes << :last_trading_day if  new_attributes.keys.include? :expiry
+      self.class.new attributes.reject{|k,_| resetted_attributes.include? k}.merge(new_attributes)
 		end
 
     # Contract comparison
