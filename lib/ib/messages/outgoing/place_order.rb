@@ -74,8 +74,8 @@ module IB
            order.all_or_none || false,
            order.min_quantity || "",
            order.percent_offset || '',
-           order.etrade_only || false,
-           order.firm_quote_only || false,
+           false, # was: order.etrade_only || false,  desupported in TWS > 981
+           false, # was: order.firm_quote_only || false,    desupported in TWS > 981
            order.nbbo_price_cap || "",
            order[:auction_strategy],
            order.starting_price,
