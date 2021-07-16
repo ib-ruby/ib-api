@@ -199,7 +199,6 @@ module IB
        'PEG MID' => :pegged_to_midpoint, # Pegged-to-Midpoint
        'PEG BENCH' => :pegged_to_benchmark, # Pegged-to-Benmchmark # Vers. 102
        'VWAP' => :vwap, #                  VWAP-Guaranted
-       'OCA' => :one_cancels_all, #        One-Cancels-All
        'VOL' => :volatility, #             Volatility
        'SCALE' => :scale, #                Scale
        'NONE' => :none, # Used to indicate no hedge in :delta_neutral_order_type

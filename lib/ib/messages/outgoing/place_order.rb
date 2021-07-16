@@ -76,7 +76,7 @@ module IB
            order.percent_offset || '',
            false, # was: order.etrade_only || false,  desupported in TWS > 981
            false, # was: order.firm_quote_only || false,    desupported in TWS > 981
-           order.nbbo_price_cap || "",
+           order.nbbo_price_cap || "", ## desupported in TWS > 981, too. maybe we have to insert a hard-coded "" here
            order[:auction_strategy],
            order.starting_price,
            order.stock_ref_price || "",
