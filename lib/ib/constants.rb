@@ -21,7 +21,11 @@ module IB
                '15 mins' =>:min15,
                '30 mins' =>:min30,
                '1 hour' =>:hour1,
-               '1 day' => :day1
+               '4 hours' =>:hour4,
+               '8 hours' =>:hour8,
+               '1 day' => :day1,
+               '1 week' => :week1,
+               '1 month' => :month1,
   }.freeze
 
   # Enumeration of data types.
