@@ -48,7 +48,11 @@ class PortfolioValue < IB::Model
     alias to_s to_human
 
     def table_header
-      [ '' ,   '', 'pos',  'avr', 'market', 'value', 'unrealized', 'realized'  ]
+      if block_given?
+      [ '' ,   yield , 'pos',  'entry', 'market', 'value', 'unrealized', 'realized'  ]
+      else
+      [ '' ,   '', 'pos',  'entry', 'market', 'value', 'unrealized', 'realized'  ]
+      end
     end
 
     def table_row
@@ -63,11 +67,13 @@ class PortfolioValue < IB::Model
 										else 
 											""
 										end
+      
+      entry = average_cost.to_f / contract.multiplier.to_f
 
       [ the_account,
         contract.to_human[1..-2],
        outprice[position.to_i],
-       outprice[average_cost.to_f.round(3)],
+       outprice[entry.to_f.round(3)],
        outprice[market_price.to_f.round(3)],
        outprice[market_value.to_f.round(2)],
 			 unrealized_pnl.to_i.zero? ? "": outprice[unrealized_pnl], 

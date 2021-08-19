@@ -7,8 +7,8 @@ module CoreExtensions
     end
 
     module TablePresenter
-      def as_table
-        the_table_header = first.table_header
+      def as_table(&b)
+        the_table_header = first.table_header(&b)
         the_table_rows = map &:table_row
         Terminal::Table.new headings: the_table_header, rows: the_table_rows , style: { border: :unicode }
       end

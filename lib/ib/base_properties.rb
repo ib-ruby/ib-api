@@ -23,10 +23,19 @@ module IB
     def table_row
      [ self.class.to_s.demodulize ] +  content_attributes.values
     end
-
-
-    def as_table
-      Terminal::Table.new headings: table_header, rows: [table_row ], style: { border: :unicode }
+    # the optional block specifies a title
+    # i.e.
+#s =  Symbols::Spreads.stoxx_dez
+    # puts s.portfolio_value( U).as_table{ s.description[1..-2] }
+#┌───────────┬─────────────────────────────────────────────┬─────┬────────┬─────────┬──────────┬────────────┬──────────┐
+#│           │  Straddle ESTX50(4200.0)[Dec 2021]          │ pos │ entry  │ market  │ value    │ unrealized │ realized │
+#╞═══════════╪═════════════════════════════════════════════╪═════╪════════╪═════════╪══════════╪════════════╪══════════╡
+#│ U7274612  │ Option: ESTX50 20211217 put 4200.0 DTB EUR  │  -4 │ 179.85 │ 169.831 │ -6793.22 │     400.78 │          │
+#│ U7274612  │ Option: ESTX50 20211217 call 4200.0 DTB EUR │  -4 │  97.85 │ 131.438 │ -5257.51 │   -1343.51 │          │
+#└───────────┴─────────────────────────────────────────────┴─────┴────────┴─────────┴──────────┴────────────┴──────────┘
+## 
+    def as_table &b
+      Terminal::Table.new headings: table_header(&b), rows: [table_row ], style: { border: :unicode }
     end
 
     # Comparison support

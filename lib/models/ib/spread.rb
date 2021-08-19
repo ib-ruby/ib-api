@@ -149,6 +149,18 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 #		end
 
 
+    def as_table 
+      t=  Terminal::Table.new title:  description[1..-2] ,
+                          headings: table_header, 
+
+                          style: { border: :unicode }
+
+      t.add_row table_row
+      legs.each{ |y| t.add_row y.table_row }
+      t.render
+
+    end
+
 		def self.build_from_json container
 			read_leg = ->(a) do 
 				  IB::ComboLeg.new :con_id => a.read_int,

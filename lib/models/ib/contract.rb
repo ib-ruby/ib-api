@@ -413,13 +413,17 @@ In places where these terms are used to indicate a concept, we have left them as
 		end
 
 
-    def table_header
+    def table_header( &b )
+      if block_given?
+      [ yield(self) , 'symbol',  'con_id', 'exchange', 'expiry','multiplier', 'trading-class' , 'right', 'strike', 'currency' ]
+      else
       [ '', 'symbol',  'con_id', 'exchange', 'expiry','multiplier', 'trading-class' , 'right', 'strike', 'currency' ]
+      end
     end
  
     def table_row
       [ self.class.to_s.demodulize, symbol, 
-         con_id.zero? ? '' : con_id ,
+        { value: con_id.zero? ? '' : con_id , alignment: :right}, 
          { value: exchange, alignment: :center}, 
          expiry, 
          { value: multiplier.zero??  "" : multiplier, alignment: :center}, 
