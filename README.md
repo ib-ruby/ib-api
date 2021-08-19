@@ -25,7 +25,7 @@ $ gem install ib-api
 
 In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
 
-Even then, it needs just a few lines of code to place an order
+It needs just a few lines of code to place an order
 
 ```ruby
 require 'ib-api'
