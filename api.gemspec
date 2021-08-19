@@ -40,5 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
 	spec.add_dependency 'activesupport', '>= 6.0'
 	spec.add_dependency 'activemodel'
+	spec.add_dependency 'ox'
 	spec.add_dependency 'terminal-table'
 end
