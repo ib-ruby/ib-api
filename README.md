@@ -25,7 +25,7 @@ $ gem install ib-api
 
 In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
 
-Even then, it needs just a few lines of code to place an order
+It needs just a few lines of code to place an order
 
 ```ruby
 require 'ib-api'
@@ -69,23 +69,30 @@ or occationally
 
 ```ruby
         # first define actions
-	a = ib.subscribe(:Alert, :ContractData ) do |msg| 
+	q =  Queue.new    # Initialize as Queue
+	request_id = nil  # declare variable
+	a = ib.subscribe(:Alert, :ContractData, :ContractDataEnd ) do |msg| 
 		case msg
 		when Messages::Incoming::Alert
-			if msg.code == 200   # No security found 
-				# do someting
-			end
+			q.close if msg.code == 200   # No security found 
 		when Messages::Incoming::ContractData  # security returned
-			# do something
-	
+			q.push msg.contract if msg.request_id == request_id
+	        when Messages::Incoming::ContractDataEnd
+		       q.close if msg.request_id == request_id
 		end  # case
 	end
         # perform request
-        ib.send_message :RequestContractData, :contract => #{some contract}
-         
-        # wait until the :ContractDataEnd message returned
-        ib.wait_for :ContractDataEnd
-         
+        request_id = ib.send_message :RequestContractData, :contract => Stock.new(symbol: 'T')
+        
+	while contract = q.pop 
+	  puts contract.as_table 
+	end
+┌───────┬────────┬──────────┬──────────┬────────┬────────────┬───────────────┬───────┬────────┬──────────┐
+│       │ symbol │ con_id   │ exchange │ expiry │ multiplier │ trading-class │ right │ strike │ currency │
+╞═══════╪════════╪══════════╪══════════╪════════╪════════════╪═══════════════╪═══════╪════════╪══════════╡
+│ Stock │ T      │ 37018770 │  SMART   │        │            │       T       │       │        │   USD    │
+└───────┴────────┴──────────┴──────────┴────────┴────────────┴───────────────┴───────┴────────┴──────────┘
+  
         ib.unsubscribe a    # release subscriptions
          
 ```
