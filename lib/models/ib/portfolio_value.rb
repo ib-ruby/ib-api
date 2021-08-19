@@ -68,7 +68,7 @@ class PortfolioValue < IB::Model
 											""
 										end
       
-      entry = average_cost.to_f / contract.multiplier.to_f
+      entry = average_cost.to_f / (contract.multiplier.to_i.zero? ?  1 : contract.multiplier.to_i)
 
       [ the_account,
         contract.to_human[1..-2],
