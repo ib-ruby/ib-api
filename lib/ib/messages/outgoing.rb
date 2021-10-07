@@ -63,7 +63,7 @@ module IB
 
       ## Data format is: @data = { :id => ticker_id}
       CancelMarketData = def_message [2, 2]
-      CancelMarketDepth = def_message 11
+      #      CancelMarketDepth = def_message 11   ## moved to  outgoing/request_market_depth.rb
       CancelScannerSubscription = def_message 23
       CancelHistoricalData = def_message 25
       CancelRealTimeBars = def_message 51
@@ -343,6 +343,7 @@ module IB
       require 'ib/messages/outgoing/bar_requests'
       require 'ib/messages/outgoing/account_requests'
       require 'ib/messages/outgoing/request_marketdata'
+      require 'ib/messages/outgoing/request_market_depth'
       require 'ib/messages/outgoing/request_tick_data'
 
     end # module Outgoing

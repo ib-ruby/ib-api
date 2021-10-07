@@ -99,16 +99,22 @@ known_servers = {
 :min_server_ver_order_container          => 145, ### > Version Field in Order dropped
 :min_server_ver_smart_depth              => 146,
 :min_server_ver_remove_null_all_casting  => 147,
-:min_server_ver_d_peg_orders             => 148
-
-
-
-
+:min_server_ver_d_peg_orders             => 148,
+:min_server_ver_mkt_depth_prim_exchange  => 149,
+:min_server_ver_completed_orders         => 150,
+:min_server_ver_price_mgmt_algo          => 151,
+:min_server_ver_stock_type               => 152,
+:min_server_ver_encode_msg_ascii7        => 153,
+:min_server_ver_send_all_family_codes    => 154,
+:min_server_ver_no_default_open_close    => 155,
+:min_server_ver_price_based_volitility   => 156,
+:min_server_ver_replace_fa_end           => 157,
+:min_server_ver_duration                 => 158
 }
 # 100+ messaging */
 # 100 = enhanced handshake, msg length prefixes
 
 MIN_CLIENT_VER = 100
 MAX_CLIENT_VER = 137 #known_servers[:min_server_ver_d_peg_orders]
-
+MAX_CLIENT_VER = known_servers[:min_server_ver_duration]
 # imessages/outgoing/request_tick_Data is prepared for change to ver. 140 , its commented for now
