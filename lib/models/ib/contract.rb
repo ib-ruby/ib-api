@@ -375,6 +375,11 @@ module IB
       self[:sec_type] == 'IND'
     end
 
+    def crypto?  #  :nodoc:
+
+      self[:sec_type] == 'CRYPTO'
+    end
+
 
 		def verify  # :nodoc:
 			error "verify must be overloaded. Please require at least `ib/verify` from the `ib-extenstions` gem "

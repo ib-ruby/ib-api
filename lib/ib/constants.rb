@@ -231,7 +231,8 @@ module IB
 	     'BILL' =>  :bill,
 	     'BSK'  =>  :basket,
 			 'FWD' =>   :forward,
-			 'FIXED' => :fixed }.freeze
+			 'FIXED' => :fixed ,
+       'CRYPTO' => :crypto }.freeze
 
   # Obtain symbolic value from given property code:
   # VALUES[:side]['B'] -> :buy
