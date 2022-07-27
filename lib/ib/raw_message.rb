@@ -10,7 +10,7 @@ module IB
       @data = String.new
     end
 
-    def process
+    def each
       while true
       append_new_data
 

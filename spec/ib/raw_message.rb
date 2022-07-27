@@ -12,7 +12,7 @@ RSpec.describe IB::RawMessageParser do
 
     parser = IB::RawMessageParser.new(socket)
     counter = 0
-    parser.process do |message|
+    parser.each do |message|
       expect(message).to eq(VALID_MESSAGE)
       break if counter >= 1
 
@@ -30,7 +30,7 @@ RSpec.describe IB::RawMessageParser do
 
     parser = IB::RawMessageParser.new(socket)
     counter = 0
-    parser.process do |message|
+    parser.each do |message|
       expect(message).to eq(VALID_MESSAGE)
 
       counter += 1
@@ -50,7 +50,7 @@ RSpec.describe IB::RawMessageParser do
 
     parser = IB::RawMessageParser.new(socket)
     counter = 0
-    parser.process do |message|
+    parser.each do |message|
       expect(message).to eq(VALID_MESSAGE)
 
       counter += 1
@@ -68,7 +68,7 @@ RSpec.describe IB::RawMessageParser do
 
     parser = IB::RawMessageParser.new(socket)
     counter = 0
-    parser.process do |message|
+    parser.each do |message|
       expect(message).to eq(VALID_MESSAGE)
       break if counter >= test_message_count
 
@@ -87,7 +87,7 @@ RSpec.describe IB::RawMessageParser do
 
     parser = IB::RawMessageParser.new(socket)
     counter = 0
-    parser.process do |message|
+    parser.each do |message|
       expect(message).to eq(VALID_MESSAGE)
       break if counter >= test_message_count
 
@@ -103,6 +103,6 @@ RSpec.describe IB::RawMessageParser do
     allow(socket).to receive(:recv_from).and_return(bad_message)
 
     parser = IB::RawMessageParser.new(socket)
-    expect { parser.process { |msg| } }.to raise_error(StandardError, /invalid last byte/)
+    expect { parser.each { |msg| } }.to raise_error(StandardError, /invalid last byte/)
   end
 end
