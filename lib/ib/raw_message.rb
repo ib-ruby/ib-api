@@ -12,19 +12,25 @@ module IB
 
     def each
       while true
-      append_new_data
+        append_new_data
+        # puts "looping: #{@data.inspect}"
+       
+        # Do we have the length message?
+        next unless length_data?
 
-      next unless length_data?
-      next unless enough_data?
+        # Based on the length, do we have 
+        # enough data to process a full 
+        # message?
+        next unless enough_data?
 
-      length = next_msg_length
-      validate_data_header(length)
+        length = next_msg_length
+        validate_data_header(length)
 
-      raw = grab_message(length)
-      validate_message_footer(raw, length)
-      msg = parse_message(raw, length)
-      remove_message
-      yield msg
+        raw = grab_message(length)
+        validate_message_footer(raw, length)
+        msg = parse_message(raw, length)
+        remove_message
+        yield msg
       end
     end
 
@@ -52,6 +58,7 @@ module IB
       actual_lngth = next_msg_length + HEADER_LNGTH
       echo 'too little data' if next_msg_length.nil?
       return false if next_msg_length.nil?
+
       @data.bytesize >= actual_lngth
     end
 
@@ -60,25 +67,27 @@ module IB
     end
 
     def next_msg_length
-      #can't check length if first 4 bytes don't exist
+      # can't check length if first 4 bytes don't exist
       length = @data.byteslice(0..3).unpack1('N')
       return 0 if length.nil?
+
       length
     end
 
     def append_new_data
-      @data += @socket.recv_from
+      @data += @socket.recvfrom(4096)[0]
     end
 
-    def validate_message_footer(msg,length)
+    def validate_message_footer(msg, _length)
       last = msg.bytesize
-      last_byte = msg.byteslice(last-1,last)
+      last_byte = msg.byteslice(last - 1, last)
       raise 'Could not validate last byte' if last_byte.nil?
       raise "Message has an invalid last byte. expecting \0, received: #{last_byte}" if last_byte != "\0"
     end
 
     def validate_data_header(length)
       return true if length <= 5000
+
       raise 'Message is longer than sane max length'
     end
   end
