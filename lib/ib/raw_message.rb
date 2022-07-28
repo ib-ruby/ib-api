@@ -11,17 +11,10 @@ module IB
     end
 
     def each
-      while true
-        append_new_data
-        # puts "looping: #{@data.inspect}"
-       
-        # Do we have the length message?
-        next unless length_data?
+      append_new_data
 
-        # Based on the length, do we have 
-        # enough data to process a full 
-        # message?
-        next unless enough_data?
+      while valid_data?
+        # puts "looping: #{@data.inspect}"
 
         length = next_msg_length
         validate_data_header(length)
@@ -32,6 +25,18 @@ module IB
         remove_message
         yield msg
       end
+    end
+
+    def valid_data?
+      # Make sure message length is available
+      return false unless length_data?
+
+      # Based on the length, do we have
+      # enough data to process a full
+      # message?
+      return false unless enough_data?
+
+      true
     end
 
     # extract message and convert to
