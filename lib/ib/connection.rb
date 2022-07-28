@@ -3,6 +3,7 @@ require 'thread'
 require 'ib/socket'
 require 'logger'
 require 'logging'
+require 'ib/raw_message'
 require 'ib/messages'
 
 module IB
@@ -64,6 +65,7 @@ module IB
       @message_lock = Mutex.new
 
       @connected = false
+      @parser = nil
       self.next_local_id = nil
 
       # TWS always sends NextValidId message at connect -subscribe save this id
@@ -119,13 +121,16 @@ module IB
 
 			self.socket = IBSocket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
 			socket.initialising_handshake
-			socket.decode_message( socket.recieve_messages ) do  | the_message |
+      @parser = RawMessageParser.new(socket)
+      @parser.each do | the_message |
+			#socket.decode_message( socket.recieve_messages ) do  | the_message |
 				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
 				@server_version =  the_message.shift.to_i
 				error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
 
 				@remote_connect_time = DateTime.parse the_message.shift
 				@local_connect_time = Time.now
+        break # only receive one message.
 			end
 
 			# V100 initial handshake
@@ -412,7 +417,8 @@ module IB
 		def process_message
 			logger.progname='IB::Connection#process_message' if logger.is_a?(Logger)
 
-			socket.decode_message(  socket.recieve_messages ) do | the_decoded_message |
+      @parser.each do | the_decoded_message |
+			#socket.decode_message(  socket.recieve_messages ) do | the_decoded_message |
 				#	puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
 				msg_id = the_decoded_message.shift.to_i
 
