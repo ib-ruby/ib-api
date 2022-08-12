@@ -56,5 +56,16 @@ Protocol of api-changes:  https://www.interactivebrokers.com/en/index.php?f=2435
   
     Ensure that the buffer is read completely!
 
+6.3 HeadTimeStamp  --:: OK
+6.4 HistogramData  --:: OK 
+6.4 HistoricalData --:: OK
+6.5 ManagedAccounts--:: OK 
+6.6 OptionChian    --:: OK
+6.7 PositionData   --:: OK 
+6.8 PositionsMulti --:: OK 
+6.9 ReceiveFA      --:: OK 
+6.10 MultiAccountUpdate --:: OK 
+
+
     
 
