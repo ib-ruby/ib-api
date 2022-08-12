@@ -109,7 +109,14 @@ known_servers = {
 :min_server_ver_no_default_open_close    => 155,
 :min_server_ver_price_based_volitility   => 156,
 :min_server_ver_replace_fa_end           => 157,
-:min_server_ver_duration                 => 158
+:min_server_ver_duration                 => 158,
+:min_server_ver_market_data_in_shares    => 159,
+:min_server_ver_post_to_ats              => 160,
+:min_server_ver_wshe_calendar            => 161,
+:min_server_ver_auto_cancel_parent       => 162,
+:min_server_ver_fractional_size_support  => 163,
+:min_server_ver_size_rules               => 164,
+:min_server_ver_historical_schedule      => 165
 }
 # 100+ messaging */
 # 100 = enhanced handshake, msg length prefixes
