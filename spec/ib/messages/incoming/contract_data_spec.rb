@@ -19,17 +19,16 @@ RSpec.describe IB::Messages::Incoming::ContractData do
 
 		after(:all){ IB::Connection.current.clear_received :ContractData }
 
-		
 #		it_behaves_like 'ContractData Message' do
-#			let( :the_message ){ IB::Connection.current.received[:ContractData].first  }  
+#			let( :the_message ){ IB::Connection.current.received[:ContractData].first  }
 #		end
-		context "Basics" do 
+		context "Basics" do
 			subject{  IB::Connection.current.received[:ContractData].contract.last }
 
 			it_behaves_like 'a complete Contract Object'
 			its( :sec_type ){is_expected.to eq :stock}
 			its( :symbol ){is_expected.to eq 'GE'}
-			its( :con_id ){is_expected.to eq 7516}
+			its( :con_id ){is_expected.to eq 498843743}
 		end
 
 	  context "received a single contract" do

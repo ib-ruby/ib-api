@@ -51,16 +51,14 @@ RSpec.describe IB::Messages::Incoming do
 			establish_connection
       ib = IB::Connection.current
 			ib.send_message :RequestAccountData, :subscribe => true, :account_code => ACCOUNT
-										 
       ib.wait_for :PortfolioValue
 			sleep 1
 			ib.send_message :RequestAccountData, :subscribe => false
     end
 
     after(:all) { close_connection }
-	
 		it_behaves_like 'Portfolio Value Message' do
-			let( :the_portfolio_value ){ IB::Connection.current.received[:PortfolioValue].first  }  
+			let( :the_portfolio_value ){ IB::Connection.current.received[:PortfolioValue].first  }
 		end
 
 		it_behaves_like 'Account Value Message' do
@@ -68,7 +66,7 @@ RSpec.describe IB::Messages::Incoming do
 		end
 
 		it_behaves_like 'Valid AccountValue Object' do
-			let( :the_account_value_object ){ IB::Connection.current.received[:AccountValue].first.account_value }  
+			let( :the_account_value_object ){ IB::Connection.current.received[:AccountValue].first.account_value }
 		end
   end #
 end # describe IB::Messages:Incoming

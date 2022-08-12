@@ -122,6 +122,6 @@ known_servers = {
 # 100 = enhanced handshake, msg length prefixes
 
 MIN_CLIENT_VER = 100
-MAX_CLIENT_VER = 137 #known_servers[:min_server_ver_d_peg_orders]
-MAX_CLIENT_VER = known_servers[:min_server_ver_duration]
+MAX_CLIENT_VER = 165 #known_servers[:min_server_ver_d_peg_orders]
+MAX_CLIENT_VER = known_servers[:min_server_ver_historical_schedule]
 # imessages/outgoing/request_tick_Data is prepared for change to ver. 140 , its commented for now

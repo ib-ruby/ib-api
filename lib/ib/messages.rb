@@ -96,4 +96,4 @@ __END__
     // 64 = can receive solicited attrib in openOrder message
     // 65 = can receive verifyAndAuthMessageAPI and verifyAndAuthCompleted messages
     // 66 = can receive randomize size and randomize price order fields
-
+    //  not updated since Vers. 9.71
