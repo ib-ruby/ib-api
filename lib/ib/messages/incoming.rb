@@ -248,4 +248,11 @@ __END__
         HISTORICAL_TICKS_BID_ASK  = 97
         HISTORICAL_TICKS_LAST     = 98
         TICK_BY_TICK              = 99
-    
+    # VER 10
+        ORDER_BOUND               = 100
+        COMPLETED_ORDER           = 101
+        COMPLETED_ORDERS_END      = 102
+        REPLACE_FA_END            = 103
+        WSH_META_DATA             = 104
+        WSH_EVENT_DATA            = 105
+        HISTORICAL_SCHEDULE       = 106

@@ -6,7 +6,7 @@ module IB
       end
 
       ContractDetails = ContractData =
-        def_message([10, [6, 8]],
+        def_message([ 10, 0 ], #, [8, 8]],
                     [:request_id, :int],                          ## request id 
                     [:contract, :symbol, :string],								## next the major contract-fields
                     [:contract, :sec_type, :string],							## are transmitted
@@ -20,7 +20,7 @@ module IB
 										[:contract, :trading_class, :string],         ## new Version 8
                     [:contract, :con_id, :int],
                     [:contract_detail, :min_tick, :decimal],
-                    [:contract_detail, :md_size_multiplier, :int],
+#                    [:contract_detail, :md_size_multiplier, :int],  # Vers 10.12  not used anymore
                     [:contract, :multiplier, :int],
                     [:contract_detail, :order_types, :string],
                     [:contract_detail, :valid_exchanges, :string],
@@ -42,7 +42,11 @@ module IB
 										[:contract_detail, :under_symbol, :string ],
 										[:contract_detail, :under_sec_type, :string ],
 										[:contract_detail, :market_rule_ids, :string ],
-										[:contract_detail, :real_expiration_date, :date ]
+										[:contract_detail, :real_expiration_date, :date ],
+                    [:contract_detail, :stock_type, :string ],  # new Version 10.12
+                    [:contract_detail, :min_size, :int ],  # new Version 10.12
+                    [:contract_detail, :size_increment, :int ],  # new Version 10.12
+                    [:contract_detail, :suggested_size_increment, :int ],  # new Version 10.12
 									 )
 #
 #

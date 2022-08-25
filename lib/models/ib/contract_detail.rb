@@ -68,6 +68,10 @@ module IB
       :next_option_date, # only if bond has embedded options.
       :next_option_type, # only if bond has embedded options.
       :notes, # Additional notes, if populated for the bond in IB's database
+      :stock_type,   # new Version 10.12 -->  common
+      :min_size,    # new Version 10.12
+      :size_increment,   # new Version 10.12
+      :suggested_size_increment,  # new Version 10.12
       :callable => :bool, # Can be called by the issuer under certain conditions.
       :puttable => :bool, # Can be sold back to the issuer under certain conditions
       :convertible => :bool, # Can be converted to stock under certain conditions.

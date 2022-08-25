@@ -43,10 +43,10 @@ def establish_connection
 
 			raise "Unable to verify IB PAPER ACCOUNT" unless ib.received?(:ManagedAccounts)
 
-			received = ib.received[:ManagedAccounts].first.accounts_list.split(',')
-			unless received.include?(ACCOUNT)
+			accounts = ib.received[:ManagedAccounts].first.accounts_list.split(',')
+			unless accounts.include?(ACCOUNT)
 				close_connection
-				raise "Connected to wrong account #{received}, expected #{ACCOUNT}" 
+        raise "Connected to wrong account ! Expected #{ACCOUNT} to be included in  #{accounts},  \n edit \'spec/config.yml\' " 
 			end
 			puts "Performing tests with ClientId: #{ib.client_id}"
 			OPTS[:account_verified] = true

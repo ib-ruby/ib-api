@@ -22,7 +22,6 @@ describe IB::Messages::Incoming do
 			establish_connection
       ib = IB::Connection.current
 			req_id= ib.send_message :RequestAccountSummary, tags: 'RegTMargin,ExcessLiquidity, DayTradesRemaining'
-										 
       ib.wait_for :AccountSummary
 			sleep 1
 			ib.send_message :CancelAccountSummary, id: req_id
@@ -32,11 +31,11 @@ describe IB::Messages::Incoming do
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:AccountSummary].first }
-		 
+
     it_behaves_like 'AccountSummary message'
 
 		it_behaves_like 'Valid AccountValue Object' do
-			let( :the_account_value_object ){ IB::Connection.current.received[:AccountSummary].first.account_value  }  
+			let( :the_account_value_object ){ IB::Connection.current.received[:AccountSummary].first.account_value  }
 		end
 		it "has appropiate attributes" do
 			expect( subject.account_value ).to be_a  IB::AccountValue

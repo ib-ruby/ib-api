@@ -47,7 +47,7 @@ describe IB::Messages::Incoming::Alert do
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:Alert].first }
-		
+
     it_behaves_like 'this Alert message'
   end #
 end # describe IB::Messages:Incoming

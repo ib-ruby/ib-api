@@ -8,7 +8,7 @@ RSpec.shared_examples_for "simple_instruction" do
 	its( :version )    { is_expected.to eq 1 }
 	its( :data )       { is_expected.not_to  be_empty }
 	its( :buffer  )    { is_expected.to be_empty }
-end 
+end
 
 
 RSpec.describe IB::Messages::Incoming   do
@@ -43,13 +43,12 @@ RSpec.describe IB::Messages::Incoming   do
 			context "without value" do
 				subject{ int_instruction.new ["1"]  }
 				it_behaves_like 'simple_instruction'
-				its(:the_integer){ is_expected.to be_nil } 
-																									
+				its(:the_integer){ is_expected.to be_nil }
 			end
 			context "with Blank" do
 				subject{ int_instruction.new ["1", ""]  }
 				it_behaves_like 'simple_instruction'
-				its(:the_integer){ is_expected.to be_nil } 
+				its(:the_integer){ is_expected.to be_nil }
 			end
 		end
 		context "Instruction with String" do

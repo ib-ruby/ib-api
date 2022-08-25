@@ -437,4 +437,10 @@ __END__
      REQ_HISTORICAL_TICKS          = 96
      REQ_TICK_BY_TICK_DATA         = 97
      CANCEL_TICK_BY_TICK_DATA      = 98
-		 
+		# ver10
+     REQ_COMPLETED_ORDERS          = 99
+     REQ_WSH_META_DATA             = 100
+     CANCEL_WSH_META_DATA          = 101
+     REQ_WSH_EVENT_DATA            = 102
+     CANCEL_WSH_EVENT_DATA         = 103
+
