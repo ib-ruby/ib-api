@@ -116,10 +116,10 @@ module IB
       #    :theta - The option theta value.
       #    :under_price - The price of the underlying.
       TickOptionComputation = TickOption =
-          def_message([21, 6], AbstractTick,
+          def_message([21, 0], AbstractTick,
                       [:ticker_id, :int],
                       [:tick_type, :int],
-                      #                       What is the "not yet computed" indicator:
+                      [:tick_attribute, :int],
                       [:implied_volatility, :decimal_limit_1], # -1 and below
                       [:delta, :decimal_limit_2],					#      -2 and below
                       [:option_price, :decimal_limit_1],	#      -1   -"-

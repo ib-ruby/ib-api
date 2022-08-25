@@ -119,7 +119,7 @@ module IB
 
 			self.socket = IBSocket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
 			socket.initialising_handshake
-			socket.decode_message( socket.recieve_messages ) do  | the_message |
+			socket.decode_message( socket.receive_messages ) do  | the_message |
 				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
 				@server_version =  the_message.shift.to_i
 				error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
@@ -412,9 +412,9 @@ module IB
 		def process_message
 			logger.progname='IB::Connection#process_message' if logger.is_a?(Logger)
 
-			socket.decode_message(  socket.recieve_messages ) do | the_decoded_message |
-				#	puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
-				msg_id = the_decoded_message.shift.to_i
+			socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
+			#	puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
+			msg_id = the_decoded_message.shift.to_i
 
 				# Debug:
 		#		logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}

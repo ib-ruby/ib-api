@@ -27,6 +27,8 @@ module IB
             @data[:request_id] = @data[:id] || @data[:ticker_id] || @data[:request_id] || rand(9999)
             @data[:id] = @data[:ticker_id] = nil
           end
+          contract = @data[:contract]
+#          error "RequestMarketDepth requires a valid con-id" if contract.con_id.empty?
 
           [
             self.class.message_id,
@@ -35,7 +37,7 @@ module IB
             contract.con_id,
             contract.symbol,
             contract[:sec_type],
-            contract.last_trade_date_or_contract_month,
+            contract.expiry,  #last_trade_date_or_contract_month,
             contract.strike,
             contract.right == :none ? '' : contract.right,
             contract.multiplier,
