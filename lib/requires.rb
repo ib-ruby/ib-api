@@ -1,5 +1,5 @@
 require 'active_support/core_ext/module/attribute_accessors.rb'
-require 'extensions/class-extensions'
+require_relative 'extensions/class-extensions'
 
 require 'terminal-table'
 
