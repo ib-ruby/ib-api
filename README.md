@@ -94,7 +94,7 @@ or occationally
 ```
 ## Minimal TWS-Version
 
-`ib-api` is tested via the _stable IB-Gateway_ (Version 9.72) and should work with any current tws-installation. 
+`ib-api` is tested via the _stable IB-Gateway_ (Version 10.12) and should work with any current tws-installation. 
 
 ## Tests
 
