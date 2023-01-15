@@ -96,7 +96,7 @@ module IB
                       [:tick_list, ->(tick_list){ tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')}, []],
                       [:snapshot, false],
 		      [:regulatory_snapshot, false],
-		      [:mkt_data_options, "XYZ"]
+		      [:mkt_data_options, ""]
     end
   end
 end
