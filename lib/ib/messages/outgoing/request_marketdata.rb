@@ -96,7 +96,7 @@ module IB
                       [:tick_list, ->(tick_list){ tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')}, []],
                       [:snapshot, false],
 		      [:regulatory_snapshot, false],
-		      [:mkt_data_options, "XYZ"]
+          [:mkt_data_options, ""]  # changed to enable requests in V 10.19 ff
     end
   end
 end
