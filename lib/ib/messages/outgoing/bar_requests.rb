@@ -62,7 +62,7 @@ module IB
            bar_size,
            data_type.to_s.upcase,
            @data[:use_rth] ,
-	   "XYZ"   # not suported realtimebars option string
+	   ""   # not suported realtimebars option string
 	  ]
         end
       end # RequestRealTimeBars
@@ -189,7 +189,7 @@ module IB
           2 , # @data[:format_date], format-date is hard-coded as int_date in incoming/historicalData 
            contract.serialize_legs ,
 	   @data[:keep_up_todate],   # 0 / 1
-	  'XYZ'	#  chartOptions:TagValueList - For internal use only. Use default value XYZ. 	
+	  ''	#  chartOptions:TagValueList - For internal use only. Use default value XYZ. 	
 	  ]
         end
       end # RequestHistoricalData
