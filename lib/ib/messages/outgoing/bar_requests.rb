@@ -186,10 +186,10 @@ module IB
            @data[:duration],
            @data[:use_rth],
            data_type.to_s.upcase,
-          2 , # @data[:format_date], format-date is hard-coded as int_date in incoming/historicalData 
+          2 , # @data[:format_date], format-date is hard-coded as int_date in incoming/historicalData
            contract.serialize_legs ,
 	   @data[:keep_up_todate],   # 0 / 1
-	  'XYZ'	#  chartOptions:TagValueList - For internal use only. Use default value XYZ. 	
+     ''	#  chartOptions:TagValueList - For internal use only. Use default value XYZ., dropped in V10.19
 	  ]
         end
       end # RequestHistoricalData
