@@ -537,5 +537,11 @@ Format of serialisation
 		 'OrderState' => order_state}
 		end
 
+    #  expell uncommon attributes
+    def invariant_attributes
+      attributes.reject{ |x| [ :designated_location, :display_size, :etrade_only, :exempt_code, :ext_operator, :random_size, :random_price, :firm_quote_only, :scale_auto_reset, :scale_random_percent, :scale_table, :short_sale_slot, :solicided, :created_at, :modified_at ].include? x }
+
+    end
+
   end # class Order
 end # module IB

@@ -5,7 +5,7 @@ require 'models/ib/underlying'
 
 module IB
 
-  if defined?(Contract) 
+  if defined?(Contract)
 		#Connection.current.logger.warn "Contract already a #{defined?(Contract)}"
 
 #		puts Contract.ancestors
