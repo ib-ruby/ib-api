@@ -29,7 +29,7 @@ RSpec.describe IB::Messages::Incoming::ContractData do
 			it_behaves_like 'a complete Contract Object'
 			its( :sec_type ){is_expected.to eq :stock}
 			its( :symbol ){is_expected.to eq 'GE'}
-			its( :con_id ){is_expected.to eq 7516}
+			its( :con_id ){is_expected.to eq 498843743}
 		end
 
 	  context "received a single contract" do
