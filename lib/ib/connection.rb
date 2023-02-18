@@ -417,14 +417,17 @@ module IB
 				msg_id = the_decoded_message.shift.to_i
 
 				# Debug:
-		#		logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
+				logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
 
 				# Create new instance of the appropriate message type,
 				# and have it read the message from socket.
 				# NB: Failure here usually means unsupported message type received
-				logger.error { "Got unsupported message #{msg_id}" } unless Messages::Incoming::Classes[msg_id]
-				error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
-				msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        unless Messages::Incoming::Classes[msg_id]
+          logger.error { "Got unsupported message #{msg_id}" }
+          error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
+        else
+          msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        end
 
 				# Deliver message to all registered subscribers, alert if no subscribers
 				# Ruby 2.0 and above: Hashes are ordered.
