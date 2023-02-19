@@ -284,13 +284,13 @@ module IB
       begin
       while (time_left = time_out - Time.now) > 0
         # If socket is readable, process single incoming message
-        if windows_ver =  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
+        if  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
           process_message if select [socket], nil, nil, time_left
-        end
+        
 
 				# the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
 				# unfortunately, it raises Errors in windows environment
-        if windows_ver.nil?
+        else
           if select [socket], nil, nil, time_left
             #  # Peek at the message from the socket; if it's blank then the
             #  # server side of connection (TWS) has likely shut down.
