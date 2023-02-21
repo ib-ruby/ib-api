@@ -26,20 +26,21 @@ module Support
 				@logger = logger
 			end
 
-			def configure_logger(log=nil)
-				if log
+			def configure_logger(log= STDOUT)
+        if log.is_a? Logger
 					@logger = log
 				else
-          @logger = Logger.new(STDOUT)
-					@logger.level = Logger::INFO
-					@logger.formatter = proc do |severity, datetime, progname, msg|
+					@logger = Logger.new log
+        end
+        @logger.level = Logger::INFO
+        @logger.formatter = proc do |severity, datetime, progname, msg|
 					#	"#{datetime.strftime("%d.%m.(%X)")}#{"%5s" % severity}->#{msg}\n"
 						"#{"%1s" % severity[0]}: #{msg}\n"
 					end
-            @logger.debug "------------------------------ start logging ----------------------------"
-				end # branch
+        @logger.debug "------------------------------ start logging ----------------------------"
 			end # def
 		end # module ClassMethods
 	end # module Logging
 end # module Support
 
+# source: https://github.com/jondot/sneakers/blob/master/lib/sneakers/concerns/logging.rb
