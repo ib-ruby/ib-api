@@ -284,22 +284,27 @@ module IB
       begin
       while (time_left = time_out - Time.now) > 0
         # If socket is readable, process single incoming message
-				#process_message if select [socket], nil, nil, time_left
+        if  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
+          process_message if select [socket], nil, nil, time_left
+        
+
 				# the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
 				# unfortunately, it raises Errors in windows environment
-        if select [socket], nil, nil, time_left
-        #  # Peek at the message from the socket; if it's blank then the
-        #  # server side of connection (TWS) has likely shut down.
-          socket_likely_shutdown = socket.recvmsg(100, Socket::MSG_PEEK)[0] == ""
-				#
-        #  # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
-          process_message
-        #
-        #  # After processing, if socket has shut down we sleep for 100ms
-        #  # to avoid spinning in a tight loop. If the server side somehow
-        #  # comes back up (gets reconnedted), normal processing
-        #  # (without the 100ms wait) should happen.
-         sleep(0.1) if socket_likely_shutdown
+        else
+          if select [socket], nil, nil, time_left
+            #  # Peek at the message from the socket; if it's blank then the
+            #  # server side of connection (TWS) has likely shut down.
+            socket_likely_shutdown = socket.recvmsg(100, Socket::MSG_PEEK)[0] == ""
+    				#
+            #  # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
+            process_message
+            #
+            #  # After processing, if socket has shut down we sleep for 100ms
+            #  # to avoid spinning in a tight loop. If the server side somehow
+            #  # comes back up (gets reconnedted), normal processing
+            #  # (without the 100ms wait) should happen.
+            sleep(0.1) if socket_likely_shutdown
+          end
         end
       end
       rescue Errno::ECONNRESET => e
@@ -307,7 +312,7 @@ module IB
         if e.message =~ /Connection reset by peer/
           logger.fatal "Is another client listening on the same port?"
           error "try reconnecting with a different client-id", :reader
-        else 
+        else
           logger.fatal "Aborting"
           Kernel.exit
         end
@@ -417,14 +422,17 @@ module IB
 				msg_id = the_decoded_message.shift.to_i
 
 				# Debug:
-		#		logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
+				logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
 
 				# Create new instance of the appropriate message type,
 				# and have it read the message from socket.
 				# NB: Failure here usually means unsupported message type received
-				logger.error { "Got unsupported message #{msg_id}" } unless Messages::Incoming::Classes[msg_id]
-				error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
-				msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        unless Messages::Incoming::Classes[msg_id]
+          logger.error { "Got unsupported message #{msg_id}" }
+          error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
+        else
+          msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        end
 
 				# Deliver message to all registered subscribers, alert if no subscribers
 				# Ruby 2.0 and above: Hashes are ordered.
