@@ -182,7 +182,7 @@ module IB
           when what.is_a?(Symbol)
             if Messages::Incoming.const_defined?(what)
               [Messages::Incoming.const_get(what)]
-            elsif TechnicalAnalysis::Signals.const_defined?(what)
+            elsif defined?( TechnicalAnalysis ) && TechnicalAnalysis::Signals.const_defined?(what)
               [TechnicalAnalysis::Signals.const_get?(what)]
             else
               error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
