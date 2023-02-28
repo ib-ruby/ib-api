@@ -117,21 +117,18 @@ known_servers = {
 :min_server_ver_fractional_size_support  => 163,
 :min_server_ver_size_rules               => 164,
 :min_server_ver_historical_schedule      => 165
-:min_server_ver_advanced_order_reject    = 166
-:min_server_ver_user_info                = 167
-:min_server_ver_crypto_aggregated_trades = 168
-:min_server_ver_manual_order_time        = 169
-:min_server_ver_pegbest_pegmid_offsets   = 170
-:min_server_ver_wsh_event_data_filters   = 171
-:min_server_ver_ipo_prices               = 172
-:min_server_ver_wsh_event_data_filters_date = 173
-:min_server_ver_instrument_timezone         = 174
-:min_server_ver_hmds_market_data_in_shares  = 175
-:min_server_ver_bond_issuerid               = 176
+:min_server_ver_advanced_order_reject    = 166,
+:min_server_ver_user_info                = 167,
+:min_server_ver_crypto_aggregated_trades = 168,
+:min_server_ver_manual_order_time        = 169,
+:min_server_ver_pegbest_pegmid_offsets   = 170,
+:min_server_ver_wsh_event_data_filters   = 171,
+:min_server_ver_ipo_prices               = 172,
+:min_server_ver_wsh_event_data_filters_date = 173,
+:min_server_ver_instrument_timezone         = 174,
+:min_server_ver_hmds_market_data_in_shares  = 175,
+:min_server_ver_bond_issuerid               = 176,
 :min_server_ver_fa_profile_desupport        = 177
-
-
-
 }
 # 100+ messaging */
 # 100 = enhanced handshake, msg length prefixes
