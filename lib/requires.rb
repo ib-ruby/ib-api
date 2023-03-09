@@ -8,13 +8,13 @@ require 'ib/errors'
 require 'ib/constants'
 require 'ib/connection'
 
-# An external model- or database-driver provides the base class for models 
+# An external model- or database-driver provides the base class for models
 # if the constant DB is defined
-# 
-# basically 	IB::Model  has to be assigned to the substitute base class
-# the database-driver requires models and messages at the appropoate time
+#
+# basically	IB::Model  has to be assigned to the substitute base class
+# the database-driver requires models and messages at the appropiate time
 unless defined?(DB)
-	require 'ib/model' 
+	require 'ib/model'
 	require 'ib/models'
 	require 'ib/messages'
 end

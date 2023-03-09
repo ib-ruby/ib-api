@@ -4,6 +4,7 @@ require 'ib/socket'
 require 'logger'
 require 'logging'
 require 'ib/messages'
+require 'ib/errors'
 
 module IB
   # Encapsulates API connection to TWS or Gateway
@@ -80,7 +81,7 @@ module IB
       if connect
         disconnect if connected?
         update_next_order_id
-        Kernel.exit if self.next_local_id.nil?  # emergency exit. 
+        Kernel.exit if self.next_local_id.nil?  # emergency exit.
         # update_next_order_id should have raised an error
       end
       Connection.current = self
@@ -99,7 +100,7 @@ module IB
       th = Thread.new { sleep 5; q.close }
       local_id = q.pop
       if q.closed?
-        error "Could not get NextValidID", :reader
+         raise IB::TransmissionError "Could not get NextValidID", caller
       else
         th.kill
       end
@@ -113,7 +114,7 @@ module IB
 		def connect
 			logger.progname='IB::Connection#connect'
 			if connected?
-				error  "Already connected!"
+        logger.info  "Already connected!"
 				return
 			end
 
@@ -122,7 +123,7 @@ module IB
 			socket.decode_message( socket.recieve_messages ) do  | the_message |
 				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
 				@server_version =  the_message.shift.to_i
-				error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
+				raise IB::Error  "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
 
 				@remote_connect_time = DateTime.parse the_message.shift
 				@local_connect_time = Time.now
@@ -135,6 +136,7 @@ module IB
 			#			optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
 			socket.send_messages start_api, version, @client_id  , @optional_capacities
 			@connected = true
+      # always print connected message to log
 			logger.fatal{ "Connected to server, version: #{@server_version}, " +
                  "using client-id: #{client_id},\n   connection time: " +
 								 "#{@local_connect_time} local, " +
@@ -185,12 +187,12 @@ module IB
             elsif defined?( TechnicalAnalysis ) && TechnicalAnalysis::Signals.const_defined?(what)
               [TechnicalAnalysis::Signals.const_get?(what)]
             else
-              error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
+              raise IB::Error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
             end
           when what.is_a?(Regexp)
             Messages::Incoming::Classes.values.find_all { |klass| klass.to_s =~ what }
           else
-            error  "#{what} must represent incoming IB message class", :args
+            raise IB::ArgumentError  "#{what} must represent incoming IB message class"
           end
      # @subscribers_lock.synchronize do
           message_classes.flatten.each do |message_class|
@@ -286,7 +288,6 @@ module IB
         # If socket is readable, process single incoming message
         if  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
           process_message if select [socket], nil, nil, time_left
-        
 
 				# the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
 				# unfortunately, it raises Errors in windows environment
@@ -311,7 +312,7 @@ module IB
         logger.fatal e.message
         if e.message =~ /Connection reset by peer/
           logger.fatal "Is another client listening on the same port?"
-          error "try reconnecting with a different client-id", :reader
+          raise IB::ConnectionError "try reconnecting with a different client-id"
         else
           logger.fatal "Aborting"
           Kernel.exit
@@ -333,13 +334,18 @@ module IB
       when what.is_a?(Symbol)
         Messages::Outgoing.const_get(what).new *args
       else
-        error "Only able to send outgoing IB messages", :args
+        raise IB::ArgumentError "Only able to send outgoing IB messages"
       end
-      error   "Not able to send messages, IB not connected!"  unless connected?
+      raise IB::ConnectionError   "Not able to send messages, IB not connected!"  unless connected?
 			begin
       @message_lock.synchronize do
       message.send_to socket
       end
+      rescue IB::TransmissionError => e
+        logger.error "TRANSMISSION ERROR ... retrying after reconnect"
+        disconnect
+        connect
+        message.send_to socket
 			rescue Errno::EPIPE
 				logger.error{ "Broken Pipe, trying to reconnect"  }
 				disconnect
@@ -356,8 +362,8 @@ module IB
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
     def place_order order, contract
      # order.place contract, self  ## old
-      error "Unable to place order, next_local_id not known" unless next_local_id
-			error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
+      raise IB::Error "Unable to place order, next_local_id not known" unless next_local_id
+			raise IB::Error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
       order.client_id = client_id
       order.local_id = next_local_id
       self.next_local_id += 1
@@ -368,7 +374,7 @@ module IB
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
  #      order.modify contract, self    ## old
-			error "Unable to modify order; local_id not specified" if order.local_id.nil?
+			raise IB::Error "Unable to modify order; local_id not specified" if order.local_id.nil?
       order.modified_at = Time.now
       send_message :PlaceOrder,
         :order => order,
@@ -397,10 +403,10 @@ module IB
         @reader_thread = Thread.new { process_messages while @reader_running }
       rescue Errno::ECONNRESET => e
           logger.fatal e.message
-          Kernel.exit
+          raise IB::TransmissionError "Socket Error" , caller
         end
       else
-        error "Could not start reader, not connected!", :reader, true
+        raise IB::TransmissionError "Could not start reader, not connected!", caller
       end
     end
 
@@ -429,7 +435,7 @@ module IB
 				# NB: Failure here usually means unsupported message type received
         unless Messages::Incoming::Classes[msg_id]
           logger.error { "Got unsupported message #{msg_id}" }
-          error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
+          raise IB::TransmissionError "Something strange happened - Reader has to be restarted"  if msg_id.to_i.zero?
         else
           msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
         end

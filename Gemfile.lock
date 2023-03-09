@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ib-api (972.5.1)
+    ib-api (972.5.2)
       activemodel
       activesupport (>= 6.0)
       ox
@@ -96,4 +96,4 @@ DEPENDENCIES
   rspec-its
 
 BUNDLED WITH
-   2.3.22
+   2.4.6

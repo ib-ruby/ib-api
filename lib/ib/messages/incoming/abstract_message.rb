@@ -1,5 +1,6 @@
 require 'ib/messages/abstract_message'
 require 'ib/support'
+require 'ib/errors'
 require 'ox'
 module IB
 	module Messages
@@ -21,7 +22,8 @@ module IB
 				def check_version actual, expected
 					unless actual == expected || expected.is_a?(Array) && expected.include?(actual)
 						puts self.class.name
-						error "Unsupported version #{actual} received, expected #{expected}"
+            logger.error "Unsupported version #{actual} received, expected #{expected}"
+						raise IB::LoadError "Unsupported version #{actual} received, expected #{expected}"
 					end
 				end
 
@@ -51,7 +53,7 @@ module IB
 				def simple_load
 					load_map *self.class.data_map
 				rescue IB::Error  => e
-					error "Reading #{self.class}: #{e.class}: #{e.message}", :load, e.backtrace
+					raise IB::Transmissionerror "Reading #{self.class}: #{e.class}: #{e.message}", caller
 				end
 				# Every message loads received message version first
 				# Override the load method in your subclass to do actual reading into @data.
@@ -95,7 +97,7 @@ module IB
 							begin
 								data = @buffer.__send__("read_#{type}", &block)
 							rescue IB::LoadError, NoMethodError => e
-								error "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}" , :reader, false
+								IB::TransmissionError "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}"
 							end
 							# debug	      puts data.inspect
 							if group
@@ -105,7 +107,7 @@ module IB
 								@data[name] = data
 							end
 						else
-							error "Unrecognized instruction #{instruction}"
+							raise IB::Error "Unrecognized instruction #{instruction}"
 						end
 					end
 				end

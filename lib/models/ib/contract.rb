@@ -376,9 +376,9 @@ module IB
     end
 
 
-		def verify  # :nodoc:
-			error "verify must be overloaded. Please require at least `ib/verify` from the `ib-extenstions` gem "
-		end
+#		def verify  # :nodoc:
+#			error "verify must be overloaded. Please require at least `ib/verify` from the `ib-extenstions` gem "
+#		end
 =begin
 From the release notes of TWS 9.50
 

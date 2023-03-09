@@ -4,6 +4,9 @@ module IB
   class Error < RuntimeError
   end
 
+  class ConnectionError < ArgumentError
+  end
+
   class ArgumentError < ArgumentError
   end
 
