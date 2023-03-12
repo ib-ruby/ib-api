@@ -100,7 +100,7 @@ module IB
       th = Thread.new { sleep 5; q.close }
       local_id = q.pop
       if q.closed?
-         raise IB::TransmissionError "Could not get NextValidID", caller
+         error "Could not get NextValidID", :reader
       else
         th.kill
       end
@@ -123,7 +123,7 @@ module IB
 			socket.decode_message( socket.recieve_messages ) do  | the_message |
 				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
 				@server_version =  the_message.shift.to_i
-				raise IB::Error  "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
+				error IB::Error  "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
 
 				@remote_connect_time = DateTime.parse the_message.shift
 				@local_connect_time = Time.now
@@ -187,12 +187,12 @@ module IB
             elsif defined?( TechnicalAnalysis ) && TechnicalAnalysis::Signals.const_defined?(what)
               [TechnicalAnalysis::Signals.const_get?(what)]
             else
-              raise IB::Error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
+              error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
             end
           when what.is_a?(Regexp)
             Messages::Incoming::Classes.values.find_all { |klass| klass.to_s =~ what }
           else
-            raise IB::ArgumentError  "#{what} must represent incoming IB message class"
+            error  "#{what} must represent incoming IB message class"
           end
      # @subscribers_lock.synchronize do
           message_classes.flatten.each do |message_class|
@@ -312,7 +312,7 @@ module IB
         logger.fatal e.message
         if e.message =~ /Connection reset by peer/
           logger.fatal "Is another client listening on the same port?"
-          raise IB::ConnectionError "try reconnecting with a different client-id"
+          error "try reconnecting with a different client-id", :reader
         else
           logger.fatal "Aborting"
           Kernel.exit
@@ -334,9 +334,9 @@ module IB
       when what.is_a?(Symbol)
         Messages::Outgoing.const_get(what).new *args
       else
-        raise IB::ArgumentError "Only able to send outgoing IB messages"
+       error "Only able to send outgoing IB messages"
       end
-      raise IB::ConnectionError   "Not able to send messages, IB not connected!"  unless connected?
+      error  "Not able to send messages, IB not connected!"  unless connected?
 			begin
       @message_lock.synchronize do
       message.send_to socket
@@ -345,7 +345,9 @@ module IB
         logger.error "TRANSMISSION ERROR ... retrying after reconnect"
         disconnect
         connect
-        message.send_to socket
+        logger.fatal "Retry communications after reconnect"
+        retry
+#        message.send_to socket
 			rescue Errno::EPIPE
 				logger.error{ "Broken Pipe, trying to reconnect"  }
 				disconnect
@@ -362,8 +364,8 @@ module IB
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
     def place_order order, contract
      # order.place contract, self  ## old
-      raise IB::Error "Unable to place order, next_local_id not known" unless next_local_id
-			raise IB::Error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
+      error "Unable to place order, next_local_id not known" unless next_local_id
+			error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
       order.client_id = client_id
       order.local_id = next_local_id
       self.next_local_id += 1
@@ -374,7 +376,7 @@ module IB
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
  #      order.modify contract, self    ## old
-			raise IB::Error "Unable to modify order; local_id not specified" if order.local_id.nil?
+			error "Unable to modify order; local_id not specified" if order.local_id.nil?
       order.modified_at = Time.now
       send_message :PlaceOrder,
         :order => order,
@@ -403,10 +405,10 @@ module IB
         @reader_thread = Thread.new { process_messages while @reader_running }
       rescue Errno::ECONNRESET => e
           logger.fatal e.message
-          raise IB::TransmissionError "Socket Error" , caller
+          error "Socket Error" , :reader
         end
       else
-        raise IB::TransmissionError "Could not start reader, not connected!", caller
+        error "Could not start reader, not connected!", :reader
       end
     end
 

@@ -54,7 +54,7 @@ module IB
 				def simple_load
 					load_map *self.class.data_map
 				rescue IB::Error  => e
-					raise IB::Transmissionerror "Reading #{self.class}: #{e.class}: #{e.message}", caller
+					error "Reading #{self.class}: #{e.class}: #{e.message}", :reader
 				end
 				# Every message loads received message version first
 				# Override the load method in your subclass to do actual reading into @data.
@@ -98,7 +98,7 @@ module IB
 							begin
 								data = @buffer.__send__("read_#{type}", &block)
 							rescue IB::LoadError, NoMethodError => e
-								IB::TransmissionError "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}"
+								error  "Reading #{self.class}: #{e.class}: #{e.message}  --> Instruction: #{name}", :reader
 							end
 							# debug	      puts data.inspect
 							if group
@@ -108,7 +108,7 @@ module IB
 								@data[name] = data
 							end
 						else
-							raise IB::Error "Unrecognized instruction #{instruction}"
+							error  "Unrecognized instruction #{instruction}"
 						end
 					end
 				end
