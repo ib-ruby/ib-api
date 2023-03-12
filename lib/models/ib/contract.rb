@@ -1,5 +1,5 @@
 require 'models/ib/contract_detail'
-require 'models/ib/underlying'
+#require 'models/ib/underlying'
 
 
 
@@ -20,6 +20,7 @@ module IB
       #            and IBM is being requested (IBM can trade in GBP or USD).
 
       :legs_description, # received in OpenOrder for all combos
+      :under_comp,  #  for delta neutral combos
 
       :sec_type, # Security type. Valid values are: SECURITY_TYPES
 
@@ -34,7 +35,6 @@ module IB
       #                  identifying suffix. Ex: AAPL.O for Apple on NASDAQ.)
 
       :symbol => :s, # This is the symbol of the underlying asset.
-
       :local_symbol => :s, # Local exchange symbol of the underlying asset
       :trading_class => :s,
       # Future/option contract multiplier (only needed when multiple possibilities exist)
@@ -97,10 +97,10 @@ module IB
   #    alias combo_legs_description legs_description
   #  alias combo_legs_description= legs_description=
 
-      # for Delta-Neutral Combo Contracts
-      has_one :underlying
-    alias under_comp underlying
-    alias under_comp= underlying=
+  # for Delta-Neutral Combo Contracts
+#      has_one :underlying
+#    alias under_comp underlying
+#    alias under_comp= underlying=
 
 
       ### Extra validations

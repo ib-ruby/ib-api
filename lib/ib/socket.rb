@@ -51,14 +51,14 @@ module IBSupport
   end
 end
 module IB
-  # includes methods from IBSupport 
-	# which adds a tws-method to  
+  # includes methods from IBSupport
+	# which adds a tws-method to
 	# - Array
 	# - Symbol
 	# - String
 	# - Numeric
 	# - TrueClass, FalseClass and NilClass
-	# 
+	#
   module PrepareData
     using IBSupport
 		# First call the method #tws on the data-object
@@ -80,31 +80,23 @@ module IB
 
 			# The received package is decoded. The parameter (msg) is an Array
 			#
-			# The protocol is simple: Every Element is treated as Character. 
-			# Exception: The first Element determines the expected length. 
+			# The protocol is simple: Every Element is treated as Character.
+			# Exception: The first Element determines the expected length.
 			#
-			# The decoded raw-message can further modified by the optional block.
-			# 
-			# The default is to instantiate a Hash: message_id becomes the key.
-			# The Hash is returned
+			# The decoded raw-message has to be  modified by the nandatory block.
 			#
-			# If a block is provided, no Hash is build and the modified raw-message is returned
+    #
 		def decode_message msg
-			m = Hash.new
 			while not msg.blank?
 				# the first item is the length
 				size= msg[0..4].unpack("N").first
 				msg =  msg[4..-1]
 				# followed by a sequence of characters
 				message =  msg.unpack("A#{size}").first.split("\0")
-				if block_given?
 					yield message
-				else
-					m[message.shift.to_i] = message
-				end
 				msg =  msg[size..-1]
 			end
-			return m unless block_given?
+	#		return m unless block_given?
 		end
 
 	end
@@ -135,9 +127,9 @@ module IB
       string = self.gets(EOL)
 
       until string
-	# Silently ignores nils
-	string = self.gets(EOL)
-	sleep 0.1
+        # Silently ignores nils
+        string = self.gets(EOL)
+        sleep 0.1
       end
 
       string.chomp
@@ -162,24 +154,22 @@ module IB
 
     def recieve_messages
       begin
-	complete_message_buffer = []
-	begin 
-	  # this is the blocking version of recv
-	  buffer =  self.recvfrom(4096)[0]
-	# STDOUT.puts "BUFFER:: #{buffer.inspect}"
-	  complete_message_buffer << buffer
+        complete_message_buffer = []
+        begin
+          # this is the blocking version of recv
+          buffer =  self.recvfrom(4096)[0]
+      #     STDOUT.puts "BUFFER:: #{buffer.inspect}"
+          complete_message_buffer << buffer
+        end while buffer.size == 4096
 
-	end while buffer.size == 4096
-	complete_message_buffer.join('')
+        complete_message_buffer.join('')
       rescue Errno::ECONNRESET =>  e
-	    Connection.logger.fatal{ "Data Buffer is not filling \n
-		    The Buffer: #{buffer.inspect} \n
-		    Backtrace:\n 
-	 #{e.backtrace.join("\n") } " }
-	Kernel.exit
+        Connection.logger.fatal{ "Data Buffer is not filling \n
+        The Buffer: #{buffer.inspect} \n
+                                 Backtrace:\n 
+   #{e.backtrace.join("\n") } " }
+  Kernel.exit
       end
     end
-
   end # class IBSocket
-
 end # module IB

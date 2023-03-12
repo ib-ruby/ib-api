@@ -435,7 +435,7 @@ module IB
 				# NB: Failure here usually means unsupported message type received
         unless Messages::Incoming::Classes[msg_id]
           logger.error { "Got unsupported message #{msg_id}" }
-          raise IB::TransmissionError "Something strange happened - Reader has to be restarted"  if msg_id.to_i.zero?
+         error "Something strange happened - Reader has to be restarted", :reader  if msg_id.to_i.zero?
         else
           msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
         end

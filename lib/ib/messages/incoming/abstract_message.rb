@@ -22,8 +22,9 @@ module IB
 				def check_version actual, expected
 					unless actual == expected || expected.is_a?(Array) && expected.include?(actual)
 						puts self.class.name
-            logger.error "Unsupported version #{actual} received, expected #{expected}"
-						raise IB::LoadError "Unsupported version #{actual} received, expected #{expected}"
+            IB::Connection.current.logger.error "Unsupported version #{actual} received, expected #{expected}"
+            IB::Connection.current.logger.error @buffer
+						error "Unsupported version #{actual} received, expected #{expected}", :load
 					end
 				end
 
