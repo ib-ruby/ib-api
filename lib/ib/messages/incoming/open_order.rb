@@ -112,15 +112,15 @@ module IB
 
         def contract
           @contract ||= IB::Contract.build(
-              @data[:contract].merge(:underlying => underlying)
+              @data[:contract]#.merge(:underlying => underlying)
           )
         end
 
-        def underlying
-          @underlying = @data[:underlying_present] ? IB::Underlying.new(@data[:underlying]) : nil
-        end
-
-        alias under_comp underlying
+#        def underlying
+#          @underlying = @data[:underlying_present] ? IB::Underlying.new(@data[:underlying]) : nil
+#        end
+#
+#        alias under_comp underlying
 
         def load
           super
