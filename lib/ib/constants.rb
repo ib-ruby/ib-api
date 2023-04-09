@@ -10,22 +10,27 @@ module IB
 
   # Enumeration of bar size types for convenience.
   # Bar sizes less than 30 seconds do not work for some securities.
-  BAR_SIZES = {'1 sec' => :sec1,
+  # Legal ones are: 1 secs, 5 secs, 10 secs, 15 secs, 30 secs, 1 min, 2 mins, 3 mins, 5 mins,
+  # 10 mins, 15 mins, 20 mins, 30 mins, 1 hour, 2 hours, 3 hours, 4 hours, 8 hours, 1 day, 1W, 1M
+  BAR_SIZES = {'1 secs' => :sec1,
                '5 secs' => :sec5,
-               '15 secs' =>:sec15,
-               '30 secs' =>:sec30,
+               '10 secs' => :sec10,
+               '15 secs' => :sec15,
+               '30 secs' => :sec30,
                '1 min' => :min1,
                '2 mins' => :min2,
                '3 mins' => :min3,
                '5 mins' => :min5,
-               '15 mins' =>:min15,
-               '30 mins' =>:min30,
-               '1 hour' =>:hour1,
-               '4 hours' =>:hour4,
-               '8 hours' =>:hour8,
+               '10 mins' => :min10,
+               '15 mins' => :min15,
+               '20 mins' => :min20,
+               '30 mins' => :min30,
+               '1 hour' => :hour1,
+               '4 hours' => :hour4,
+               '8 hours' => :hour8,
                '1 day' => :day1,
                '1 week' => :week1,
-               '1 month' => :month1,
+               '1 month' => :month1
   }.freeze
 
   # Enumeration of data types.
