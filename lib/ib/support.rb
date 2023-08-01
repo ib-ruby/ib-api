@@ -29,13 +29,17 @@ module IBSupport
 		## Values -1 and below indicate: Not computed (TickOptionComputation)
 		def read_decimal_limit_1
 			i= read_float
-			i <= -1 ? nil : i
+      return nil if i.nil?
+      return nil if i <= -1
+      i
 		end
 
 		## Values -2 and below indicate: Not computed (TickOptionComputation)
 		def read_decimal_limit_2
 			i= read_float
-			i <= -2 ? nil : i
+      return nil if i.nil?
+      return nil if i <= -2
+      i
 		end
 
 
