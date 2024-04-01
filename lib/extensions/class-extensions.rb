@@ -1,4 +1,10 @@
-module CoreExtensions
+# Include the method `to_bool` to some basic classes
+#
+# Prepare the output of arrays via Terminal::Table
+#
+# Define the method `count_duplicates` for Arrays
+#
+module ClassExtensions
   module Array
     module DuplicatesCounter
       def count_duplicates
@@ -14,78 +20,86 @@ module CoreExtensions
       end
     end
   end
-end
 
-Array.include CoreExtensions::Array::DuplicatesCounter
-Array.include CoreExtensions::Array::TablePresenter
-
-
-
-
-class Time
-  # Render datetime in IB format (zero padded "yyyymmdd HH:mm:ss")
-  def to_ib
-    "#{year}#{sprintf("%02d", month)}#{sprintf("%02d", day)} " +
+  module Time
+    # Render datetime in IB format (zero padded "yyyymmdd HH:mm:ss")
+    def to_ib
+      "#{year}#{sprintf("%02d", month)}#{sprintf("%02d", day)} " +
         "#{sprintf("%02d", hour)}:#{sprintf("%02d", min)}:#{sprintf("%02d", sec)}"
-  end
-end # Time
-
-class Numeric
-  # Conversion 0/1 into true/false
-  def to_bool
-    self == 0 ? false : true
-  end
-end
-
-class TrueClass
-  def to_bool
-    self
-  end
-end
-
-class FalseClass
-  def to_bool
-    self
-  end
-end
-
-class String
-  def to_bool
-    case self.chomp.upcase
-      when 'TRUE', 'T', '1'
-        true
-      when 'FALSE', 'F', '0', ''
-        false
-      else
-        error "Unable to convert #{self} to bool"
     end
   end
-end
 
-class NilClass
-  # We still need to pass on nil, meaning: no value
-  def to_bool
-    self
-  end
-end
-
-class Symbol
-  def to_f
-    0
+  module Numeric
+    # Conversion 0/1 into true/false
+    module Bool
+      def to_bool
+        self == 0 ? false : true
+      end
+    end
   end
 
-  # ActiveModel serialization depends on this method
-  def <=> other
-    to_s <=> other.to_s
+  module BoolClass
+    # Conversion 0/1 into true/false
+    module Bool
+      def to_bool
+        self
+      end
+    end
   end
+  module String
+    module Bool
+      def to_bool
+        case self.chomp.upcase
+        when 'TRUE', 'T', '1'
+          true
+        when 'FALSE', 'F', '0', ''
+          false
+        else
+          error "Unable to convert #{self} to bool"
+        end
+      end
+    end
+  end
+  module Symbol
+    module Float
+      def to_f
+        0
+      end
+    end
+    module Sort
+      # ActiveModel serialization depends on this method
+      def <=> other
+        to_s <=> other.to_s
+      end
+    end
+  end
+    module Object
+      # We still need to pass on nil, meaning: no value
+      def to_sup
+        self.to_s.upcase unless self.nil?
+      end
+    end
+
 end
 
-class Object
-  # We still need to pass on nil, meaning: no value
-  def to_sup
-    self.to_s.upcase unless self.nil?
-  end
-end
+Array.include ClassExtensions::Array::DuplicatesCounter
+Array.include ClassExtensions::Array::TablePresenter
+FalseClass.include ClassExtensions::BoolClass::Bool
+NilClass.include ClassExtensions::BoolClass::Bool
+Numeric.include ClassExtensions::Numeric::Bool
+Object.include ClassExtensions::Object
+String.include ClassExtensions::String::Bool
+Symbol.include ClassExtensions::Symbol::Float
+Symbol.include ClassExtensions::Symbol::Sort
+Time.include  ClassExtensions::Time
+TrueClass.include ClassExtensions::BoolClass::Bool
+
+
+
+
+
+
+
 
 ### Patching Object#error in ib/errors
 #  def error message, type=:standard

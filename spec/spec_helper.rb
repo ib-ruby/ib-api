@@ -3,6 +3,7 @@
 require 'bundler/setup'
 require 'rspec'
 require 'rspec/its'
+require 'rspec/given'
 require 'rspec/collection_matchers'
 require 'ib-api'
 require 'pp'
