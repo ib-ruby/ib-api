@@ -106,7 +106,7 @@ module IB
 																[:multiplier, :int]
 
 			class OptionChainDefinition
-					using IBSupport   # defines tws-method for Array  (socket.rb)
+					using IB::Support   # defines tws-method for Array  (socket.rb)
 					def load
 						super
 						load_map 	[:expirations, :array, proc {  @buffer.read_date }],

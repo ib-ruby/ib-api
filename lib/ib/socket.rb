@@ -1,66 +1,16 @@
 require 'socket'
-module IBSupport
-  refine  Array do
-    def tws
-      if blank?
-        nil.tws
-      else
-        self.flatten.map( &:tws ).join  # [ "", [] , nil].flatten -> ["", nil]
-        # elemets with empty array's are cut 
-        # this is the desired behavior!
-      end
-    end
-  end
-  refine  Symbol do
-    def tws
-      self.to_s.tws
-    end
-  end
-  refine String do
-    def tws
-      if empty?
-        IB::EOL
-      else
-        self[-1] == IB::EOL ? self : self+IB::EOL
-      end
-    end
-  end
-
-  refine  Numeric do
-    def tws
-      self.to_s.tws
-    end
-  end
-
-  refine TrueClass do
-    def tws
-      1.tws
-    end
-  end
-
-  refine  FalseClass do
-    def tws
-      0.tws
-    end
-  end
-
-  refine NilClass do
-    def tws
-      IB::EOL
-    end
-  end
-end
+require 'ib/support'
 module IB
-  # includes methods from IBSupport 
-  # which adds a tws-method to  
+  # includes methods from IB:.Support
+  # which adds a tws-method to
   # - Array
   # - Symbol
   # - String
   # - Numeric
   # - TrueClass, FalseClass and NilClass
-  # 
+  #
   module PrepareData
-    using IBSupport
+    using IB::Support
     # First call the method #tws on the data-object
     #
     # Then transfom into an Array using the #Pack-Method
@@ -111,7 +61,7 @@ module IB
 
   class IBSocket < TCPSocket
     include PrepareData
-    using IBSupport
+    using IB::Support
 
     def initialising_handshake
       v100_prefix = "API".tws.encode 'ascii' 

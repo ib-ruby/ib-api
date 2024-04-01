@@ -51,7 +51,7 @@ module IB
 #
 #
       class ContractData
-				using IBSupport   # defines tws-method for Array  (socket.rb)
+				using IB::Support   # defines tws-method for Array  (socket.rb)
         def contract
           @contract = IB::Contract.build @data[:contract].merge(:contract_detail => contract_detail)
         end

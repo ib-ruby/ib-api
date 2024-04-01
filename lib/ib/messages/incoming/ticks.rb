@@ -162,7 +162,7 @@ module IB
 			## error messages: (10189) "Failed to request tick-by-tick data:Historical data request pacing violation"
 			#  
 			class TickByTick
-				using IBSupport  # extended Array-Class  from abstract_message
+				using IB::Support  # extended Array-Class  from abstract_message
 				
 				def resolve_mask
 					@data[:mask].present? ? [ @data[:mask] & 1 , @data[:mask] & 2  ] : [] 

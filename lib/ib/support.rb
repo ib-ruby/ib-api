@@ -1,11 +1,19 @@
+#  Class-extensions only applied when data are read from the tws
+#  Array :  read several formats
+#  Array, String, Symbol, true, false, nil : apply tws.method
+#
+#  Apply through:  `module aaxx
+#                     using IB::Support a
+#                     `
+module IB
+  module Support
 
-module IBSupport
 	refine Array do
 
 		def zero?
 			false
 		end
-		# Returns the integer. 
+		# Returns the integer.
 		# retuns nil otherwise or if no element is left on the stack
 		def read_int
 			i= self.shift  rescue nil
@@ -125,7 +133,7 @@ module IBSupport
 		#	 Key's are transformed to symbols, values are treated as string
 		def read_hash
 			tags = read_array( hashmode: true )  # { |_| [read_string, read_string] }
-		result =   if 	tags.nil? || tags.flatten.empty?
+      result =   if 	tags.nil? || tags.flatten.empty?
 								 tags
 							 else
 								 interim = if  tags.size.modulo(2).zero? 
@@ -173,5 +181,55 @@ module IBSupport
 
 
 		alias read_bool read_boolean
-	end
+
+    def tws
+      if blank?
+        nil.tws
+      else
+        self.flatten.map( &:tws ).join  # [ "", [] , nil].flatten -> ["", nil]
+        # elemets with empty array's are cut 
+        # this is the desired behavior!
+      end
+    end
+  end   # refining array
+  refine  Symbol do
+    def tws
+      self.to_s.tws
+    end
+  end
+  refine String do
+    def tws
+      if empty?
+        IB::EOL
+      else
+        self[-1] == IB::EOL ? self : self+IB::EOL
+      end
+    end
+  end
+
+  refine  Numeric do
+    def tws
+      self.to_s.tws
+    end
+  end
+
+  refine TrueClass do
+    def tws
+      1.tws
+    end
+  end
+
+  refine  FalseClass do
+    def tws
+      0.tws
+    end
+  end
+
+  refine NilClass do
+    def tws
+      IB::EOL
+    end
+  end
+end
+
 end

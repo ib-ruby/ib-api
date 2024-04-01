@@ -1,7 +1,7 @@
 module IB
   module Messages
     module Incoming
-      using IBSupport
+      using IB::Support
       # OpenOrder is the longest message with complex processing logics
       OpenOrder =
           def_message [5, 34],		# updated to v. 34 according to python (decoder.py processOpenOrder)

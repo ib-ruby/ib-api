@@ -13,7 +13,7 @@ module IB
 				end
 
 				def to_human
-					"< ManagedAccounts: #{accounts.map(&:account).join(" - ")}>"
+					"<ManagedAccounts: #{accounts.map(&:account).join(" - ")}>"
 				end
 			end
 

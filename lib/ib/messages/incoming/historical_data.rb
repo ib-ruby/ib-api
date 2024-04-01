@@ -32,7 +32,7 @@ module IB
                                    [:count, :int]
       class HistoricalData
         attr_accessor :results
-				using IBSupport  # extended Array-Class  from abstract_message
+				using IB::Support  # extended Array-Class  from abstract_message
  
         def load
           super
@@ -67,7 +67,7 @@ module IB
 
       class HistogramData
         attr_accessor :results
-				using IBSupport  # extended Array-Class  from abstract_message
+				using IB::Support  # extended Array-Class  from abstract_message
  
         def load
           super
@@ -86,7 +86,7 @@ module IB
 
       class HistoricalDataUpdate
         attr_accessor :results
-				using IBSupport  # extended Array-Class  from abstract_message
+				using IB::Support  # extended Array-Class  from abstract_message
 
         def bar
             @bar = IB::Bar.new @data[:bar]

@@ -4,7 +4,7 @@ require 'ox'
 module IB
 	module Messages
 		module Incoming
-			using IBSupport # refine Array-method for decoding of IB-Messages
+			using IB::Support # refine Array-method for decoding of IB-Messages
 
 
 			# Container for specific message classes, keyed by their message_ids

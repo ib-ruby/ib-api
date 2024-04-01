@@ -19,7 +19,7 @@ module IB
   ## public data-queue: received,  received?, wait_for, clear_received
   ## misc:	      reader_running?
 
-  include Support::Logging   # provides default_logger
+  include ::Support::Logging   # provides default_logger
 
     mattr_accessor :current
     # Please note, we are realizing only the most current TWS protocol versions,

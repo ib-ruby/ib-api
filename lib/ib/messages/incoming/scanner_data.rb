@@ -18,7 +18,7 @@ module IB
                                 [:count, :int]
       class ScannerData
         attr_accessor :results
-				using IBSupport  # extended Array-Class  from abstract_message
+				using IB::Support  # extended Array-Class  from abstract_message
 
         def load
           super

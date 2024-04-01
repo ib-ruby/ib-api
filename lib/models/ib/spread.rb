@@ -8,7 +8,7 @@ module IB
   class Spread  < Bag
 		has_many :legs
 
-		using IBSupport
+		using IB::Support
 
 =begin
 Parameters:   front: YYYMM(DD)

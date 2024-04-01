@@ -29,7 +29,7 @@ module IB
 
 
 	class PriceCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 		prop :price,
 			:trigger_method  # see /models/ib/order.rb# 51 ff	 and /lib/ib/constants # 210 ff
 		
@@ -68,7 +68,7 @@ module IB
 	end
 
 	class TimeCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 		prop :time
 
 		def condition_type 
@@ -105,7 +105,7 @@ module IB
 	end
 
 	class ExecutionCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 		
 		def condition_type 
 			5
@@ -133,7 +133,7 @@ module IB
 	end
 
 	class MarginCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 
 		prop  :percent
 
@@ -160,7 +160,7 @@ module IB
 	
 
 	class VolumeCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 
 		prop :volume
 
@@ -193,7 +193,7 @@ module IB
 	end
 
 	class PercentChangeCondition < OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+    using IB::Support   # refine Array-method for decoding of IB-Messages
 		prop :percent_change
 
 		def condition_type 
@@ -223,7 +223,7 @@ module IB
 		end
 	end
 	class OrderCondition
-		using IBSupport   # refine Array-method for decoding of IB-Messages
+		using IB::Support   # refine Array-method for decoding of IB-Messages
 		# subclasses representing specialized condition types.
 
 		Subclasses = Hash.new(OrderCondition)
