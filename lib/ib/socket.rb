@@ -1,5 +1,6 @@
 require 'socket'
 require 'ib/support'
+require 'ib/prepare_data'
 module IB
   # includes methods from IB:.Support
   # which adds a tws-method to
@@ -9,62 +10,12 @@ module IB
   # - Numeric
   # - TrueClass, FalseClass and NilClass
   #
-  module PrepareData
-    using IB::Support
-    # First call the method #tws on the data-object
-    #
-    # Then transfom into an Array using the #Pack-Method
-    #
-    # The optional Block introduces a user-defined pattern to pack the data.
-    #
-    # Default is "Na*"
-    def prepare_message data
-      data =  data.tws unless data.is_a?(String) && data[-1]== EOL
-      matrize = [data.size,data]
-      if block_given?	    # A user defined decoding-sequence is accepted via block
-        matrize.pack yield
-      else
-        matrize.pack  "Na*"
-      end
-    end
-
-    # The received package is decoded. The parameter (msg) is an Array
-    #
-    # The protocol is simple: Every Element is treated as Character. 
-    # Exception: The first Element determines the expected length. 
-    #
-    # The decoded raw-message can further modified by the optional block.
-    # 
-    # The default is to instantiate a Hash: message_id becomes the key.
-    # The Hash is returned
-    #
-    # If a block is provided, no Hash is build and the modified raw-message is returned
-    def decode_message msg
-      m = Hash.new
-      while not msg.blank?
-        # the first item is the length
-        size= msg[0..4].unpack("N").first
-        msg =  msg[4..-1]
-        # followed by a sequence of characters
-        message =  msg.unpack("A#{size}").first.split("\0")
-        if block_given?
-          yield message
-        else
-          m[message.shift.to_i] = message
-        end
-        msg =  msg[size..-1]
-      end
-      return m unless block_given?
-    end
-
-  end
-
-  class IBSocket < TCPSocket
-    include PrepareData
+  class Socket < TCPSocket
+    include IB::PrepareData
     using IB::Support
 
     def initialising_handshake
-      v100_prefix = "API".tws.encode 'ascii' 
+      v100_prefix = "API".tws.encode 'ascii'
       v100_version = self.prepare_message Messages::SERVER_VERSION
       write_data v100_prefix+v100_version
       ## start tws-log
@@ -113,7 +64,7 @@ module IB
     def receive_messages
       begin
         complete_message_buffer = []
-        begin 
+        begin
           # this is the blocking version of recv
           buffer =  self.recvfrom(4096)[0]
     #      STDOUT.puts "BUFFER:: #{buffer.inspect}"
@@ -130,6 +81,6 @@ module IB
       end
     end
 
-end # class IBSocket
+  end # class Socket
 
 end # module IB

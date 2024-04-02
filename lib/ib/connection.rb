@@ -117,7 +117,7 @@ module IB
 				return
 			end
 
-			self.socket = IBSocket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
+			self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
 			socket.initialising_handshake
 			socket.decode_message( socket.receive_messages ) do  | the_message |
 				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
@@ -293,7 +293,7 @@ module IB
 	  if select [socket], nil, nil, time_left
             #  Peek at the message from the socket; if it's blank then the
             #  server side of connection (TWS) has likely shut down.
-            socket_likely_shutdown = socket.recvmsg(100, Socket::MSG_PEEK)[0] == ""
+            socket_likely_shutdown = socket.recvmsg(100, ::Socket::MSG_PEEK)[0] == ""
             # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
             process_message
             # After processing, if socket has shut down we sleep for 100ms
