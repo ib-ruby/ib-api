@@ -5,9 +5,9 @@ Reimplementation of the basic functions of ib-ruby
 
 ---
 
-Try the V10 branch  (V 10.19)
-    Completed Zeitwerk integration.  
-    Submitting of orders is still pending.  (Aprl 2024)
+Try the V10 branch  (V 10.19)   
+*    Completed Zeitwerk integration.  
+*    Submitting of orders is still pending.  (Aprl 2024)
 
 ---
 
