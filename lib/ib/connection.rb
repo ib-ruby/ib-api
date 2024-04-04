@@ -1,9 +1,3 @@
-require 'thread'
-#require 'active_support'
-require 'ib/socket'
-require 'logger'
-require 'logging'
-require 'ib/messages'
 
 module IB
   # Encapsulates API connection to TWS or Gateway
@@ -109,7 +103,7 @@ module IB
 
 		### Working with connection
     #
-    ### connect can be called directly. but is mostly called through update_next_order_id
+    ### connect can be called directly, but is mostly addressed through update_next_order_id
 		def connect
 			logger.progname='IB::Connection#connect'
 			if connected?
@@ -120,12 +114,12 @@ module IB
 			self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
 			socket.initialising_handshake
 			socket.decode_message( socket.receive_messages ) do  | the_message |
-				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
-				@server_version =  the_message.shift.to_i
+								#puts "TheMessage :: #{the_message.inspect}" 
+        @server_version =  the_message.shift.to_i.freeze
 				error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
 
-				@remote_connect_time = DateTime.parse the_message.shift
-				@local_connect_time = Time.now
+        @remote_connect_time = DateTime.parse the_message.shift.freeze
+        @local_connect_time = Time.now.freeze
 			end
 
 			# V100 initial handshake
@@ -175,17 +169,18 @@ module IB
         error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
 
         args.each do |what|
+          puts "What: #{what.inspect}"
           message_classes =
           case
-          when what.is_a?(Class) && what < Messages::Incoming::AbstractMessage
+          when what.is_a?(Class) && what < IB::Messages::Incoming::AbstractMessage
             [what]
           when what.is_a?(Symbol)
-            if Messages::Incoming.const_defined?(what)
-              [Messages::Incoming.const_get(what)]
-            elsif TechnicalAnalysis::Signals.const_defined?(what)
-              [TechnicalAnalysis::Signals.const_get?(what)]
+            if IB::Messages::Incoming.const_defined?(what)
+              [IB::Messages::Incoming.const_get(what)]
+    #        elsif TechnicalAnalysis::Signals.const_defined?(what)
+    #          [TechnicalAnalysis::Signals.const_get?(what)]
             else
-              error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
+              error "#{what} is no IB::Messages class"
             end
           when what.is_a?(Regexp)
             Messages::Incoming::Classes.values.find_all { |klass| klass.to_s =~ what }

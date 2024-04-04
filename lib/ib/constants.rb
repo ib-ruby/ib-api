@@ -1,4 +1,5 @@
 module IB
+
   ### Widely used TWS constants:
 
   EOL = "\0"
@@ -227,12 +228,15 @@ module IB
        'STK'  =>  :stock,
        'WAR'  =>  :warrant,
 	     'ICU' =>   :icu,
-			 'ICS' =>  :ics, 
+			 'ICS' =>  :ics,
 	     'BILL' =>  :bill,
 	     'BSK'  =>  :basket,
 			 'FWD' =>   :forward,
 			 'FIXED' => :fixed ,
-       'CRYPTO' => :crypto }.freeze
+       'CRYPTO' => :crypto,
+       "EC"   => :event_contract  # 
+#  "Event Contracts are daily-expiring, cash settled, European Style, binary-options on futures contracts, offering short-term trading opportunities for individuals seeking to take a position on daily price moves on futures using smaller-value trades of up to $20 per contract. The Event Contracts allow market participants to trade their view on the price direction of key futures markets at the end of each day’s trading session."
+    }.freeze
 
   # Obtain symbolic value from given property code:
   # VALUES[:side]['B'] -> :buy

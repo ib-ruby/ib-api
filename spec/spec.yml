@@ -7,7 +7,7 @@
  :reuters: false      # currently not used
  :account: DU4035278   # Set this to your Paper Account Number
  :market_data: false  # if true: include tests depending on market-data subscriptions for the sample
-:stock:
+:stock:               # SAMPLE Stock in tests
   :symbol: 'GE'  
   :currency: 'USD'    # optional
   :exchange: 'SMART'  # optional

@@ -9,7 +9,6 @@ module IB
       ##  then: 'is_smart_depth' (bool) has to be specified in  CancelMarketDepth, too
       #
       #
-      CancelMarketDepth = def_message([11, 1], :is_smart_depth)
 
       RequestMarketDepth = def_message(
         [10, 5],

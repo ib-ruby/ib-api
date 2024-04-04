@@ -4,7 +4,7 @@ describe 'Request Fundamental Data',
          :connected => true, :integration => true, :reuters => true do
 
   before(:all) do
-		establish_connection 
+		establish_connection
     ib = IB::Connection.current
 
     contract = IB::Contract.new :symbol => 'IBM',
@@ -33,7 +33,7 @@ describe 'Request Fundamental Data',
   it 'responds with XML with relevant data' do
     require 'ox'
     data_xml = subject.xml[:ReportSnapshot]
-    name = data_xml[:CoIDs][:CoID].at(1) 
+    name = data_xml[:CoIDs][:CoID].at(1)
     expect(name).to match 'International Business Machines'
   end
 end

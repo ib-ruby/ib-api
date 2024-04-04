@@ -1,5 +1,3 @@
-require 'active_model'
-require 'active_support/concern'
 #require 'active_support/hash_with_indifferent_access'
 
 module IB
@@ -134,8 +132,8 @@ Remove all Time-Stamps from the list of Attributes
             body[:get]
           when body[:get]
             proc { self[name].send "to_#{body[:get]}" }
-          when VALUES[name] # property is encoded
-            proc { VALUES[name][self[name]] }
+          when IB::VALUES[name] # property is encoded
+            proc { IB::VALUES[name][self[name]] }
           else
             proc { self[name] }
           end

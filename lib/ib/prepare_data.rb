@@ -35,16 +35,18 @@ module IB
     #
     # The default is to instantiate a Hash: message_id becomes the key.
     # The Hash is returned
-    #
-    # If a block is provided, no Hash is build and the modified raw-message is returned
-    def decode_message msg
-      m = Hash.new
-      while not msg.blank?
-        # the first item is the length
-        size= msg[0..4].unpack("N").first
-        msg =  msg[4..-1]
-        # followed by a sequence of characters
-        message =  msg.unpack("A#{size}").first.split("\0")
+      #
+      # If a block is provided, no Hash is build and the modified raw-message is returned
+      def decode_message msg
+        m = Hash.new
+        while  not msg.blank?
+          # the first item is the length
+          size= msg[0..4].unpack("N").first
+          msg =  msg[4..-1]
+          # followed by a sequence of characters
+          message =  msg.unpack("A#{size}").first.split("\0")
+          # DEBUG display raw decoded message on STDOUT
+#          STDOUT::puts "message: #{message}"
         if block_given?
           yield message
         else

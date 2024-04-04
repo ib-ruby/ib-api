@@ -8,7 +8,7 @@ shared_examples_for 'ManagedAccounts message' do
 	its( :buffer  ){ is_expected.to be_empty }
 
   it 'has class accessors as well' do
-    expect( subject.class.message_id).to eq  15 
+    expect( subject.class.message_id).to eq  15
     expect( subject.class.message_type).to eq :ManagedAccounts
   end
 end
@@ -25,11 +25,11 @@ describe IB::Messages::Incoming do
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:ManagedAccounts].first }
-		 
+
     it_behaves_like 'ManagedAccounts message'
 
 		it_behaves_like 'Valid Account Object' do
-			let( :the_account_object ){ IB::Connection.current.received[:ManagedAccounts].first.accounts.first  }  
+			let( :the_account_object ){ IB::Connection.current.received[:ManagedAccounts].first.accounts.first  }
 		end
   end #
 end # describe IB::Messages:Incoming

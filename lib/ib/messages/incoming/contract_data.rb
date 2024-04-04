@@ -1,11 +1,8 @@
 module IB
   module Messages
     module Incoming
-      module ContractAccessors
 
-      end
-
-      ContractDetails = ContractData =
+      ContractData = ContractDetails =
         def_message([ 10, 0 ], #, [8, 8]],
                     [:request_id, :int],                          ## request id 
                     [:contract, :symbol, :string],								## next the major contract-fields
@@ -66,8 +63,12 @@ module IB
 
       end # ContractData
 
+
+      module ContractAccessors
+
+      end
       BondContractData =
-        def_message [18, [4, 6]], ContractData,
+        def_message [18, [4, 6]], ContractDetails,
         [:request_id, :int],
         [:contract, :symbol, :string],
         [:contract, :sec_type, :string],

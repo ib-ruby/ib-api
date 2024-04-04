@@ -22,7 +22,7 @@ describe IB::Messages::Incoming do
 			establish_connection
       ib = IB::Connection.current
 			ib.send_message :RequestPositions
-										 
+
       ib.wait_for :PositionData
 			sleep 1
 			ib.send_message :CancelPositions
@@ -32,7 +32,7 @@ describe IB::Messages::Incoming do
     after(:all) { close_connection }
 
     subject { IB::Connection.current.received[:PositionData].first }
-		 
+
     it_behaves_like 'PositionData message'
 
   end #

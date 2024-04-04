@@ -1,6 +1,6 @@
 require 'main_helper'
 
-RSpec.shared_examples 'Position Message' do 
+RSpec.shared_examples 'Position Message' do
 	subject{ the_message }
   it { is_expected.to be_an IB::Messages::Incoming::PositionsMulti }
   its(:message_type) { is_expected.to eq :PositionsMulti }
@@ -17,7 +17,7 @@ end
 RSpec.describe IB::Messages::Incoming::PositionsMulti do
 
 	context "Syntetic Message" do
-		let( :the_message ) do 
+		let( :the_message ) do
 			IB::Messages::Incoming::PositionsMulti.new(
 			["1", "204", "DU167348", "14171", "LHA", "STK", "", "0.0", "", "", "IBIS", "EUR", "LHA", "XETRA", "10124", "15.39373125"])
 		end
@@ -27,7 +27,7 @@ RSpec.describe IB::Messages::Incoming::PositionsMulti do
 			expect( the_message.contract.symbol ).to eq 'LHA'
 			puts the_message.inspect
 		end
-		it_behaves_like 'Position Message' 
+		it_behaves_like 'Position Message'
 
 		end
   context 'Message received from IB', :connected => true  do
@@ -41,9 +41,9 @@ RSpec.describe IB::Messages::Incoming::PositionsMulti do
     end
 
     after(:all) { close_connection }
-		
+
 		it_behaves_like 'Position Message' do
-			let( :the_message ){ IB::Connection.current.received[:PositionsMulti].first  }  
+			let( :the_message ){ IB::Connection.current.received[:PositionsMulti].first  }
 		end
 
 

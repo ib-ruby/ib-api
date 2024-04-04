@@ -1,4 +1,4 @@
-require 'ib/messages/incoming/abstract_message'
+#require 'ib/messages/incoming/abstract_message'
 
 # EClientSocket.java uses sendMax() rather than send() for a number of these.
 # It sends an EOL rather than a number if the value == Integer.MAX_VALUE (or Double.MAX_VALUE).
@@ -33,13 +33,13 @@ module IB
       ScannerParameters = def_message 19, [:xml, :xml]
 
 			class  ScannerParameters 
-				# returns a List of Hashes specifing Instruments. 
+				# returns a List of Hashes specifing Instruments.
 				# >  C.received[:ScannerParameters].first.instruments.first
-				# => {:name=>"US Stocks", 
-				#     :type=>"STK", 
-				#     :filters=>"AFTERHRSCHANGEPERC,AVGOPTVOLUME,AVGPRICETARGET,AVGRATING,AVGTARGET2PRICERATIO,AVGVOLUME,AVGVOLUME_USD,CHANGEOPENPERC,CHANGEPERC,EMA_20,EMA_50,EMA_100,EMA_200,PRICE_VS_EMA_20,PRICE_VS_EMA_50,PRICE_VS_EMA_100,PRICE_VS_EMA_200,DAYSTOCOVER,DIVIB,DIVYIELD,DIVYIELDIB,FEERATE,FIRSTTRADEDATE,GROWTHRATE,HALTED,HASOPTIONS,HISTDIVIB,HISTDIVYIELDIB,IMBALANCE,IMBALANCEADVRATIOPERC,IMPVOLAT,IMPVOLATOVERHIST,INSIDEROFFLOATPERC,INSTITUTIONALOFFLOATPERC,MACD,MACD_SIGNAL,MACD_HISTOGRAM,MKTCAP,MKTCAP_USD,NEXTDIVAMOUNT,NEXTDIVDATE,NUMPRICETARGETS,NUMRATINGS,NUMSHARESINSIDER,NUMSHARESINSTITUTIONAL,NUMSHARESSHORT,OPENGAPPERC,OPTVOLUME,OPTVOLUMEPCRATIO,PERATIO,PILOT,PPO,PPO_SIGNAL,PPO_HISTOGRAM,PRICE,PRICE2BK,PRICE2TANBK,PRICERANGE,PRICE_USD,QUICKRATIO,REBATERATE,REGIMBALANCE,REGIMBALANCEADVRATIOPERC,RETEQUITY,SHORTABLESHARES,SHORTOFFLOATPERC,SHORTSALERESTRICTED,SIC,ISSUER_COUNTRY_CODE,SOCSACT,SOCSNET,STKTYPE,STVOLUME_3MIN,STVOLUME_5MIN,STVOLUME_10MIN,TRADECOUNT,TRADERATE,UNSHORTABLE,VOLUME,VOLUMERATE,VOLUME_USD,RCGLTCLASS,RCGLTENDDATE,RCGLTIVALUE,RCGLTTRADE,RCGITCLASS,RCGITENDDATE,RCGITIVALUE,RCGITTRADE,RCGSTCLASS,RCGSTENDDATE,RCGSTIVALUE,RCGSTTRADE", 
-				#     :group=>"STK.GLOBAL", 
-				#     :shortName=>"US", 
+				# => {:name=>"US Stocks",
+				#     :type=>"STK",
+				#     :filters=>"AFTERHRSCHANGEPERC,AVGOPTVOLUME,AVGPRICETARGET,AVGRATING,AVGTARGET2PRICERATIO,AVGVOLUME,AVGVOLUME_USD,CHANGEOPENPERC,CHANGEPERC,EMA_20,EMA_50,EMA_100,EMA_200,PRICE_VS_EMA_20,PRICE_VS_EMA_50,PRICE_VS_EMA_100,PRICE_VS_EMA_200,DAYSTOCOVER,DIVIB,DIVYIELD,DIVYIELDIB,FEERATE,FIRSTTRADEDATE,GROWTHRATE,HALTED,HASOPTIONS,HISTDIVIB,HISTDIVYIELDIB,IMBALANCE,IMBALANCEADVRATIOPERC,IMPVOLAT,IMPVOLATOVERHIST,INSIDEROFFLOATPERC,INSTITUTIONALOFFLOATPERC,MACD,MACD_SIGNAL,MACD_HISTOGRAM,MKTCAP,MKTCAP_USD,NEXTDIVAMOUNT,NEXTDIVDATE,NUMPRICETARGETS,NUMRATINGS,NUMSHARESINSIDER,NUMSHARESINSTITUTIONAL,NUMSHARESSHORT,OPENGAPPERC,OPTVOLUME,OPTVOLUMEPCRATIO,PERATIO,PILOT,PPO,PPO_SIGNAL,PPO_HISTOGRAM,PRICE,PRICE2BK,PRICE2TANBK,PRICERANGE,PRICE_USD,QUICKRATIO,REBATERATE,REGIMBALANCE,REGIMBALANCEADVRATIOPERC,RETEQUITY,SHORTABLESHARES,SHORTOFFLOATPERC,SHORTSALERESTRICTED,SIC,ISSUER_COUNTRY_CODE,SOCSACT,SOCSNET,STKTYPE,STVOLUME_3MIN,STVOLUME_5MIN,STVOLUME_10MIN,TRADECOUNT,TRADERATE,UNSHORTABLE,VOLUME,VOLUMERATE,VOLUME_USD,RCGLTCLASS,RCGLTENDDATE,RCGLTIVALUE,RCGLTTRADE,RCGITCLASS,RCGITENDDATE,RCGITIVALUE,RCGITTRADE,RCGSTCLASS,RCGSTENDDATE,RCGSTIVALUE,RCGSTTRADE",
+				#     :group=>"STK.GLOBAL",
+				#     :shortName=>"US",
 				#     :cloudScanNotSupported=>"false"}
 				def instruments
 					@data[:xml][:ScanParameterResponse][:InstrumentList].first[:Instrument]
@@ -47,16 +47,16 @@ module IB
 
 				# returns a List of Hashes specifing ScanTypes
 				# >  C.received[:ScannerParameters].first.scan_types.first
-				# => {:displayName=>"Assets Under Management (AltaVista) Desc", 
-				#			:scanCode=>"SCAN_etfAssets_DESC", 
-				#			:instruments=>"ETF.EQ.US,ETF.FI.US", 
-				#			:absoluteColumns=>"false", 
-				#			:Columns=>{:ColumnSetRef=>{:colId=>"0", :name=>"PctPerf", :display=>"false", :displayType=>"DATA"}, 
-				#			:Column=>{:colId=>"6031", :name=>"Assets Under Management", :display=>"true", :displayType=>"DATA"}}, 
-				#			:supportsSorting=>"true", 
-				#			:respSizeLimit=>"2147483647", :snapshotSizeLimit=>"2147483647", 
-				#			:searchDefault=>"false", :access=>"unrestricted"} 
-# 
+				# => {:displayName=>"Assets Under Management (AltaVista) Desc",
+				#			:scanCode=>"SCAN_etfAssets_DESC",
+				#			:instruments=>"ETF.EQ.US,ETF.FI.US",
+				#			:absoluteColumns=>"false",
+				#			:Columns=>{:ColumnSetRef=>{:colId=>"0", :name=>"PctPerf", :display=>"false", :displayType=>"DATA"},
+				#			:Column=>{:colId=>"6031", :name=>"Assets Under Management", :display=>"true", :displayType=>"DATA"}},
+				#			:supportsSorting=>"true",
+				#			:respSizeLimit=>"2147483647", :snapshotSizeLimit=>"2147483647",
+				#			:searchDefault=>"false", :access=>"unrestricted"}
+#
 
 				def scan_types
 					@data[:xml][:ScanParameterResponse][:ScanTypeList][:ScanType]
@@ -98,7 +98,7 @@ module IB
                       [:yield, :decimal_max],
                       [:yield_redemption_date, :int] # YYYYMMDD format
 
-			SecurityDefinitionOptionParameter = OptionChainDefinition = def_message [75,0] , 
+			SecurityDefinitionOptionParameter = OptionChainDefinition = def_message [75,0] ,
 																[:request_id, :int],
 																[:exchange, :string],
 																[:con_id, :int],   # underlying_con_id
@@ -109,7 +109,7 @@ module IB
 					using IB::Support   # defines tws-method for Array  (socket.rb)
 					def load
 						super
-						load_map 	[:expirations, :array, proc {  @buffer.read_date }],
+						load_map	[:expirations, :array, proc {  @buffer.read_date }],
 											[:strikes, :array, proc {  @buffer.read_decimal } ]
 					end
 					def expirations
@@ -123,8 +123,6 @@ module IB
 						"OptionChainDefinition #{trading_class}@#{exchange} [#{multiplier} X ] strikes: #{strikes.first} - #{strikes.last} expirations: #{expirations.first} - #{expirations.last}"
 					end
 			end
-																
-
 
 			 OptionChainDefinitionEnd  = SecurityDefinitionOptionParameterEnd = def_message [76,0 ],
 																[ :request_id, :int ]
@@ -133,36 +131,72 @@ module IB
       #<- 1-9-789--USD-CASH-----IDEALPRO--CAD------
       #-> ---81-123-5.0E-5--0-
 
-			MarketDepthExchanges =  def_message [80,0], 
+			MarketDepthExchanges =  def_message [80,0],
 																[ :request_id, :int ]
 
       TickRequestParameters = def_message [81, 0], [ :ticker_id, :int ],
 					      [ :min_tick, :decimal],
 					      [ :exchange, :string ],
 					      [ :snapshot_permissions, :int ]
-#      class TickRequestParameters 
+#      class TickRequestParameters
 #	def load
 #	  simple_load
 #	end
  #     end
 
+
+      RequestManagedAccounts = def_message 17
+			AccountSummaryEnd = def_message 64
+
+			PositionDataEnd = def_message 62
+
+			PositionsMultiEnd =  def_message 72
+
+      TickSnapshotEnd = def_message 57, [:ticker_id, :int]
+
+      AccountUpdatesMultiEnd =  def_message 74
+
+      AccountUpdateTime = def_message 8, [:time_stamp, :string]
+
+			AccountValue = def_message([6, 2], AccountMessage,
+																 [:account_value, :key, :symbol],
+																 [:account_value, :value, :string],
+																 [:account_value, :currency, :string],
+																 [:account, :string])
+
+
+			AccountUpdatesMulti =  def_message( 73,
+																[ :request_id, :int ],
+																[ :account , :string ],
+																[ :model, :string ],
+																[ :key		,  :string ],
+																[ :value ,	 :decimal],
+																[ :currency, :string ])
+			AccountSummary = def_message(63, AccountMessage,
+																	 [:request_id, :int],
+																	[ :account, :string ],
+																	[:account_value, :key, :symbol],
+																	[:account_value, :value, :string],
+																	[:account_value, :currency, :string]
+																	)
+
       ### Require standalone source files for more complex message classes:
 
-      require 'ib/messages/incoming/alert'
-      require 'ib/messages/incoming/contract_data'
-      require 'ib/messages/incoming/delta_neutral_validation'
-      require 'ib/messages/incoming/execution_data'
-      require 'ib/messages/incoming/historical_data'
-      require 'ib/messages/incoming/market_depths'
-      require 'ib/messages/incoming/next_valid_id'
-      require 'ib/messages/incoming/open_order'
-      require 'ib/messages/incoming/order_status'
-      require 'ib/messages/incoming/account_value'
-      require 'ib/messages/incoming/portfolio_value'
-      require 'ib/messages/incoming/real_time_bar'
-      require 'ib/messages/incoming/scanner_data'
-      require 'ib/messages/incoming/ticks'
-
+#      require 'ib/messages/incoming/alert'
+#      require 'ib/messages/incoming/contract_data'
+#      require 'ib/messages/incoming/delta_neutral_validation'
+#      require 'ib/messages/incoming/execution_data'
+#      require 'ib/messages/incoming/historical_data'
+#      require 'ib/messages/incoming/market_depths'
+#      require 'ib/messages/incoming/next_valid_id'
+#      require 'ib/messages/incoming/open_order'
+#      require 'ib/messages/incoming/order_status'
+#      require 'ib/messages/incoming/account_value'
+#      require 'ib/messages/incoming/portfolio_value'
+#      require 'ib/messages/incoming/real_time_bar'
+#      require 'ib/messages/incoming/scanner_data'
+#      require 'ib/messages/incoming/ticks'
+#
     end # module Incoming
   end # module Messages
 end # module IB

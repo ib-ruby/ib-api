@@ -1,6 +1,7 @@
 module IB
   module Messages
     module Outgoing
+      extend Messages # def_message macros
 
       # Data format is { :id => int: local_id,
       #                  :contract => Contract,

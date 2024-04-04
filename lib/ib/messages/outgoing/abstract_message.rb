@@ -1,4 +1,4 @@
-require 'ib/messages/abstract_message'
+#require 'ib/messages/abstract_message'
 
 module IB
   module Messages

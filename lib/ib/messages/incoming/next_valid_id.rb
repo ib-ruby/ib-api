@@ -8,6 +8,7 @@ module IB
       NextValidID = NextValidId = def_message(9, [:local_id, :int])
 
       class NextValidId
+				using IB::Support
 
         # Legacy accessor
         alias order_id local_id

@@ -1,6 +1,3 @@
-require 'socket'
-require 'ib/support'
-require 'ib/prepare_data'
 module IB
   # includes methods from IB:.Support
   # which adds a tws-method to
@@ -57,7 +54,7 @@ module IB
     rescue Errno::ECONNRESET =>  e
       Connection.logger.fatal{ "Data not accepted by IB \n
         #{data.inspect} \n
-                               Backtrace:\n "}
+        Backtrace:\n "}
       Connection.logger.error   e.backtrace
     end
 
@@ -67,7 +64,7 @@ module IB
         begin
           # this is the blocking version of recv
           buffer =  self.recvfrom(4096)[0]
-    #      STDOUT.puts "BUFFER:: #{buffer.inspect}"
+#          STDOUT.puts "BUFFER:: #{buffer.inspect}"
           complete_message_buffer << buffer
 
         end while buffer.size == 4096
@@ -75,8 +72,8 @@ module IB
       rescue Errno::ECONNRESET =>  e
         Connection.logger.fatal{ "Data Buffer is not filling \n
         The Buffer: #{buffer.inspect} \n
-  Backtrace:\n 
-  #{e.backtrace.join("\n") } " }
+        Backtrace:\n 
+        #{e.backtrace.join("\n") } " }
                                  Kernel.exit
       end
     end
