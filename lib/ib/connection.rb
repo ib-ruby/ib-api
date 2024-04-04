@@ -169,7 +169,6 @@ module IB
         error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
 
         args.each do |what|
-          puts "What: #{what.inspect}"
           message_classes =
           case
           when what.is_a?(Class) && what < IB::Messages::Incoming::AbstractMessage

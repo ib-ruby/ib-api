@@ -15,7 +15,7 @@ require "server_versions"
 require 'ib/constants'
 require 'ib/errors'
 #loader =  Zeitwerk::Loader.new
-loader =  Zeitwerk::Loader.for_gem
+loader =  Zeitwerk::Loader.for_gem(warn_on_extra_files: false)
 loader.ignore("#{__dir__}/server_versions.rb")
 loader.ignore("#{__dir__}/ib-api.rb")
 loader.ignore("#{__dir__}/ib/contract.rb")
