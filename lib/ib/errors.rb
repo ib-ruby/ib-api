@@ -18,6 +18,9 @@ module IB
 
   class TransmissionError < RuntimeError
   end
+	# define a custom ErrorClass which can be fired if a verification fails
+	class VerifyError < StandardError
+  end
 end # module IB
 
 # Patching Object with universally accessible top level error method. 

@@ -14,6 +14,8 @@ module IB
   ## misc:	      reader_running?
 
   include ::Support::Logging   # provides default_logger
+  include  Plugins
+
 
     mattr_accessor :current
     # Please note, we are realizing only the most current TWS protocol versions,
@@ -25,6 +27,7 @@ module IB
     attr_accessor  :client_id
     attr_accessor  :server_version
     attr_accessor  :client_version
+    attr_accessor  :plugins
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
@@ -38,12 +41,15 @@ module IB
       client_id:  rand( 1001 .. 9999 ) ,
       client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
       optional_capacities: "", # TWS-Version 974: "+PACEAPI"
+      plugins: [],
       #server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
       **any_other_parameters_which_are_ignored
     # V 974 release motes
     # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
       self.class.configure_logger logger
+      # enable specification of host and port through host: 'localhost:4002' as parameter
+			host, port = (host+':'+port.to_s).split(':')
       # convert parameters into instance-variables and assign them
       method(__method__).parameters.each do |type, k|
         next unless type == :key  ##  available: key , keyrest
@@ -51,11 +57,19 @@ module IB
         v = eval(k.to_s)
         instance_variable_set("@#{k}", v) unless v.nil?
       end
+      puts "@host: #{@host}"
+      puts "@port: #{@port}"
 
       # A couple of locks to avoid race conditions in JRuby
       @subscribe_lock = Mutex.new
       @receive_lock = Mutex.new
       @message_lock = Mutex.new
+
+      @plugins.each do |name|
+        activate_plugin name
+      end
+
+
 
       @connected = false
       self.next_local_id = nil

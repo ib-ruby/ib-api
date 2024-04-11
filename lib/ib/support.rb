@@ -28,7 +28,7 @@ module IB
 		end
 		def read_decimal
 			i= self.shift  rescue nil
-			i = i.to_d unless i.blank?
+			i = BigDecimal(i) unless i.blank?
 			i.is_a?(Numeric)  && i < IB::TWS_MAX ?  i : nil  # return nil, if a very large number is transmitted
 		end
 
@@ -36,13 +36,13 @@ module IB
 
 		## Values -1 and below indicate: Not computed (TickOptionComputation)
 		def read_decimal_limit_1
-			i= read_float
+			i= read_decimal
 			i <= -1 ? nil : i
 		end
 
 		## Values -2 and below indicate: Not computed (TickOptionComputation)
 		def read_decimal_limit_2
-			i= read_float
+			i= read_decimal
 			i <= -2 ? nil : i
 		end
 

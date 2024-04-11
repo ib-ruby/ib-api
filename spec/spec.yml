@@ -1,7 +1,9 @@
 ---
 :connection:
- :port: 4002 # 7497 or 4001 / 7496
- :host: 127.0.0.1
+ :port:  4002 # 7497 or 4001 / 7496
+ :host:  127.0.0.1
+  # :port: 7496 # 4002 # 7497 or 4001 / 7496
+  #:host: 10.247.8.109 #10.247.8.109 #  127.0.0.1
 # :client_id: 2111  # if commented: use a randomy choosen id instead
  :base_currency: EUR
  :reuters: false      # currently not used

@@ -4,7 +4,7 @@ Ruby interface to Interactive Brokers' TWS API
 Reimplementation of the basic functions of ib-ruby
 
 ---
-__STATUS:  Preparing for a new GEM-Release, scheduled for  July__  (delayed to August)
+__STATUS:  Preparing for a new GEM-Release)
 ---
 
 
@@ -23,7 +23,7 @@ Install in the usual way
 $ gem install ib-api
 ```
 
-In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
+In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `received-Array`.
 
 It needs just a few lines of code to place an order
 
@@ -52,11 +52,38 @@ puts ib.recieved[:OrderStatus].to_human
 
 ```
 
+## Plugins
+
+**IB-API** ships with simple plugins to facilitate automations 
+
+```ruby
+require 'ib-api'
+# connect with default parameters 
+ib =  IB::Connection.new do | c |
+  c.activate_plugin "verify"
+end
+
+g =  IB::Stock.new symbol: 'GE'
+puts g.verify.first.attributes
+{:symbol=>"GE", :sec_type=>"STK", :last_trading_day=>"", :strike=>0.0, :right=>"", :exchange=>"SMART", :currency=>"USD", :local_symbol=>"GE", :trading_class=>"GE", :con_id=>498843743, :multiplier=>0, :primary_exchange=>"NYSE", }
+```
+
+Currently implemented plugins
+
+* verify:  get contract details from the tws
+* market-price: fetch the current market-price of a contract
+* eod:  retrieve EOD-Data for the given contract
+* greeks: read current option greeks
+* option-chain: build option-chains for given strikes and expiries 
+* spread-prototypes:  create limit, stop, market, etc. orders through prototypes
+* probability-of-expiring: calculate the probability of expiring for the option-contract
+
+
 ##### User-specific Actions
 Besides storing any TWS-response in an array, callbacks are implemented.
 
 The user subscribes to a certain response and defines the actions in a typically ruby manner. These actions
-can be defined globaly
+can be defined globally
 ```ruby
 ib =  IB::Connection.new do |tws|
       # Subscribe to TWS alerts/errors and order-related messages
@@ -65,7 +92,7 @@ ib =  IB::Connection.new do |tws|
 
 ```
 
-or occationally
+or occasionally
 
 ```ruby
         # first define actions

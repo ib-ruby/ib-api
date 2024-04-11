@@ -68,14 +68,14 @@ def clean_connection
 			puts " Logs:", log_entries if @stdout
 		end
 		@stdout.string = '' if @stdout
-		ib.clear_received 
+		ib.clear_received
 	end
 end
 
 def close_connection
 	ib =  IB::Connection.current
 	if ib
-		clean_connection 
+		clean_connection
 		ib.close
 	end
 end

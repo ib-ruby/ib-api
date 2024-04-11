@@ -14,3 +14,20 @@ describe  IB::Connection do
   Then{  out_classes.is_a? Hash }
   Then{  out_classes.size == 53 }
 end
+
+describe "Connection tests" do
+  it "connect to localhost" do
+    c = IB::Connection.new host: OPTS[:connection][:host], port: OPTS[:connection][:port], connect: false
+    expect( c ).to be_a IB::Connection
+    c.connect
+    expect( c.connected? ).to be_truthy
+
+  end
+  it "connect to localhost with host:port syntax" do  # expected: no GUI-TWS is running on localhost
+    c = IB::Connection.new host: '127.0.0.1:4001', connect: false
+    expect( c ).to be_a IB::Connection
+    expect{ c.connect }.to raise_error Errno::ECONNREFUSED
+
+  end
+end
+

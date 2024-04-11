@@ -12,7 +12,6 @@ module IB
 																							## Max-Client_ver --> 144!!
 
       class PlaceOrder
-				
         def encode
 #					server_version = Connection.current.server_version
           order = @data[:order]
@@ -26,7 +25,7 @@ module IB
            (order.side == :short ? 'SSHORT' : order.side == :short_exempt ? 'SSHORTX' : order.side.to_sup),
 					 order.total_quantity,
            order[:order_type], # Internal code, 'LMT' instead of :limit
-           order.limit_price,		
+           order.limit_price,
            order.aux_price,
            order[:tif],
            order.oca_group,
@@ -52,13 +51,11 @@ module IB
                ## Support for combo routing params in Order
                order.combo_params.empty? ? 0 : [order.combo_params.size] + order.combo_params.to_a
 	     ]
-	        else     
-	          []    
-	  end,	      
-	     
-
+	        else
+	          []
+	  end,
            "", # deprecated shares_allocation field
-           order.discretionary_amount,	    
+           order.discretionary_amount,
            order.good_after_time,
            order.good_till_date,
            [ order.fa_group,
@@ -170,20 +167,20 @@ module IB
 		 order.soft_dollar_tier_value,
 		 order.soft_dollar_tier_display_name,
 #	   order.serialize_soft_dollar_tier() ,	      # MIN_SERVER_VER_SOFT_DOLLAR_TIER
-	   order.cash_qty , 		      # MIN_SERVER_VER_CASH_QTY  /111)
-#			 if server_version >= 138   # :min_server_ver_decision_maker 
+	   order.cash_qty ,		      # MIN_SERVER_VER_CASH_QTY  /111)
+#			 if server_version >= 138   # :min_server_ver_decision_maker
 				 [ order.mifid_2_decision_maker, order.mifid_2_decision_algo],
 #				end ,
-#				if server_version >= 139 # min_server_ver_mifid_execution  
+#				if server_version >= 139 # min_server_ver_mifid_execution
 				[ order.mifid_2_execution_maker, order.mifid_2_execution_algo ],
 #				end,
-#				if server_version >= 141 # min_server_ver_auto_price_for_hedge 
+#				if server_version >= 141 # min_server_ver_auto_price_for_hedge
 				order.dont_use_auto_price_for_hedge,
 #				end,
 #				if server_version >= 145 #	min_server_ver_order_container
 					order.is_O_ms_container,
 #				end,
-#				if server_version >= 148 # 	min_server_ver_d_peg_orders
+#				if server_version >= 148 #	min_server_ver_d_peg_orders
 					order.discretionary_up_to_limit_price
 #				end ]
 				]
@@ -199,7 +196,6 @@ module IB
 #        if self.serverVersion() >= MIN_SERVER_VER_D_PEG_ORDERS: 148
 #            flds.append(make_field(order.discretionaryUpToLimitPrice))
 #
-#  
 
         end
       end # PlaceOrder
