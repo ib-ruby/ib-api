@@ -79,53 +79,11 @@ Currently implemented plugins
 * probability-of-expiring: calculate the probability of expiring for the option-contract
 
 
-##### User-specific Actions
-Besides storing any TWS-response in an array, callbacks are implemented.
 
-The user subscribes to a certain response and defines the actions in a typically ruby manner. These actions
-can be defined globally
-```ruby
-ib =  IB::Connection.new do |tws|
-      # Subscribe to TWS alerts/errors and order-related messages
-	tws.subscribe(:Alert, :OpenOrder, :OrderStatus, :OpenOrderEnd) { |msg| puts msg.to_human }
-     end
-
-```
-
-or occasionally
-
-```ruby
-        # first define actions
-	q =  Queue.new    # Initialize as Queue
-	request_id = nil  # declare variable
-	a = ib.subscribe(:Alert, :ContractData, :ContractDataEnd ) do |msg| 
-		case msg
-		when Messages::Incoming::Alert
-			q.close if msg.code == 200   # No security found 
-		when Messages::Incoming::ContractData  # security returned
-			q.push msg.contract if msg.request_id == request_id
-	        when Messages::Incoming::ContractDataEnd
-		       q.close if msg.request_id == request_id
-		end  # case
-	end
-        # perform request
-        request_id = ib.send_message :RequestContractData, :contract => Stock.new(symbol: 'T')
-        
-	while contract = q.pop 
-	  puts contract.as_table 
-	end
-┌───────┬────────┬──────────┬──────────┬────────┬────────────┬───────────────┬───────┬────────┬──────────┐
-│       │ symbol │ con_id   │ exchange │ expiry │ multiplier │ trading-class │ right │ strike │ currency │
-╞═══════╪════════╪══════════╪══════════╪════════╪════════════╪═══════════════╪═══════╪════════╪══════════╡
-│ Stock │ T      │ 37018770 │  SMART   │        │            │       T       │       │        │   USD    │
-└───────┴────────┴──────────┴──────────┴────────┴────────────┴───────────────┴───────┴────────┴──────────┘
-  
-        ib.unsubscribe a    # release subscriptions
-         
 ```
 ## Minimal TWS-Version
 
-`ib-api` is tested via the _stable IB-Gateway_ (Version 9.72) and should work with any current tws-installation. 
+`ib-api` is tested via the _stable IB-Gateway_ (Version 10.19) and should work with any current tws-installation. 
 
 ## Tests
 
