@@ -79,8 +79,6 @@ Currently implemented plugins
 * probability-of-expiring: calculate the probability of expiring for the option-contract
 
 
-
-```
 ## Minimal TWS-Version
 
 `ib-api` is tested via the _stable IB-Gateway_ (Version 10.19) and should work with any current tws-installation. 
