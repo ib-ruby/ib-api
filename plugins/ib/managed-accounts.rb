@@ -67,7 +67,7 @@ transmission of available managed-accounts.
         disconnect
         sleep(0.1)
       end
-      if @plugins.include? 'connection-tools'
+      if @plugins.include? "connection-tools"
         safe_connect
       else
         connect()

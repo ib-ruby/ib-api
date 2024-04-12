@@ -95,7 +95,7 @@ module IB
       q = Queue.new
       subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
       unless connected?
-        if @plugins.inlcude? `connection-tools`
+        if @plugins.include? "connection-tools"
           safe_connect
         else
           connect() # connect implies requesting NextValidId
