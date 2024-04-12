@@ -57,8 +57,6 @@ module IB
         v = eval(k.to_s)
         instance_variable_set("@#{k}", v) unless v.nil?
       end
-      puts "@host: #{@host}"
-      puts "@port: #{@port}"
 
       # A couple of locks to avoid race conditions in JRuby
       @subscribe_lock = Mutex.new
@@ -68,8 +66,6 @@ module IB
       @plugins.each do |name|
         activate_plugin name
       end
-
-
 
       @connected = false
       self.next_local_id = nil
@@ -86,9 +82,8 @@ module IB
       yield self if block_given?
 
       if connect
-        disconnect if connected?
         update_next_order_id
-        Kernel.exit if self.next_local_id.nil?  # emergency exit. 
+        Kernel.exit if self.next_local_id.nil?  # emergency exit.
         # update_next_order_id should have raised an error
       end
       Connection.current = self
@@ -100,7 +95,11 @@ module IB
       q = Queue.new
       subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
       unless connected?
-        connect() # connect implies requesting NextValidId
+        if @plugins.inlcude? `connection-tools`
+          safe_connect
+        else
+          connect() # connect implies requesting NextValidId
+        end
       else
         send_message :RequestIds
       end

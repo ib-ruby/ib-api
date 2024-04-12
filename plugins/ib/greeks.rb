@@ -12,10 +12,10 @@ module IB
 #
 	 def request_greeks delayed:  true, what: :model, thread: false
 
-		 tws = Connection.current 		 # get the initialized ib-ruby instance
+		 tws = Connection.current		 # get the initialized ib-ruby instance
 		 # define requested tick-attributes
 		 request_data_type = IB::MARKET_DATA_TYPES.rassoc( delayed ? :frozen_delayed : :frozen ).first
-		 # possible types = 	[ [ :delayed_model_option , :model_option ] , [:delayed_last_option , :last_option ],
+		 # possible types =	[ [ :delayed_model_option , :model_option ] , [:delayed_last_option , :last_option ],
 		 # [ :delayed_bid_option , :bid_option ], [ :delayed_ask_option , :ask_option ]]
 		 tws.send_message :RequestMarketDataType, :market_data_type =>  request_data_type
 		 tickdata = []

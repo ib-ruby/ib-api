@@ -70,7 +70,9 @@ puts g.verify.first.attributes
 
 Currently implemented plugins
 
+* connection-tools: ensure that a connection is established and active
 * verify:  get contract details from the tws
+* managed-accounts: fetch and organize account- and portfoliovalues
 * market-price: fetch the current market-price of a contract
 * eod:  retrieve EOD-Data for the given contract
 * greeks: read current option greeks
