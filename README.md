@@ -4,16 +4,15 @@ Ruby interface to Interactive Brokers' TWS API
 Reimplementation of the basic functions of ib-ruby
 
 ---
-__STATUS:  Preparing for a new GEM-Release)
+__STATUS: Placement of orders is currently broken__
+
 ---
 
 
 __Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__  (_work in progress_)
 
 ----
-`ib-ruby`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
-
-`ib-api`    provides a simple interface to low-level TWS API-calls.  
+`ib-api`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
 
 ----
 

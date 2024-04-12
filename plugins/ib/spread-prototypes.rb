@@ -1,5 +1,18 @@
-# These modules are used to facilitate referencing of most common Spreads
+=begin
 
+Plugin to automate the creation of common spreads
+
+   Straddle.build from: Contract, expiry:,   strike:
+   Strangle build from: Contract. expiry:,  p: , c:
+   Vertical.build from: Contract, expiry:, right: , buy: (a strike), sell: (a strike)
+   Calendar.build from: Contract. right:, :strike:, front: (an expiry), back: (an expiry)
+   Butterfly.buiild from: Contract, right:, strike: , expiry: ,  front: (long-option strike), back: (long option strike)
+
+   StockSpread.fabricate  symbol1, symbol2, ratio:[ n, m ]  # only for us-stocks
+
+=end
+
+module IB
 # Spreads are created in  two ways:
 #
 #	(1) IB::Spread::{prototype}.build  from: {underlying},
@@ -11,7 +24,6 @@
 #
 #	They return a freshly instantiated Spread-Object
 #
-module IB
 	module SpreadPrototype
 
 
@@ -56,9 +68,3 @@ module IB
   end
 end
 
-#require 'ib/spread_prototypes/straddle'
-#require 'ib/spread_prototypes/strangle'
-#require 'ib/spread_prototypes/vertical'
-#require 'ib/spread_prototypes/calendar'
-#require 'ib/spread_prototypes/stock-spread'
-#require 'ib/spread_prototypes/butterfly'

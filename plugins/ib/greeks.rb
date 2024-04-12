@@ -1,4 +1,13 @@
 module IB
+=begin
+
+Plugin to fetch Option Greeks
+
+Provides Option.request_greeks and
+         Option.greeks  to display the fetched data
+
+=end
+
  module Greeks
 
 # Ask for the Greeks and implied Vola

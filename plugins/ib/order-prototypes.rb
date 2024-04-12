@@ -1,6 +1,12 @@
-# These modules are used to facilitate referencing of most common Ordertypes
-
 module IB
+=begin
+  # Plugin to build IB::Order objects through singletons
+  #         Limit.order size: 4, price: 10
+  #         Market.order: size: 4
+  #         etc
+  #
+
+=end
 	module OrderPrototype
 
 

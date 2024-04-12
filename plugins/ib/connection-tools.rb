@@ -1,4 +1,13 @@
 module IB
+
+=begin
+Plugin for advanced Connections
+
+Provides `check_connection` and `safe_connect`
+
+
+=end
+
   module ConnectionTools
 		# Handy method to ensure that a connection is established and active.
 		#

@@ -2,6 +2,16 @@ module IB
 require 'active_support/core_ext/date/calculations'
 require 'csv'
 
+
+=begin
+
+Plugin to support EndOfDay OHLC-Data for a contract
+
+Provides Contract.eod  for EndOfDay historical data,
+         Contract.get_bars for custom ohlc-timeframes,
+         Contract.from_csv and Contract.to_csv to store and retrieve ohlc-data
+=end
+
  module Eod
 	module BuisinesDays
 	#	https://stackoverflow.com/questions/4027768/calculate-number-of-business-days-between-two-days
