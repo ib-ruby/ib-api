@@ -158,7 +158,7 @@ module IB
  end # module
 
  Connection.current.activate_plugin 'verify'
- Connection.current.activate_plugin 'market-price'
+ Connection.current.activate_plugin 'market_price'
 
  class Contract
    include OptionChain

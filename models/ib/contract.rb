@@ -400,7 +400,7 @@ In places where these terms are used to indicate a concept, we have left them as
 		end
 
 
-# is read by Account#PlaceOrder to set requirements for contract-types, as NonGuaranteed for stock-spreads
+# is read by Account#PlaceOrder to set requirements for contract-types, as NonGuaranteed for stock_spreads
 		def order_requirements
 			Hash.new
 		end

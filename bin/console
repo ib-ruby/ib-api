@@ -10,7 +10,7 @@
 require 'bundler/setup'
 require 'yaml'
 
-require 'ib-api'
+require 'ib_api'
 
 class Array
   # enables calling members of an array. which are hashes  by it name
@@ -64,9 +64,9 @@ read_yml = -> (key) do
   ## and prior to the connection-process
   ## Here we just subscribe to some events
   C =  Connection.new  client_id: client_id, host: host, connect: false do |c|  # future use__ , optional_capacities: "+PACEAPI"  do |c|
-    c.activate_plugin 'connection-tools'
+    c.activate_plugin 'connection_tools'
     c.activate_plugin 'verify'
-    c.activate_plugin 'managed-accounts'
+    c.activate_plugin 'managed_accounts'
     c.subscribe( :ContractData, :BondContractData) { |msg| c.logger.info { msg.contract.to_human } }
     c.subscribe( :Alert, :ContractDataEnd, :ManagedAccounts, :OrderStatus ) {| m| c.logger.info { m.to_human } }
     c.subscribe( :PortfolioValue, :AccountValue, :OrderStatus, :OpenOrderEnd, :ExecutionData ) {| m| c.logger.info { m.to_human }}

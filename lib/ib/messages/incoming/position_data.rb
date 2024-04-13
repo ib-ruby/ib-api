@@ -12,7 +12,7 @@ module IB
 					[:price, :decimal]
 									 ) do 
 #        def to_human
-          "<PositionValue: #{account} ->  #{contract.to_human} ( Amount #{position}) : Market-Price #{price} >"
+          "<PositionValue: #{account} ->  #{contract.to_human} ( Amount #{position}) : market_price #{price} >"
         end
 
 

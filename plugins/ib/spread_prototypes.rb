@@ -63,7 +63,7 @@ module IB
 		end
 	end
     Connection.current.activate_plugin "verify"
-  [:straddle, :strangle, :vertical, :calendar, :"stock-spread", :butterfly].each do | pt |
+  [:straddle, :strangle, :vertical, :calendar, :"stock_spread", :butterfly].each do | pt |
     Connection.current.activate_plugin "spread_prototypes/#{pt.to_s}"
   end
 end

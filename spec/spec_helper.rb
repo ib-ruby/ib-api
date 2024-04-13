@@ -5,7 +5,7 @@ require 'rspec'
 require 'rspec/its'
 require 'rspec/given'
 require 'rspec/collection_matchers'
-require 'ib-api'
+require 'ib_api'
 require 'pp'
 require 'yaml'
 
