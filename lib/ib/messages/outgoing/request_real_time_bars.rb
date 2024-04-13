@@ -36,13 +36,16 @@ module IB
         def encode
           data_type, bar_size, contract = parse @data
 
-          [super,
-           contract.serialize_short(:primary_exchange),  # include primary exchange in request
-           bar_size,
-           data_type.to_s.upcase,
-           @data[:use_rth] ,
-	   ""   # not suported realtimebars option string
-	  ]
+          [
+            super,
+            contract.serialize_short(:primary_exchange),  # include primary exchange in request
+            bar_size,
+            data_type.to_s.upcase,
+            @data[:use_rth] ,
+            ""   # not suported realtimebars option string
+          ]
         end
-      end # RequestRealTimeBars
-
+      end
+    end
+  end # RequestRealTimeBars
+end
