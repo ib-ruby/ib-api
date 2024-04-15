@@ -154,7 +154,7 @@ module IB
     # Array: [ yymm -> Options] prepares for the correct conversion to a Hash
     expirations.map do |expiration_date|
       [
-        expiration_date.strftime('%y%m').to_i,
+        expiration_date.strftime('%Y-%m-%d'),
         strikes.map { |strike| option_prototype(expiration_date, strike, right) }.compact
       ]
     end.to_h

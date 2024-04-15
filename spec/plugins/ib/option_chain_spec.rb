@@ -17,20 +17,20 @@ RSpec.describe 'IB::OptionChain' do
 
     it 'returns correctly ATM put options' do
       result = contract.atm_options
-      expect(result.keys).to all(be_a Integer)
+      expect(result.keys).to all(be_a String)
       expect(result.keys.size).to be > 1
       first_atm_expiry_date_key = result.keys.first
-      first_atm_expiry_date = Date.strptime(first_atm_expiry_date_key.to_s, '%y%m')
+      first_atm_expiry_date = Date.parse(first_atm_expiry_date_key)
       expect(result[first_atm_expiry_date_key].size).to eq(1)
 
       first_atm_option = result[first_atm_expiry_date_key].first
       expect(first_atm_option).to be_a(IB::Option)
       expect(first_atm_option.attributes).to include({
                                                        symbol: 'GE',
-                                                       last_trading_day: /#{first_atm_expiry_date.strftime('%Y-%m-')}/,
+                                                       last_trading_day: first_atm_expiry_date_key,
                                                        right: 'P',
                                                        exchange: be_a(String),
-                                                       local_symbol: /GE\s+#{first_atm_expiry_date_key}/,
+                                                       local_symbol: /GE\s+#{first_atm_expiry_date_.strftime('%y%m%d')}/,
                                                        trading_class: 'GE',
                                                        multiplier: 100
                                                      })
@@ -38,20 +38,20 @@ RSpec.describe 'IB::OptionChain' do
 
     it 'returns correctly ATM call options' do
       result = contract.atm_options(right: :call)
-      expect(result.keys).to all(be_a Integer)
+      expect(result.keys).to all(be_a String)
       expect(result.keys.size).to be > 1
       first_atm_expiry_date_key = result.keys.first
-      first_atm_expiry_date = Date.strptime(first_atm_expiry_date_key.to_s, '%y%m')
+      first_atm_expiry_date = Date.parse(first_atm_expiry_date_key)
       expect(result[first_atm_expiry_date_key].size).to eq(1)
 
       first_atm_option = result[first_atm_expiry_date_key].first
       expect(first_atm_option).to be_a(IB::Option)
       expect(first_atm_option.attributes).to include({
                                                        symbol: 'GE',
-                                                       last_trading_day: /#{first_atm_expiry_date.strftime('%Y-%m-')}/,
+                                                       last_trading_day: first_atm_expiry_date_key,
                                                        right: 'C',
                                                        exchange: be_a(String),
-                                                       local_symbol: /GE\s+#{first_atm_expiry_date_key}/,
+                                                       local_symbol: /GE\s+#{first_atm_expiry_date.strftime('%y%m%d')}/,
                                                        trading_class: 'GE',
                                                        multiplier: 100
                                                      })
@@ -59,7 +59,7 @@ RSpec.describe 'IB::OptionChain' do
 
     it 'does not find ATM options for far away ref_price' do
       result = contract.atm_options(ref_price: 0.0)
-      expect(result.keys).to all(be_a Integer)
+      expect(result.keys).to all(be_a String)
       expect(result.keys.size).to be > 1
 
       first_atm_expiry_date_key = result.keys.first
@@ -110,20 +110,20 @@ RSpec.describe 'IB::OptionChain' do
 
     it 'sorts OTM options by expiry' do
       result = contract.otm_options(sort: :expiry)
-      expect(result.keys).to all(be_a Integer)
+      expect(result.keys).to all(be_a String)
       expect(result.keys.size).to eq(12)
       first_otm_expiry_date_key = result.keys.first
-      first_otm_expiry_date = Date.strptime(first_otm_expiry_date_key.to_s, '%y%m')
+      first_otm_expiry_date = Date.parse(first_otm_expiry_date_key)
       expect(result[first_otm_expiry_date_key].size).to be_positive
 
       first_otm_option = result[first_otm_expiry_date_key].first
       expect(first_otm_option).to be_a(IB::Option)
       expect(first_otm_option.attributes).to include({
                                                        symbol: 'GE',
-                                                       last_trading_day: /#{first_otm_expiry_date.strftime('%Y-%m-')}/,
+                                                       last_trading_day: first_otm_expiry_date_key,
                                                        right: 'P',
                                                        exchange: be_a(String),
-                                                       local_symbol: /GE\s+#{first_otm_expiry_date_key}/,
+                                                       local_symbol: /GE\s+#{first_otm_expiry_date.strftime('%y%m%d')}/,
                                                        trading_class: 'GE',
                                                        multiplier: 100
                                                      })
@@ -191,20 +191,20 @@ RSpec.describe 'IB::OptionChain' do
 
     it 'sorts ITM options by expiry' do
       result = contract.itm_options(sort: :expiry)
-      expect(result.keys).to all(be_a Integer)
+      expect(result.keys).to all(be_a String)
       expect(result.keys.size).to eq(12)
       first_itm_expiry_date_key = result.keys.first
-      first_itm_expiry_date = Date.strptime(first_itm_expiry_date_key.to_s, '%y%m')
+      first_itm_expiry_date = Date.parse(first_itm_expiry_date_key)
       expect(result[first_itm_expiry_date_key].size).to be_positive
 
       first_itm_option = result[first_itm_expiry_date_key].first
       expect(first_itm_option).to be_a(IB::Option)
       expect(first_itm_option.attributes).to include({
                                                        symbol: 'GE',
-                                                       last_trading_day: /#{first_itm_expiry_date.strftime('%Y-%m-')}/,
+                                                       last_trading_day: first_itm_expiry_date_key,
                                                        right: 'P',
                                                        exchange: be_a(String),
-                                                       local_symbol: /GE\s+#{first_itm_expiry_date_key}/,
+                                                       local_symbol: /GE\s+#{first_itm_expiry_date.strftime('%y%m%d')}/,
                                                        trading_class: 'GE',
                                                        multiplier: 100
                                                      })
