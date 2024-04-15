@@ -90,33 +90,12 @@ module IB
 
       # third Friday of a month
       monthly_expirations = @option_chain_definition[:expirations].find_all {|y| (15..21).include? y.day }
-      #				puts @option_chain_definition.inspect
-      option_prototype = -> ( ltd, strike ) do
-        IB::Option.new( symbol: symbol,
-          exchange: @option_chain_definition[:exchange],
-          trading_class: @option_chain_definition[:trading_class],
-          multiplier: @option_chain_definition[:multiplier],
-          currency: currency,
-          last_trading_day: ltd,
-          strike: strike,
-          right: right).verify &.first
-      end
-      options_by_expiry = -> ( schema ) do
-        # Array: [ yymm -> Options] prepares for the correct conversion to a Hash
-        Hash[  monthly_expirations.map do | l_t_d |
-          [  l_t_d.strftime('%y%m').to_i , schema.map { | strike | option_prototype[ l_t_d, strike ]}.compact ]
-        end  ]                         # by Hash[ ]
-      end
-      options_by_strike = -> ( schema ) do
-        Hash[ schema.map do | strike |
-          [  strike ,   monthly_expirations.map { | l_t_d | option_prototype[ l_t_d, strike ]}.compact ]
-        end  ]                         # by Hash[ ]
-      end
+      Connection.logger.info @option_chain_definition.inspect
 
       if sort == :strike
-        options_by_strike[ requested_strikes ]
+        options_by_strike(requested_strikes, monthly_expirations, right)
       else
-        options_by_expiry[ requested_strikes ]
+        options_by_expiry(requested_strikes, monthly_expirations, right)
       end
     else
       Connection.logger.error "#{to_human} ::No Options available"
@@ -154,6 +133,40 @@ module IB
         above_market_price_strikes = chain[1][0..count-1]
       end
     end
+  end
+
+  private
+
+  def option_prototype(last_trading_day, strike, right)
+    IB::Option.new(
+      symbol:,
+      exchange: @option_chain_definition[:exchange],
+      trading_class: @option_chain_definition[:trading_class],
+      multiplier: @option_chain_definition[:multiplier],
+      currency: currency,
+      last_trading_day:,
+      strike:,
+      right:
+    ).verify &.first
+  end
+
+  def options_by_expiry(strikes, expirations, right)
+    # Array: [ yymm -> Options] prepares for the correct conversion to a Hash
+    expirations.map do |expiration_date|
+      [
+        expiration_date.strftime('%y%m').to_i,
+        strikes.map { |strike| option_prototype(expiration_date, strike, right) }.compact
+      ]
+    end.to_h
+  end
+
+  def options_by_strike(strikes, expirations, right)
+    strikes.map do |strike|
+      [
+        strike,
+        expirations.map { |expiration_date| option_prototype(expiration_date, strike, right) }.compact
+      ]
+    end.to_h
   end
  end # module
 
