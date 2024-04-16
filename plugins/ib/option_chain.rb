@@ -27,40 +27,31 @@ module IB
     # -----------------------------------------------------------------------------------------------------
     # get OptionChainDefinition from IB ( instantiate cashed Hash )
     if @option_chain_definition.blank?
-      sub_sdop = ib.subscribe( :SecurityDefinitionOptionParameterEnd ) { |msg| finalize.push(true) if msg.request_id == my_req }
-      sub_ocd = ib.subscribe( :OptionChainDefinition ) do | msg |
-        if msg.request_id == my_req
-          message = msg.data
-          # transfer the first record to @option_chain_definition
-          if @option_chain_definition.blank?
-            @option_chain_definition = msg.data
-          end
-          # override @option_chain_definition if a decent combination of attributes is met
-          # us- options:  use the smart dataset
-          # other options: prefer options of the default trading class
-          if message[:exchange] == 'SMART'
-            @option_chain_definition = msg.data
-            finalize.push(true)
-          end
-          if message[:trading_class] == symbol
-            @option_chain_definition = msg.data
-            finalize.push(true)
-          end
-        end
+      sub_sdop = ib.subscribe(:SecurityDefinitionOptionParameterEnd) do |msg|
+        finalize.close if msg.request_id == my_req
+      end
+      sub_ocd = ib.subscribe(:OptionChainDefinition) do |msg|
+        finalize.push(msg.data) if msg.request_id == my_req
       end
 
-      c = verify.first  #  ensure a complete set of attributes
-      my_req = ib.send_message :RequestOptionChainDefinition, con_id: c.con_id,
-        symbol: c.symbol,
-        exchange: c.sec_type == :future ? c.exchange : "", # BOX,CBOE',
-        sec_type: c[:sec_type]
+      contract = verify.first  #  ensure a complete set of attributes
+      my_req = ib.send_message :RequestOptionChainDefinition,
+                               con_id: contract.con_id,
+                               symbol: contract.symbol,
+                               exchange: contract.sec_type == :future ? contract.exchange : "", # BOX,CBOE',
+                               sec_type: contract[:sec_type]
 
-      finalize.pop #  wait until data appeared
-
+      until finalize.closed?
+        @option_chain_definition << finalize.pop
+      end
       ib.unsubscribe sub_sdop, sub_ocd
     else
       Connection.logger.info { "#{to_human} : using cached data" }
     end
+
+
+    @option_chain_definition = @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
+                               @option_chain_definition.first
 
     # -----------------------------------------------------------------------------------------------------
     # select values and assign to options
