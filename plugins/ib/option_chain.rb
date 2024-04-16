@@ -89,13 +89,14 @@ module IB
                            end
 
       # third Friday of a month
-      monthly_expirations = @option_chain_definition[:expirations].find_all {|y| (15..21).include? y.day }
+      requested_expiration = @option_chain_definition[:expirations]
+        .select { |expiration| monthly_expiration?(expiration) }
       Connection.logger.info @option_chain_definition.inspect
 
       if sort == :strike
-        options_by_strike(requested_strikes, monthly_expirations, right)
+        options_by_strike(requested_strikes, requested_expiration, right)
       else
-        options_by_expiry(requested_strikes, monthly_expirations, right)
+        options_by_expiry(requested_strikes, requested_expiration, right)
       end
     else
       Connection.logger.error "#{to_human} ::No Options available"
@@ -167,6 +168,13 @@ module IB
         expirations.map { |expiration_date| option_prototype(expiration_date, strike, right) }.compact
       ]
     end.to_h
+  end
+
+  def monthly_expiration?(last_trading_day)
+    first_day_of_month = last_trading_day.beginning_of_month
+    third_friday = first_day_of_month.advance(days: ((5 - first_day_of_month.wday) % 7), weeks: 2)
+
+    last_trading_day == third_friday
   end
  end # module
 

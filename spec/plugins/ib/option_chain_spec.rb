@@ -30,7 +30,7 @@ RSpec.describe 'IB::OptionChain' do
                                                        last_trading_day: first_atm_expiry_date_key,
                                                        right: 'P',
                                                        exchange: be_a(String),
-                                                       local_symbol: /GE\s+#{first_atm_expiry_date_.strftime('%y%m%d')}/,
+                                                       local_symbol: /GE\s+#{first_atm_expiry_date.strftime('%y%m%d')}/,
                                                        trading_class: 'GE',
                                                        multiplier: 100
                                                      })
