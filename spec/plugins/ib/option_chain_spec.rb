@@ -228,4 +228,100 @@ RSpec.describe 'IB::OptionChain' do
       expect(result.keys.size).to eq(0)
     end
   end
+
+  context 'when contract is_a Index' do
+    let!(:contract) { IB::Index.new(symbol: 'SPX', currency: 'USD', exchange: 'CBOE').verify.first }
+
+    context 'when trading_class is set' do
+      let(:trading_class) { 'SPXW' }
+
+      it 'returns correctly ATM put options' do
+        result = contract.atm_options(trading_class:)
+        expect(result.keys).to all(be_a String)
+        expect(result.keys.size).to be > 1
+        first_atm_expiry_date_key = result.keys.first
+        first_atm_expiry_date = Date.parse(first_atm_expiry_date_key)
+        expect(result[first_atm_expiry_date_key].size).to eq(1)
+
+        first_atm_option = result[first_atm_expiry_date_key].first
+        expect(first_atm_option).to be_a(IB::Option)
+        expect(first_atm_option.attributes).to include(
+          {
+            symbol: contract.symbol,
+            last_trading_day: first_atm_expiry_date_key,
+            right: 'P',
+            exchange: be_a(String),
+            local_symbol: /#{contract.trading_class}\s+#{first_atm_expiry_date.strftime('%y%m%d')}/,
+            trading_class:,
+            multiplier: 100
+          }
+        )
+      end
+
+      it 'returns correctly OTM put options' do
+        result = contract.otm_options(trading_class:)
+        expect(result.keys).to all(be_a BigDecimal)
+        expect(result.keys.size).to eq(6) # ATM + 5 OTM
+        strike_price = result.keys.first
+        expect(result[strike_price].size).to be_positive
+
+        first_otm_option = result[strike_price].first
+        expect(first_otm_option).to be_a(IB::Option)
+        expect(first_otm_option.attributes).to include({
+                                                         symbol: contract.symbol,
+                                                         right: 'P',
+                                                         exchange: be_a(String),
+                                                         strike: strike_price.to_f,
+                                                         trading_class:,
+                                                         multiplier: 100
+                                                       })
+
+        expect(first_otm_option.strike).to be > result[result.keys[1]].first.strike
+      end
+
+      it 'returns correctly OTM call options' do
+        result = contract.otm_options(right: :call, trading_class:)
+        expect(result.keys).to all(be_a BigDecimal)
+        expect(result.keys.size).to eq(6) # ATM + 5 OTM
+        strike_price = result.keys.first
+        expect(result[strike_price].size).to be_positive
+
+        first_otm_option = result[strike_price].first
+        expect(first_otm_option).to be_a(IB::Option)
+        expect(first_otm_option.attributes).to include({
+                                                         symbol: contract.symbol,
+                                                         right: 'C',
+                                                         exchange: be_a(String),
+                                                         strike: strike_price.to_f,
+                                                         trading_class:,
+                                                         multiplier: 100
+                                                       })
+
+        expect(first_otm_option.strike).to be < result[result.keys[1]].first.strike
+      end
+
+      it 'sorts ITM options by expiry' do
+        result = contract.itm_options(sort: :expiry, trading_class:)
+        expect(result.keys).to all(be_a String)
+        expect(result.keys.size).to eq(5)
+        first_itm_expiry_date_key = result.keys.first
+        first_itm_expiry_date = Date.parse(first_itm_expiry_date_key)
+        expect(result[first_itm_expiry_date_key].size).to be_positive
+
+        first_itm_option = result[first_itm_expiry_date_key].first
+        expect(first_itm_option).to be_a(IB::Option)
+        expect(first_itm_option.attributes).to include(
+          {
+            symbol: contract.symbol,
+            last_trading_day: first_itm_expiry_date_key,
+            right: 'P',
+            exchange: be_a(String),
+            local_symbol: /#{contract.trading_class}\s+#{first_itm_expiry_date.strftime('%y%m%d')}/,
+            trading_class:,
+            multiplier: 100
+          }
+        )
+      end
+    end
+  end
 end

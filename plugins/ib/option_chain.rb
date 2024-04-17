@@ -39,6 +39,7 @@ module IB
                                con_id: contract.con_id,
                                symbol: contract.symbol,
                                exchange: contract.sec_type == :future ? contract.exchange : "", # BOX,CBOE',
+                               trading_class:,
                                sec_type: contract[:sec_type]
 
       until finalize.closed?
@@ -49,8 +50,11 @@ module IB
       Connection.logger.info { "#{to_human} : using cached data" }
     end
 
-
-    @option_chain_definition = @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
+    @option_chain_definition.compact!
+    Connection.logger.info { @option_chain_definition.map { |x| x.slice(:trading_class, :exchange)} }
+    @option_chain_definition = @option_chain_definition.find { |x| (trading_class.blank? || x[:trading_class] == trading_class) && (exchange.blank? || x[:exchange] == exchange) } ||
+                               @option_chain_definition.find { |x| x[:exchange] == contract.exchange && x[:trading_class] == contract.trading_class } ||
+                               @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
                                @option_chain_definition.first
 
     # -----------------------------------------------------------------------------------------------------
