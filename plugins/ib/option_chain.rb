@@ -96,33 +96,30 @@ module IB
   end  # def
 
   # return a set of AtTheMoneyOptions
-  def atm_options ref_price: :request, right: :put, **params
-    option_chain(  right: right, ref_price: ref_price, sort: :expiry, **params) do | chain |
+  def atm_options(ref_price: :request, right: :put, **params)
+    option_chain(right:, ref_price:, sort: :expiry, **params) do |chain|
       chain[0]
     end
-
-
   end
 
-  # return   InTheMoneyOptions
-  def itm_options count:  5, right: :put, ref_price: :request, sort: :strike, exchange: ''
-    option_chain(  right: right,  ref_price: ref_price, sort: sort, exchange: exchange ) do | chain |
+  # return InTheMoneyOptions
+  def itm_options(count: 5, right: :put, ref_price: :request, sort: :strike, **params)
+    option_chain(right:, ref_price:, sort:, **params) do |chain|
       if right == :put
-        above_market_price_strikes = chain[1][0..count-1]
+        chain[1][0..count-1] # above market price
       else
-        below_market_price_strikes = chain[-1][-count..-1].reverse
-      end # branch
+        chain[-1][-count..-1].reverse # below market price
+      end
     end
-  end		# def
+  end
 
   # return OutOfTheMoneyOptions
-  def otm_options count:  5,  right: :put, ref_price: :request, sort: :strike, exchange: ''
-    option_chain( right: right, ref_price: ref_price, sort: sort, exchange: exchange ) do | chain |
+  def otm_options(count: 5, right: :put, ref_price: :request, sort: :strike, **params)
+    option_chain(right:, ref_price:, sort:, **params ) do |chain|
       if right == :put
-        #			puts "Chain: #{chain}"
-        below_market_price_strikes = chain[-1][-count..-1].reverse
+        chain[-1][-count..-1].reverse # below market price
       else
-        above_market_price_strikes = chain[1][0..count-1]
+        chain[1][0..count-1] # above market price
       end
     end
   end
