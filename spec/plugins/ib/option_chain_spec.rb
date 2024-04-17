@@ -66,6 +66,27 @@ RSpec.describe 'IB::OptionChain' do
       expect(result[first_atm_expiry_date_key]).to be_empty
     end
 
+    it 'returns only the next expiry' do
+      result = contract.atm_options(sort: :expiry, limit_expirations: :next)
+      expect(result.keys).to all(be_a String)
+      expect(result.keys.size).to eq(1)
+
+      expect(result.keys.first).to eq(Date.today.next_occurring(:friday).to_s)
+    end
+
+    it 'returns only the next expiry' do
+      result = contract.atm_options(sort: :expiry, limit_expirations: :monthly)
+      expect(result.keys).to all(be_a String)
+      expect(result.keys.size).to be > 1
+
+      current_month_third_friday = Date.today.beginning_of_month.next_occurring(:friday) + 14
+      next_month_third_friday = Date.today.next_month.beginning_of_month.next_occurring(:friday) + 14
+
+      expect(result.keys.first).to satisfy do |key|
+        [current_month_third_friday.to_s, next_month_third_friday.to_s].include?(key)
+      end
+    end
+
     it 'returns correctly OTM put options' do
       result = contract.otm_options
       expect(result.keys).to all(be_a BigDecimal)

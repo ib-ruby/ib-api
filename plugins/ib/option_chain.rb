@@ -12,7 +12,7 @@ module IB
   ### sort:: :strike, :expiry
   ### exchange:: List of Exchanges to be queried (Blank for all available Exchanges)
   ### trading_class                                 ( optional )
-  def option_chain ref_price: :request, right: :put, sort: :strike, exchange: '', trading_class: nil
+  def option_chain(ref_price: :request, right: :put, sort: :strike, limit_expirations: nil, exchange: nil, trading_class: nil)
 
     ib = Connection.current
 
@@ -84,8 +84,14 @@ module IB
                            end
 
       # third Friday of a month
-      requested_expiration = @option_chain_definition[:expirations]
-        .select { |expiration| monthly_expiration?(expiration) }
+      requested_expiration = case limit_expirations
+                            when :monthly
+                              @option_chain_definition[:expirations].select { |expiration| monthly_expiration?(expiration) }
+                            when :next
+                              @option_chain_definition[:expirations].first(1)
+                            else
+                              @option_chain_definition[:expirations]
+                            end
       Connection.logger.info @option_chain_definition.inspect
 
       if sort == :strike
