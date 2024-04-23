@@ -16,8 +16,8 @@ module IB
 				error "Argument must be a IB::Option" unless [ :option, :futures_option ].include?( master.sec_type )
 
 				initialize_spread( master ) do | the_spread |
-					the_spread.add_leg master.essential
-					the_spread.add_leg( master.essential.merge( right: flip_right[master.right], local_symbol: "") )
+          the_spread.add_leg master.essential.verify.first
+          the_spread.add_leg( master.essential.merge( right: flip_right[master.right], local_symbol: "").verify.first )
 					error "Initialisation of Legs failed" if the_spread.legs.size != 2
 					the_spread.description =  the_description( the_spread )
 				end
