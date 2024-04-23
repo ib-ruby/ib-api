@@ -8,7 +8,7 @@ module IB
 
 #  Fabricate a Calendar-Spread from a Master-Option
 #  -----------------------------------------
-#  If one Leg is known, the other is build by just changing the expiry
+#  If one Leg is known, the other is build through replacing the expiry
 #  The second leg is always SOLD !
 #
 #   Call with
@@ -17,6 +17,7 @@ module IB
 
 				error "Argument must be a IB::Future or IB::Option" unless  [:option, :future_option, :future ].include? master.sec_type
         m = master.verify.first
+        error "Argument is a #{master.class}, but Verification failed" unless m.is_a? IB::Contract
         the_other_expiry =  the_other_expiry.values.first if the_other_expiry.is_a?(Hash)
         back = IB::Spread.transform_distance m.expiry, the_other_expiry
         calendar =  m.roll expiry: back

@@ -9,29 +9,54 @@ module IB
       "<Future: " + [symbol, expiry, currency].join(" ") + ">"
     end
 
+
+
+    # get the next (regular) expiry of the contract
+    #
+    # fetches for real contracts if verify is available
+    #
+    def next_expiry d =  Date.today
+      exp = self.class.next_expiry d
+      if IB::Connection.current.plugins.include? 'verify'
+        self.expiry = exp[0..-3]
+        verify.sort_by{| x | x.last_trading_day}
+              .find_all{| y | y.expiry <= exp }
+              .first
+      else
+        exp
+      end
+    end
     class << self
+
+
+      # This returns the next
+      # quarterly expiration month after the current month.
+      #
+      # IB::Option.next_expiry returns the next monthly expiration
+      #
+      #
+      #
+      def next_expiry d=Date.today, type: :quarter
+        next_quarter_day = ->(year, month) do
+          base_date = Date.new(year, month)
+          base_wday  =  base_date.wday
+          base_date + ( 5 > base_wday ? 5 - base_wday : 7 - base_wday + 5 ) +  14
+        end
+        next_quarter_day[ next_quarter_year(d), next_quarter_month(d) ].strftime("%Y%m%d")
+#  /retired/        "#{ next_quarter_year(time) }#{ sprintf("%02d", next_quarter_month(time)) }"
+      end
+
+      private
       # Find the next front month of quarterly futures.
       # N.B. This will not work as expected during the front month before expiration, as
       # it will point to the next quarter even though the current month is still valid!
-      def next_quarter_month time=Time.now
-        [3, 6, 9, 12].find { |month| month > time.month } || 3 # for December, next March
+      def next_quarter_month d
+        [3, 6, 9, 12].find { |month| month > d.month } || 3 # for December, next March
       end
 
-      def next_quarter_year time=Time.now
-        next_quarter_month(time) < time.month ? time.year + 1 : time.year
+      def next_quarter_year d
+        next_quarter_month(d) < d.month ? d.year + 1 : d.year
       end
-
-      # WARNING: This returns the next
-      # quarterly expiration month after the current month. Many futures
-      # instruments have monthly contracts for the near months. This
-      # method will not work for such contracts; it will return the next
-      # quarter after the current month, even though the present month
-      # has the majority of the trading volume.
-      #
-      def next_expiry time=Time.now
-        "#{ next_quarter_year(time) }#{ sprintf("%02d", next_quarter_month(time)) }"
-      end
-
     end
   end
   end

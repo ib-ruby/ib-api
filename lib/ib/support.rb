@@ -111,32 +111,32 @@ module IB
 		#    Without providing a Block, the elements are treated as string
 		def read_array hashmode:false,  &block
 			count = read_int
-			case	count 
-			when  0 
+			case	count
+			when  0
 				[]
 			when nil
 				nil
 			else
 				count= count + count if hashmode
 				if block_given?
-					Array.new(count, &block) 
+					Array.new(count, &block)
 				else
 					Array.new( count ){ read_string }
 				end
-			end 
+			end
 		end
-		#   
-		#  Returns a hash 
-		#  Expected Buffer-Format: 
+		#
+		#  Returns a hash
+		#  Expected Buffer-Format:
 		#			count (of Hash-elements)
 		#			count* key|Value
 		#	 Key's are transformed to symbols, values are treated as string
 		def read_hash
 			tags = read_array( hashmode: true )  # { |_| [read_string, read_string] }
-      result =   if 	tags.nil? || tags.flatten.empty?
+      result =   if	tags.nil? || tags.flatten.empty?
 								 tags
 							 else
-								 interim = if  tags.size.modulo(2).zero? 
+								 interim = if  tags.size.modulo(2).zero?
 														 Hash[*tags.flatten]
 													 else 
 														 Hash[*tags[0..-2].flatten]  # omit the last element

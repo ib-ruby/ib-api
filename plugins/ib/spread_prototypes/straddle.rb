@@ -33,13 +33,14 @@ module IB
 #   IB::Spread::Straddle.build from: IB::Contract, strike: a_value, expiry: yyyymmm(dd)
 			def build from:, ** fields
 				if  from.is_a?  IB::Option
-					fabricate from.merge(fields)
+					fabricate from.merge **fields
 				else
 					initialize_spread( from ) do | the_spread |
-						leg_prototype  = IB::Option.new from.attributes
+						leg_prototype  = IB::Option.new from.invariant_attributes
 						.slice( :currency, :symbol, :exchange)
 						.merge(defaults)
             .merge( fields )
+            puts leg_prototype.attributes
 
 						leg_prototype.sec_type = 'FOP' if from.is_a?( IB::Future )
             the_spread.add_leg leg_prototype.merge( right: :put ).verify.first
@@ -60,7 +61,8 @@ module IB
       end
 
 			def the_description spread
-			 "<Straddle #{spread.symbol}(#{spread.legs.first.strike})[#{Date.parse(spread.legs.first.last_trading_day).strftime("%b %Y")}]>"
+        my_strike =  spread.legs.first.strike
+			 "<Straddle #{spread.symbol}(#{my_strike})[#{Date.parse(spread.legs.first.expiry).strftime("%b %Y")}]>"
 			end
 
       end # class

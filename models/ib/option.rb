@@ -67,13 +67,64 @@ module IB
 
 		end
 
+
+    # get the next (regular) expiry of the contract
+    #
+    # fetches for real contracts if verify is available
+    #
+    def next_expiry d =  Date.today
+      exp = self.class.next_expiry d
+      if IB::Connection.current.plugins.include? 'verify'
+        self.expiry = exp[0..-3]
+        verify.sort_by{| x | x.last_trading_day}
+              .find_all{| y | y.expiry <= exp }
+              .first
+      else
+        exp
+      end
+
+    end
+
+    # returns the third friday of the (next) month  (class method)
+    #
+    # Argument: can either be Date, a String which parses to a Date or
+    #           an Integer, yymm yyyymm or yyyymmdd -->  2406 or 202406  or 20240618
+    #
+    #           if called with a digit, this is interpretated a day of the current month
+    #
+    def self.next_expiry  base =  Date.today
+
+      c =  0
+      begin
+      base_date = if base.is_a? Date
+                      [ base.year, base.month ]
+                  else
+                    (base = Date.parse(base.to_s)).then { | d | [ d.year,d.month ] }
+                  end.then{ |y,m| Date.new y,m }
+      rescue Date::Error => e
+        base =  base.to_s + "01"
+        c =  c + 1
+        retry if c == 1
+      end
+      error "Next-Expiry: Not a valid date: #{base}" if base_date.nil?
+        friday =  5
+        base_wday  =  base_date.wday
+        b= base_date + ( friday > base_wday ? friday - base_wday : 7 - base_wday + friday ) +  14
+
+        if b < base
+          next_expiry base.then{| y | a = y + 25; a.strftime "%Y%m01" }
+        else
+          b.strftime "%Y%m%d"
+        end
+      end
+
     def to_human
       "<Option: " + [symbol, expiry, right, strike, exchange, currency].join(" ") + ">"
     end
 
   end # class Option
 
-	class FutureOption   < Option 
+	class FutureOption   < Option
     def default_attributes
       super.merge :sec_type => :futures_option
 		end

@@ -419,7 +419,7 @@ module IB
 
 		# Process single incoming message (blocking!)
 		def process_message
-			logger.progname='IB::Connection#process_message' if logger.is_a?(Logger)
+			logger.progname='IB::Connection#process_message'
 
 			socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
 			#	puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"

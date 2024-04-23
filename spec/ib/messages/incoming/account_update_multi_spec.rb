@@ -3,7 +3,7 @@ require 'main_helper'
 RSpec.shared_examples 'Account Updates Multi Message' do
   it { is_expected.to be_an IB::Messages::Incoming::AccountUpdatesMulti }
   its(:message_type) { is_expected.to eq :AccountUpdatesMulti }
-	its( :value ){ is_expected.to be_a BigDecimal }
+	its( :value ){ is_expected.to be_a Numeric }
 	its( :key ){ is_expected.to be_a String }
 	its( :currency ){ is_expected.to be_a( String ).or be_nil  }
   its(:message_id) { is_expected.to eq 73 }

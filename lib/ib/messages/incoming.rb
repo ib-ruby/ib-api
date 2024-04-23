@@ -170,7 +170,7 @@ module IB
 																[ :account , :string ],
 																[ :model, :string ],
 																[ :key		,  :string ],
-																[ :value ,	 :decimal],
+																[ :value ,	 :float],
 																[ :currency, :string ])
 			AccountSummary = def_message(63, AccountMessage,
 																	 [:request_id, :int],

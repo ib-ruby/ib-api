@@ -63,18 +63,18 @@ module IB
         complete_message_buffer = []
         begin
           # this is the blocking version of recv
-          buffer =  self.recvfrom(4096)[0]
-#          STDOUT.puts "BUFFER:: #{buffer.inspect}"
+          buffer =  self.recvfrom(8192)[0]
+          #          STDOUT.puts "BUFFER:: #{buffer.inspect}"
           complete_message_buffer << buffer
 
-        end while buffer.size == 4096
+        end while buffer.size == 8192
         complete_message_buffer.join('')
       rescue Errno::ECONNRESET =>  e
         Connection.logger.fatal{ "Data Buffer is not filling \n
         The Buffer: #{buffer.inspect} \n
         Backtrace:\n 
         #{e.backtrace.join("\n") } " }
-                                 Kernel.exit
+        Kernel.exit
       end
     end
 
