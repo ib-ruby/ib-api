@@ -160,8 +160,8 @@ Raises an IB::Error if less then 100 items are received.
     send_message :RequestAccountData, subscribe: false  ## do this only once
     unsubscribe subscription
   rescue IB::TransmissionError => e
-        tws.unsubscribe download_end unless download_end.nil?
-        tws.unsubscribe subscription
+        unsubscribe download_end unless download_end.nil?
+        unsubscribe subscription
         raise
 	end
 
@@ -199,7 +199,7 @@ Raises an IB::Error if less then 100 items are received.
 					if account.account_values.size > 10
 							# simply don't cancel the subscription if continuously is specified
 							# the connected flag is set in any case, indicating that valid data are present
-  #          tws.send_message :RequestAccountData, subscribe: false, account_code: account.account unless continuously
+  #          send_message :RequestAccountData, subscribe: false, account_code: account.account unless continuously
 						account.update_attribute :connected, true   ## flag: Account is completely initialized
             IB::Connection.logger.info { "#{account.account} => Count of AccountValues: #{account.account_values.size}"  }
 					else # unreasonable account_data received -  request is still active

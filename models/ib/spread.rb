@@ -21,7 +21,7 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
 			nb = if back.to_i > 200000
 						 back.to_i
 					 elsif back[-1] == "w" && front.to_i > 20000000
-						 start_date + (back.to_i * 7)
+						 start_date + (back.to_i * 7) + 1   # +1 to compensate for friday's bank-holiday, target has to be verified through next_expiry
 					 elsif back[-1] == "m" && front.to_i > 200000
 						 start_date >> back.to_i
 					 else

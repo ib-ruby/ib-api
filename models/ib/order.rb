@@ -84,7 +84,7 @@ module IB
 
       # Financial advisors only - use an empty String if not applicable.
       :fa_group, :fa_profile, :fa_method, :fa_percentage,
-      :model_code ,  # string, no further reference in docs. 
+      :model_code ,  # string, no further reference in docs.
       # Institutional orders only!
       :origin, #          0=Customer, 1=Firm
       :order_ref, #       String: Order reference. Customer defined order ID tag.
@@ -153,12 +153,12 @@ module IB
       :delta_neutral_settling_firm,
       :delta_neutral_clearing_account,
       :delta_neutral_clearing_intent,
-			# Used when the hedge involves a stock and indicates whether or not it is sold short. 
+			# Used when the hedge involves a stock and indicates whether or not it is sold short.
 			:delta_neutral_short_sale,
-			#  Has a value of 1 (the clearing broker holds shares) or 2 (delivered from a third party). 
+			#  Has a value of 1 (the clearing broker holds shares) or 2 (delivered from a third party).
 			#  If you use 2, then you must specify a deltaNeutralDesignatedLocation.
 			:delta_neutral_short_sale_slot,
-			# Specifies whether the order is an Open or a Close order and is used 
+			# Specifies whether the order is an Open or a Close order and is used
 			# when the hedge involves a CFD and and the order is clearing away.
 			:delta_neutral_open_close,
 
@@ -207,7 +207,7 @@ module IB
       :reference_change_amount,
       :reference_exchange_id ,
 
-      :conditions,		# Conditions determining when the order will be activated or canceled. 
+      :conditions,		# Conditions determining when the order will be activated or canceled.
       ### http://xavierib.github.io/twsapidocs/order_conditions.html
       :conditions_ignore_rth,  # bool: Indicates whether or not conditions will also be valid outside Regular Trading Hours
       :conditions_cancel_order,# bool: Conditions can determine if an order should become active or canceled.
@@ -217,20 +217,20 @@ module IB
       :adjusted_stop_price,
       :adjusted_stop_limit_price,
       :adjusted_trailing_amount,
-      
+
       :adjustable_trailing_unit,
       :ext_operator ,               # 105: MIN_SERVER_VER_EXT_OPERATOR
-		      # This is a regulartory attribute that applies 
-		      # to all US Commodity (Futures) Exchanges, provided 
-		      # to allow client to comply with CFTC Tag 50 Rules. 
+		      # This is a regulartory attribute that applies
+		      # to all US Commodity (Futures) Exchanges, provided
+		      # to allow client to comply with CFTC Tag 50 Rules.
 			:soft_dollar_tier_name,        # 106: MIN_SERVER_VER_SOFT_DOLLAR_TIER
 			:soft_dollar_tier_value,
 			:soft_dollar_tier_display_name,
-		      # Define the Soft Dollar Tier used for the order. 
+		      # Define the Soft Dollar Tier used for the order.
 		      #	Only provided for registered professional advisors and hedge and mutual funds.
-		      #	format: "#{name}=#{value},#{display_name}", name and value are used in the 
+		      #	format: "#{name}=#{value},#{display_name}", name and value are used in the
 		      #	      order-specification. Its included as ["#{name}","#{value}"] pair
-  
+
       :cash_qty,                     # 111: MIN_SERVER_VER_CASH_QTY
 			# decimal : The native cash quantity
 			:mifid_2_decision_maker,
@@ -271,10 +271,10 @@ module IB
       :modified_at,
       :leg_prices,
       :algo_params,
-      :combo_params   # Valid tags are LeginPrio, MaxSegSize, DontLeginNext, ChangeToMktTime1, 
-		      # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed, 
+      :combo_params   # Valid tags are LeginPrio, MaxSegSize, DontLeginNext, ChangeToMktTime1,
+		      # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed,
 		      # CondPriceMin, CondPriceMax, and PriceCondConid.
-		# to set an execuction-range of a security: 
+		# to set an execuction-range of a security:
 				#			 PriceCondConid, 10375;  -- conid of the combo-leg
 				#			 CondPriceMax, 62.0;		 -- max and min-price
 				#			 CondPriceMin.;60.0
@@ -301,7 +301,7 @@ module IB
 
     # Order has a collection of OrderStates, last one is always current
     has_many :order_states
-		# Order can have multible conditions 
+		# Order can have multible conditions
     has_many  :conditions
 
     def order_state
@@ -354,7 +354,7 @@ module IB
     validates_numericality_of :limit_price, :aux_price, :allow_nil => true
 
 
-    def default_attributes				# default valus are taken from order.java 
+    def default_attributes				# default valus are taken from order.java
 																	#  public Order() { }
       super.merge(
       :active_start_time => "",		# order.java # 470		# Vers 69
@@ -374,7 +374,7 @@ module IB
 			:not_held => false,  # order.java # 494
       :oca_type => :none,
 			:order_type => :limit,
-      :open_close => :open,	  # order.java # 
+      :open_close => :open,	  # order.java #
 			:opt_out_smart_routing => false,
       :origin => :customer,
 			:outside_rth => false, # order.java # 472
@@ -393,7 +393,7 @@ module IB
       :leg_prices => [],
       :algo_params => Hash.new, #{},
       :combo_params =>[], #{},
-  #      :soft_dollar_tier_params => HashWithIndifferentAccess.new( 
+  #      :soft_dollar_tier_params => HashWithIndifferentAccess.new(
 	#				    :name => "",
 	#				    :val => "",
 	#				    :display_name => ''),
@@ -441,7 +441,7 @@ Format of serialisation
    # end
 
     def serialize_misc_options
-      ""		  # Vers. 70  
+      ""		  # Vers. 70
     end
     # Placement
 		#

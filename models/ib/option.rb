@@ -68,19 +68,34 @@ module IB
 		end
 
 
-    # get the next (regular) expiry of the contract
+    # returns the verified option for the next (regular) expiry of the contract.
     #
-    # fetches for real contracts if verify is available
+    # Argument: Reference date, provided as Date-Object or as parseable string or integer, i.e
+    #           Symbols::Options.rut.merge( strike: 2000 ).next_expiry( "2405")
+    #           returns   "<Option: RUT 20240516 put 2000.0 SMART USD>"  instead of
+    #                     "<Option: RUT 20240517 put 2000.0 SMART USD>"  because the third friday is a bank holiday
+    #
+    # Optionally a block can be provided, returning the expiry to check in the format "yyyymmdd"
+    #
+    # if verify is not available, the option is just returned.
+    #
+    # (always returns a new option, respects immutability of the IB::Contract)
     #
     def next_expiry d =  Date.today
-      exp = self.class.next_expiry d
+      # get the next regular option
+      exp = block_given? ? yield : self.class.next_expiry( d )
+      # check if the option exists, otherwise fetch the previous date until a valid contract is detected
       if IB::Connection.current.plugins.include? 'verify'
-        self.expiry = exp[0..-3]
-        verify.sort_by{| x | x.last_trading_day}
-              .find_all{| y | y.expiry <= exp }
-              .first
+        real_option =  nil
+        loop do
+          real_option = merge( expiry: exp ).verify.first
+          break unless real_option.nil?
+          exp =  ( exp.to_i - 1 ).to_s
+          error( "No suitable next expiry option found" ) if exp[-2..-1] == "00"
+        end
+        real_option
       else
-        exp
+        merge( expiry: exp, last_trading_day: Date.parse( exp ).strftime( "%Y-%m-%d" ) )
       end
 
     end
