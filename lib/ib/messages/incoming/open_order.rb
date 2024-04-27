@@ -4,7 +4,7 @@ module IB
       using IB::Support
       # OpenOrder is the longest message with complex processing logics
       OpenOrder =
-          def_message [5, 34],		# updated to v. 34 according to python (decoder.py processOpenOrder)
+          def_message [5, 0],		# updated to v. 34 according to python (decoder.py processOpenOrder)
                       [:order, :local_id, :int],
 
                       [:contract, :contract], # read standard-contract 

@@ -6,8 +6,8 @@ module IB
       # Data format is { :id => int: local_id,
       #                  :contract => Contract,
       #                  :order => Order }
-      PlaceOrder = def_message [3, 45]				## ServerVersion > 145:  def_message[ 0,45 ]
-																							## server-version is not known at compilation time
+      PlaceOrder = def_message [ 3,0 ]				## ServerVersion > 145 && < 163:  def_message[ 3,45 ]
+																			## server-version is not known at compilation time
 																							## Method call has to be replaced then
 																							## Max-Client_ver --> 144!!
 
@@ -23,7 +23,7 @@ module IB
 
            # main order fields
            (order.side == :short ? 'SSHORT' : order.side == :short_exempt ? 'SSHORTX' : order.side.to_sup),
-					 order.total_quantity,
+           order.total_quantity.to_d,
            order[:order_type], # Internal code, 'LMT' instead of :limit
            order.limit_price,
            order.aux_price,
@@ -181,8 +181,9 @@ module IB
 					order.is_O_ms_container,
 #				end,
 #				if server_version >= 148 #	min_server_ver_d_peg_orders
-					order.discretionary_up_to_limit_price
+					order.discretionary_up_to_limit_price,
 #				end ]
+      ""
 				]
 #
 #
