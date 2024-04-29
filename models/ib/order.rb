@@ -211,13 +211,14 @@ module IB
       ### http://xavierib.github.io/twsapidocs/order_conditions.html
       :conditions_ignore_rth,  # bool: Indicates whether or not conditions will also be valid outside Regular Trading Hours
       :conditions_cancel_order,# bool: Conditions can determine if an order should become active or canceled.
+      #AdjustedOrderParams
       :adjusted_order_type,
       :trigger_price,
+      :trail_stop_price,
       :limit_price_offset,  # used in trailing stop limit + trailing limit orders
       :adjusted_stop_price,
       :adjusted_stop_limit_price,
       :adjusted_trailing_amount,
-
       :adjustable_trailing_unit,
       :ext_operator ,               # 105: MIN_SERVER_VER_EXT_OPERATOR
 		      # This is a regulartory attribute that applies
@@ -237,8 +238,15 @@ module IB
 		  :mifid_2_decision_algo,
 		  :mifid_2_execution_maker,
 			:mifid_2_execution_algo,
-			:dont_use_auto_price_for_hedge,
-			:discretionary_up_to_limit_price
+			:dont_use_auto_price_for_hedge,#    => :bool,
+			:discretionary_up_to_limit_price,#  => :bool,
+      :use_price_management_algo,#        => :bool,
+      :duration                 ,#        => :int,
+      :post_to_ats              ,#        => :int,
+      :auto_cancel_parent,       #        => :bool
+			:is_O_ms_container
+
+
 
     # Properties with complex processing logics
     prop :tif, #  String: Time in Force (time to market): DAY/GAT/GTD/GTC/IOC
@@ -264,8 +272,7 @@ module IB
       :opt_out_smart_routing => :bool, # Australian exchange only, default false
       :open_close => PROPS[:open_close], # Originally String: O=Open, C=Close ()
       # for ComboLeg compatibility: SAME = 0; OPEN = 1; CLOSE = 2; UNKNOWN = 3;
-      [:side, :action] => PROPS[:side], # String: Action/side: BUY/SELL/SSHORT/SSHORTX
-			:is_O_ms_container => :bool
+      [:side, :action] => PROPS[:side] # String: Action/side: BUY/SELL/SSHORT/SSHORTX
 
     prop :placed_at,
       :modified_at,

@@ -128,7 +128,14 @@ known_servers = {
 :min_server_ver_instrument_timezone         => 174,
 :min_server_ver_hmds_market_data_in_shares  => 175,
 :min_server_ver_bond_issuerid               => 176,
-:min_server_ver_fa_profile_desupport        => 177
+:min_server_ver_fa_profile_desupport        => 177,
+:min_server_ver_pending_price_revision      => 178,
+:min_server_ver_fund_data_fields            => 179,
+:min_server_ver_manual_order_time_exercise_options => 180,
+:min_server_ver_open_order_ad_strategy      => 181,
+:min_server_ver_last_trade_date             => 182,
+:min_server_ver_customer_account            => 183,
+:min_server_ver_professional_customer       => 184
 }
 # 100+ messaging */
 # 100 = enhanced handshake, msg length prefixes

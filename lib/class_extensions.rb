@@ -68,7 +68,7 @@ module ClassExtensions
         case self.chomp.upcase
         when 'TRUE', 'T', '1'
           true
-        when 'FALSE', 'F', '0', ''
+        when 'FALSE', 'F', '0', '', Float::MAX
           false
         else
           error "Unable to convert #{self} to bool"
