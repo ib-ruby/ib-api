@@ -46,16 +46,16 @@ module IB
         @option_chain_definition << finalize.pop
       end
       ib.unsubscribe sub_sdop, sub_ocd
+
+      @option_chain_definition.compact!
+      Connection.logger.info { @option_chain_definition.map { |x| x.slice(:trading_class, :exchange)} }
+      @option_chain_definition = @option_chain_definition.find { |x| (trading_class.blank? || x[:trading_class] == trading_class) && (exchange.blank? || x[:exchange] == exchange) } ||
+                                 @option_chain_definition.find { |x| x[:exchange] == contract.exchange && x[:trading_class] == contract.trading_class } ||
+                                 @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
+                                 @option_chain_definition.first
     else
       Connection.logger.info { "#{to_human} : using cached data" }
     end
-
-    @option_chain_definition.compact!
-    Connection.logger.info { @option_chain_definition.map { |x| x.slice(:trading_class, :exchange)} }
-    @option_chain_definition = @option_chain_definition.find { |x| (trading_class.blank? || x[:trading_class] == trading_class) && (exchange.blank? || x[:exchange] == exchange) } ||
-                               @option_chain_definition.find { |x| x[:exchange] == contract.exchange && x[:trading_class] == contract.trading_class } ||
-                               @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
-                               @option_chain_definition.first
 
     # -----------------------------------------------------------------------------------------------------
     # select values and assign to options
