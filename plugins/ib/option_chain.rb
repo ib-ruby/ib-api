@@ -13,46 +13,10 @@ module IB
   ### exchange:: List of Exchanges to be queried (Blank for all available Exchanges)
   ### trading_class                                 ( optional )
   def option_chain(ref_price: :request, right: :put, sort: :strike, limit_expirations: nil, exchange: nil, trading_class: nil)
-
-    ib = Connection.current
-
-    # binary interthread communication
-    finalize = Queue.new
-
-    ## Enable Cashing of Definition-Matrix
-    @option_chain_definition ||= []
-
-    my_req = nil
-
     # -----------------------------------------------------------------------------------------------------
     # get OptionChainDefinition from IB ( instantiate cashed Hash )
     if @option_chain_definition.blank?
-      sub_sdop = ib.subscribe(:SecurityDefinitionOptionParameterEnd) do |msg|
-        finalize.close if msg.request_id == my_req
-      end
-      sub_ocd = ib.subscribe(:OptionChainDefinition) do |msg|
-        finalize.push(msg.data) if msg.request_id == my_req
-      end
-
-      contract = verify.first  #  ensure a complete set of attributes
-      my_req = ib.send_message :RequestOptionChainDefinition,
-                               con_id: contract.con_id,
-                               symbol: contract.symbol,
-                               exchange: contract.sec_type == :future ? contract.exchange : "", # BOX,CBOE',
-                               trading_class:,
-                               sec_type: contract[:sec_type]
-
-      until finalize.closed?
-        @option_chain_definition << finalize.pop
-      end
-      ib.unsubscribe sub_sdop, sub_ocd
-
-      @option_chain_definition.compact!
-      Connection.logger.info { @option_chain_definition.map { |x| x.slice(:trading_class, :exchange)} }
-      @option_chain_definition = @option_chain_definition.find { |x| (trading_class.blank? || x[:trading_class] == trading_class) && (exchange.blank? || x[:exchange] == exchange) } ||
-                                 @option_chain_definition.find { |x| x[:exchange] == contract.exchange && x[:trading_class] == contract.trading_class } ||
-                                 @option_chain_definition.find { |x| x[:exchange] == 'SMART' } ||
-                                 @option_chain_definition.first
+      @option_chain_definition = request_option_chain_defintion(exchange:, trading_class:)
     else
       Connection.logger.info { "#{to_human} : using cached data" }
     end
@@ -135,6 +99,44 @@ module IB
   end
 
   private
+
+  def request_option_chain_defintion(exchange:, trading_class:)
+    my_req = nil
+    ib = Connection.current
+    finalize = Queue.new
+    option_chain_definitions = []
+
+    option_chain_definition_subscription = ib.subscribe(:SecurityDefinitionOptionParameterEnd) do |msg|
+      finalize.close if msg.request_id == my_req
+    end
+    option_chain_defintion_callback = ib.subscribe(:OptionChainDefinition) do |msg|
+      finalize.push(msg.data) if msg.request_id == my_req
+    end
+
+    contract = verify.first  #  ensure a complete set of attributes
+    my_req = ib.send_message :RequestOptionChainDefinition,
+                              con_id: contract.con_id,
+                              symbol: contract.symbol,
+                              exchange: contract.sec_type == :future ? contract.exchange : "", # BOX,CBOE',
+                              trading_class:,
+                              sec_type: contract[:sec_type]
+
+    until finalize.closed?
+      option_chain_definitions << finalize.pop
+    end
+    ib.unsubscribe option_chain_definition_subscription, option_chain_defintion_callback
+
+    option_chain_definitions.compact!
+
+    option_chain = option_chain_definitions.find do |definition|
+      (trading_class.blank? || definition[:trading_class] == trading_class) && (exchange.blank? || definition[:exchange] == exchange) 
+    end
+    option_chain ||= option_chain_definitions.find do |definition|
+      definition[:exchange] == contract.exchange && definition[:trading_class] == contract.trading_class
+    end
+    option_chain ||= option_chain_definitions.find { |definition| definition[:exchange] == 'SMART' }
+    option_chain ||= option_chain_definitions.first
+  end
 
   def option_prototype(last_trading_day, strike, right)
     IB::Option.new(
