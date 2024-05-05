@@ -24,10 +24,7 @@ module IB
         # each one and postpending a '\0'.
         #
         def send_to socket
-	  ### debugging of outgoing Messages
-	#  puts "------sendto ---------(debugging output in outgoing/abstract_message)" 
-	#   puts socket.prepare_message( self.preprocess).inspect.split('\x00')[3..-1].inspect
-	#  puts "------sendto ---------"
+          Connection.logger.debug to_s
           socket.send_messages self.preprocess #.each {|data| socket.write_data data}
         end
 
