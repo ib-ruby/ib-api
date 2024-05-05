@@ -10,7 +10,7 @@ subject to the terms and conditions of the IB API Non-Commercial License or the
 The known server versions.
 =end
 
-known_servers = {
+KNOWN_SERVERS = {
 #min_server_ver_real_time_bars       => 34,
 #min_server_ver_scale_orders         => 35,
 #min_server_ver_snapshot_mkt_data    => 35,
@@ -19,7 +19,7 @@ known_servers = {
 #min_server_ver_contract_conid       => 37,
 :min_server_ver_pta_orders             => 39,
 :min_server_ver_fundamental_data       => 40,
-:min_server_ver_under_comp             => 40,
+:min_server_ver_delta_neutral          => 40,
 :min_server_ver_contract_data_chain    => 40,
 :min_server_ver_scale_orders2          => 40,
 :min_server_ver_algo_orders            => 41,
@@ -141,6 +141,6 @@ known_servers = {
 # 100 = enhanced handshake, msg length prefixes
 
 MIN_CLIENT_VER = 100
-#MAX_CLIENT_VER = 165 #known_servers[:min_server_ver_d_peg_orders]
-MAX_CLIENT_VER = known_servers[:min_server_ver_historical_schedule]
+#MAX_CLIENT_VER = 165 #KNOWN_SERVERS[:min_server_ver_d_peg_orders]
+MAX_CLIENT_VER = KNOWN_SERVERS[:min_server_ver_historical_schedule]
 # imessages/outgoing/request_tick_Data is prepared for change to ver. 140 , its commented for now
