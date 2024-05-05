@@ -244,7 +244,16 @@ module IB
       :duration                 ,#        => :int,
       :post_to_ats              ,#        => :int,
       :auto_cancel_parent,       #        => :bool
-			:is_O_ms_container
+			:is_O_ms_container,
+      :advanced_order_reject,
+      :manual_order_time,
+      :min_trade_qty,
+      :min_compete_size,
+      :compete_against_best_offset,
+      :mid_offset_at_whole,
+      :mid_offset_at_half,
+      :customer_account,
+      :professional_account
 
 
 
@@ -421,21 +430,16 @@ Format of serialisation
 =end
 		def serialize_conditions
 			if conditions.empty?
-			0
+			  [conditions.size]
 			else
-			[ conditions.count ]	+ conditions.map( &:serialize )+  [ conditions_ignore_rth, conditions_cancel_order]
+			  [conditions.size]	+ conditions.map(&:serialize) + [conditions_ignore_rth, conditions_cancel_order]
 			end
 		end
 
     def serialize_algo
-      if algo_strategy.nil? || algo_strategy.empty?
-        [algo_strategy, algo_id]  # just omit the size and content-field
-      else
-        [algo_strategy,
-         algo_params.size,
-         algo_params.to_a,
-				 algo_id ]	    # Vers 71
-      end
+      return [''] if algo_strategy.blank?
+
+      [algo_strategy, algo_params.size] + algo_params.to_a
     end
 
    # def serialize_soft_dollar_tier
