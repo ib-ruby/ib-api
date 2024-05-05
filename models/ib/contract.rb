@@ -167,7 +167,7 @@ module IB
 
     # Serialize under_comp parameters: EClientSocket.java, line 471
     def serialize_under_comp *args   # :nodoc:
-      under_comp ? under_comp.serialize : [false]
+      under_comp ? [true] + under_comp.serialize : [false]
     end
 
     # Defined in Contract, not BAG subclass to keep code DRY

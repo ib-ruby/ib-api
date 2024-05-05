@@ -17,7 +17,7 @@ module IB
 
     # Serialize under_comp parameters
     def serialize
-      [true, con_id, delta, price]
+      [con_id, delta, price]
     end
 
     # Comparison
