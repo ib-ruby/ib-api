@@ -226,17 +226,20 @@ module IB
 			 [ proc { !@data[ :order ][ :conditions ].blank?  },
 						[ :order, :conditions_ignore_rth, :bool ],
 						[ :order, :conditions_cancel_order,:bool ] ],
+                   #AdjustedOrderParams
 	     [ :order, :adjusted_order_type, :string ],
 		   [ :order, :trigger_price,  :decimal ],
 		   [ :order, :trail_stop_price,  :decimal ],	    # cpp -source: Traillimit orders
+       [ :order, :limit_price_offset, :decimal ],
+		   [ :order, :adjusted_stop_price,  :decimal ],
 		   [ :order, :adjusted_stop_limit_price,  :decimal ],
 		   [ :order, :adjusted_trailing_amount,  :decimal ],
 		   [ :order, :adjustable_trailing_unit,  :int ],
-
+                 # SoftDollarTier
        [ :order, :soft_dollar_tier_name,  :string_not_null ],
 	     [ :order, :soft_dollar_tier_value, :string_not_null ],
 	     [ :order, :soft_dollar_tier_display_name,  :string_not_null ],
-	  #  [ :order, :cash_qty,  :decimal ],
+	     [ :order, :cash_qty,  :decimal ],
 	  #  [ :order, :mifid_2_decision_maker, :string_not_null ],   ## correct appearance of fields below
 		# [ :order, :mifid_2_decision_algo, :string_not_null ],		##  is not tested yet
 		# [ :order, :mifid_2_execution_maker, :string ],
