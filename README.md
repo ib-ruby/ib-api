@@ -27,7 +27,7 @@ In its plain vanilla usage, it just exchanges messages with the TWS. Any respons
 It needs just a few lines of code to place an order
 
 ```ruby
-require 'ib-api'
+require 'ib_api'
 # connect with default parameters 
 ib =  IB::Connection.new 
 
@@ -56,7 +56,7 @@ puts ib.recieved[:OrderStatus].to_human
 **IB-API** ships with simple plugins to facilitate automations 
 
 ```ruby
-require 'ib-api'
+require 'ib_api'
 # connect with default parameters 
 ib =  IB::Connection.new do | c |
   c.activate_plugin "verify"
@@ -69,15 +69,15 @@ puts g.verify.first.attributes
 
 Currently implemented plugins
 
-* connection-tools: ensure that a connection is established and active
+* connection_tools: ensure that a connection is established and active
 * verify:  get contract details from the tws
-* managed-accounts: fetch and organize account- and portfoliovalues
-* market-price: fetch the current market-price of a contract
+* managed_accounts: fetch and organize account- and portfoliovalues
+* market_price: fetch the current market_price of a contract
 * eod:  retrieve EOD-Data for the given contract
 * greeks: read current option greeks
-* option-chain: build option-chains for given strikes and expiries 
-* spread-prototypes:  create limit, stop, market, etc. orders through prototypes
-* probability-of-expiring: calculate the probability of expiring for the option-contract
+* option_chain: build option_chains for given strikes and expiries 
+* spread_prototypes:  create limit, stop, market, etc. orders through prototypes
+* probability_of_expiring: calculate the probability of expiring for the option-contract
 
 
 ## Minimal TWS-Version

@@ -109,7 +109,7 @@ module IB
 				end
 
 				def requirements
-					## usualy the trail_stop_price is the market-price minus(plus) the trailing_amount
+					## usualy the trail_stop_price is the market_price minus(plus) the trailing_amount
 					super.merge trail_stop_price: 'Price to trigger the action, aliased as :price'
 
 				end

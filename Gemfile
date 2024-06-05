@@ -7,11 +7,12 @@ gemspec
 
 # gem 'value_semantics'																	# models, future plans
 
-
-
 gem 'rspec'
 gem 'rspec-its'
 gem 'rspec-given'
 gem 'rspec-collection_matchers'
+gem 'rubocop'
+gem 'rubocop-rake'
+gem 'rubocop-rspec'
 gem 'guard'
 gem 'guard-rspec'

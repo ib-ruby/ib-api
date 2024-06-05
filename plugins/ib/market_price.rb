@@ -1,7 +1,7 @@
 module IB
 
  module MarketPrice
-# Ask for the Market-Price
+# Ask for the market_price
 #
 # For valid contracts, either bid/ask or last_price and close_price are transmitted.
 #
@@ -21,7 +21,7 @@ module IB
    #  (volatile, ie. data are not preserved when the Object is copied)
    #
    #Example:  IB::Stock.new(symbol: :ge).market_price
-   # returns the current market-price
+   # returns the current market_price
    #
    #Example:  IB::Stock.new(symbol: :ge).market_price(thread: true).join
    # assigns IB::Symbols.sie.misc with the value of the :last (or delayed_last) TickPrice-Message

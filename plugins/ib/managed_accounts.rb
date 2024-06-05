@@ -26,7 +26,7 @@ The plugin should be activated **before** the connection attempt.
 Standard usage
 
   ib = Connection.new connect: false do | c |
-   c.activate_plugin 'managed-accounts'
+   c.activate_plugin 'managed_accounts'
    c.initialize_managed_accounts
    c.get_account_data
   end
@@ -39,7 +39,7 @@ module ManagedAccounts
 --------------------------- InitializeManageAccounts ----------------------------------
 
 If initiated with the parameter `force: true`, a reconnect is performed to initiate the
-transmission of available managed-accounts.
+transmission of available managed_accounts.
 
 =end
 		def initialize_managed_accounts( force: false )
@@ -67,7 +67,7 @@ transmission of available managed-accounts.
         disconnect
         sleep(0.1)
       end
-      if @plugins.include? "connection-tools"
+      if @plugins.include? "connection_tools"
         safe_connect
       else
         connect()
