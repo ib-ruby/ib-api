@@ -35,9 +35,18 @@ end
 
 
 ## Connection helpers
-def establish_connection
+def establish_connection *plugins
 
-		ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
+    if plugins.include? "managed-accounts"
+      OPTS[:connection].merge connect: false
+		   ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger) do |c|
+           c.activate_plugin 'managed-accounts'
+           c.initialize_managed_accounts
+           c.get_account_data
+       end
+    else
+      ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
+    end
 		if ib
 			ib.wait_for :ManagedAccounts, 5
 

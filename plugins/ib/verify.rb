@@ -1,4 +1,30 @@
 module IB
+=begin rdoc
+
+Plugin that provides Verifying a contract
+
+Public API
+==========
+
+Extends IB::Contract
+
+* verify
+
+  returns an array of suitable IB::Contracts
+```ruby
+     a  =  Stock.new symbol: 'AA'
+     aa =  a.verify.first
+```
+
+  an optional block may be used to modify and filter the tws-response
+
+```ruby
+     f = IB::Future.new  symbol: 'M2K'
+     con_ids =  f.verify{ |c| c.con_id }
+     =>  [412889018, 428519982, 446091466, 461318872, 477836981]
+```
+=end
+
   module Verify
 
 
@@ -10,7 +36,7 @@ module IB
     #
     #
     # The method accepts a block. The  queried contract-Object is accessible there.
-    # If multiple contracts are specified, the block is executed with each of these contracts.
+    # If multiple contracts are returned by the tws, the block is executed with each of these contracts.
     #
     #
     # Verify returns an  _Array_ of contracts. The  operation leaves the contract untouched.

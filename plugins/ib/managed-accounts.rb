@@ -4,17 +4,20 @@ module IB
 
 Plugin for Managed Accounts
 
-Provides `clients` and `advisor` methods that contain account-specific data
+Provides `clients` and `advisor` objects (Type: IB::Account) that contain account-specific data.
+
+Public Api
+==========
 
 * InitializeManagedAccounts
-
  *  populates @accounts through RequestFA
  *  should be called instead of  `connect`
 
 
 * GetAccountData
  * requests account- and portfolio-data and associates them to the clients
- * provides
+
+* provides
    * client.account_values
    * client.portfolio_values
    * client.contracts
@@ -22,14 +25,19 @@ Provides `clients` and `advisor` methods that contain account-specific data
 
 The plugin should be activated **before** the connection attempt.
 
+**IB::Connection.current.initialize_manage_acounts performs a `connect` to the tws-server**`
+
 
 Standard usage
 
   ib = Connection.new connect: false do | c |
    c.activate_plugin 'managed-accounts'
-   c.initialize_managed_accounts
-   c.get_account_data
+   c.initialize_managed_accounts             #  connects to the tws
+   c.get_account_data                        #  populates c.clients
   end
+
+  account = ib.clients.first
+  puts account.portfolio_values.as_table
 
 =end
 

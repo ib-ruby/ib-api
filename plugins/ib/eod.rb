@@ -2,14 +2,32 @@ module IB
 require 'active_support/core_ext/date/calculations'
 require 'csv'
 
-
 =begin
 
 Plugin to support EndOfDay OHLC-Data for a contract
 
-Provides Contract.eod  for EndOfDay historical data,
-         Contract.get_bars for custom ohlc-timeframes,
-         Contract.from_csv and Contract.to_csv to store and retrieve ohlc-data
+Public API
+==========
+
+Extends IB::Contract
+
+* eod
+
+  * request  EndOfDay historical data
+
+  * returns an Array of OHLC-EOD-Records or a Polars-Dataframe populated with OHLC-Records for the contract
+    and populates IB::Contract#bars
+
+
+* get_bars
+
+  * request historical data for custom ohlc-timeframes,
+
+* from_csv and to_csv
+
+  *  store and retrieve ohlc-data
+
+
 =end
 
  module Eod

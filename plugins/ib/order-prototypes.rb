@@ -1,12 +1,20 @@
 module IB
-=begin
-  # Plugin to build IB::Order objects through singletons
-  #         Limit.order size: 4, price: 10
-  #         Market.order: size: 4
-  #         etc
-  #
+=begin rdoc
+
+Plugin to build IB::Order objects through singletons
+
+Public API
+==========
+
+Creates IB::Order objects
+
+
+* IB::<OrderPrototye>.order params
+* IB::<OrderPrototye>.summary
+* IB::<OrderPrototye>.parameters
 
 =end
+
 	module OrderPrototype
 
 

@@ -1,23 +1,25 @@
 module IB
+=begin
+
+Plugin that provides helper methods for orders
+
+
+Public API
+==========
+
+Extends IB::Account
+
+=end
 
   module Advanced
 
 
     def account_data_scan search_key, search_currency=nil
-      if account_values.is_a? Array
         if search_currency.present?
           account_values.find_all{|x| x.key.match( search_key )  && x.currency == search_currency.upcase }
         else
           account_values.find_all{|x| x.key.match( search_key ) }
         end
-
-      else  # not tested!!
-        if search_currency.present?
-          account_values.where( ['key like %', search_key] ).where( currency: search_currency )
-        else  # any currency
-          account_values.where( ['key like %', search_key] )
-        end
-      end
     end
 
 
@@ -26,7 +28,7 @@ module IB
 given any key of local_id, perm_id or order_ref
 and an optional status, which can be a string or a
 regexp ( status: /mitted/ matches Submitted and Presubmitted)
-the last associated Orderrecord is returned.
+the last associated Order-record is returned.
 
 Thus if several Orders are placed with the same order_ref, the active one is returned
 
@@ -47,9 +49,9 @@ Thus if several Orders are placed with the same order_ref, the active one is ret
         if contract.con_id.zero?  && !contract.is_a?( IB::Bag )
           contract =  contract.verify.first
         end
-        matched_items = matched_items.find_all{|o| o.contract.essential == contract.essential } 
+        matched_items = matched_items.find_all{|o| o.contract.essential == contract.essential }
       elsif con_id.present?
-        matched_items = matched_items.find_all{|o| o.contract.con_id == con_id } 
+        matched_items = matched_items.find_all{|o| o.contract.con_id == con_id }
       end
 
       if status.present?
@@ -96,7 +98,7 @@ Example
       => 67						# returns local_id
    order.contract			# updated contract-record
 
-      => #<IB::Contract:0x00000000013c94b0 @attributes={:con_id=>9534669, 
+      => #<IB::Contract:0x00000000013c94b0 @attributes={:con_id=>9534669,
                                                         :exchange=>"SGX",
                                                         :right=>"",
                                                         :include_expired=>false}>
@@ -112,8 +114,8 @@ Example
     # logger output: 05:17:11 Cancelling 65 New #250/ from 3000/DU167349>
 =end
 
-  def place_order  order:, contract: nil, auto_adjust: true, convert_size: true 
-    # adjust the orderprice to  min-tick
+  def place_order  order:, contract: nil, auto_adjust: true, convert_size: true
+    # adjust the order price to  min-tick
     result = ->(l){ orders.detect{|x| x.local_id == l  && x.submitted? } }
     #·IB::Symbols are always qualified. They carry a description-field
     qualified_contract = ->(c) { c.is_a?(IB::Contract) && ( c.description.present? || !c.con_id.to_i.zero? || (c.con_id.to_i <0  && c.sec_type == :bag )) }
@@ -143,7 +145,7 @@ Example
         if [ 110, #  The price does not confirm to the minimum price variation for this contract
             201, # Order rejected, No Trading permissions
             203, # Security is not allowed for trading
-            325, # Disretionary Orders are not supported for ths combination of oerder-type and exchange
+            325, # Discretionary Orders are not supported for this combination of order-type and exchange
             355, # Order size does not conform to market rule
             361, 362, 363, 364, # invalid trigger or stop-price
             388,  # Order size x is smaller than the minimum required size of yy.
@@ -201,7 +203,7 @@ Example
 Account#ModifyOrder operates in two modi:
 
 First: The order is specified  via local_id, perm_id or order_ref.
-  It is checked, whether the order is still modificable.
+  It is checked, whether the order is still modifiable.
   Then the Order ist provided through  the block. Any modification is done there.
   Important: The Block has to return the modified IB::Order
 
@@ -210,7 +212,7 @@ without further checking. The block is now optional.
   Important: The OrderRecord must provide a valid Contract.
 
 The simple version does not adjust the given prices to tick-limits.
-This has to be done manualy in the provided block
+This has to be done manually in the provided block
 =end
 
 
@@ -233,7 +235,7 @@ This has to be done manualy in the provided block
 		#
 		# Submits a "WhatIf" Order
 		#
-		# Returns the order_state.forcast
+		# Returns the order_state.forecast
 		#
 		# The order received from the TWS is kept in account.orders
 		#
@@ -244,13 +246,13 @@ This has to be done manualy in the provided block
     q =  Queue.new
     ib =  IB::Connection.current
     the_local_id = nil
+    # put the order into the queue (and exit) if the event is fired
     req =  ib.subscribe( :OpenOrder ){|m| q << m.order if m.order.local_id.to_i == the_local_id.to_i }
 
-    result = ->(l){ orders.detect{|x| x.local_id == l  && x.submitted? } }
     order.what_if = true
     order.account = account
     the_local_id = order.place  contract
-    Thread.new{  sleep 2  ;  q.close }
+    Thread.new{  sleep 2  ;  q.close }   #  wait max 2 sec.
     returned_order = q.pop
     ib.unsubscribe req
     order.what_if = false # reset what_if flag
@@ -259,18 +261,18 @@ This has to be done manualy in the provided block
     returned_order.order_state.forcast  #  return_value
   end
 
-# closes the contract by submitting an appropiate order
+# closes the contract by submitting an appropriate order
 	# the action- and total_amount attributes of the assigned order are overwritten.
 	#
 	# if a ratio-value (0 ..1) is specified in _order.total_quantity_ only a fraction of the position is closed.
 	# Other values are silently ignored
 	#
-	# if _reverse_ is specified, the opposide position is established.
+	# if _reverse_ is specified, the opposite position is established.
 	# Any value in total_quantity is overwritten
 	#
 	# returns the order transmitted
 	#
-	# raises an IB::Error if no PortfolioValues have been loaded to the IB::Acoount
+	# raises an IB::Error if no PortfolioValues have been loaded to the IB::Account
 	def close order:, contract: nil, reverse: false,  **args_which_are_ignored
 		error "must only be called after initializing portfolio_values "  if portfolio_values.blank?
 		contract_size = ->(c) do			# note: portfolio_value.position is either positiv or negativ
@@ -282,8 +284,8 @@ This has to be done manualy in the provided block
 			end
 		end
 
-		contract &.verify{|c| order.contract = c}   # if contract is specified: don't touch the parameter, get a new object .
-		error "Cannot transmit the order – No Contract given " unless order.contract.is_a?(IB::Contract)
+    order.contract =  contract.verify.first unless contract.nil?
+		error "Cannot transmit the order – No Contract given " unless order.contract.is_a?( IB::Contract )
 
 		the_quantity = if reverse
 						 -contract_size[order.contract] * 2
@@ -305,25 +307,30 @@ This has to be done manualy in the provided block
 
 # just a wrapper to the Gateway-cancel-order method
 	def cancel order:
-		Gateway.current.cancel_order order
+		Connection.current.cancel_order order
 	end
 
+  ## ToDo ... needs adaption !
 	#returns an hash where portfolio_positions are grouped into Watchlists.
 	#
 	# Watchlist => [  contract => [ portfoliopositon] , ... ] ]
 	#
-  def organize_portfolio_positions   the_watchlists= IB::Gateway.current.active_watchlists
+  def organize_portfolio_positions   the_watchlistsi #= IB::Gateway.current.active_watchlists
 		  the_watchlists = [ the_watchlists ] unless the_watchlists.is_a?(Array)
-			self.focuses = portfolio_values.map do | pw |
-											z=	the_watchlists.map do | w |
-												ref_con_id = pw.contract.con_id
-												watchlist_contract = w.find do |c|
-													c.is_a?(IB::Bag) ? c.combo_legs.map(&:con_id).include?(ref_con_id) : c.con_id == ref_con_id
-												end rescue nil
-												watchlist_contract.present? ? [w,watchlist_contract] : nil
-											end.compact
+			self.focuses = portfolio_values.map do | pw |             # iterate over pw
+                     ref_con_id = pw.contract.con_id
+							                z =	the_watchlists.map do | w |           # iterate over w and assign to z
+                                  watchlist_contract = w.find do |c|      # iterate over c
+								                                        if c.is_a? IB::Bag
+                                                           c.combo_legs.map( &:con_id ).include?( ref_con_id )
+                                                        else
+                                                           c.con_id == ref_con_id
+                                                         end
+                                                       end rescue nil
+                                  watchlist_contract.present? ? [w,watchlist_contract] : nil
+                               end.compact
 
-											z.empty? ? [ IB::Symbols::Unspecified, pw.contract, pw ] : z.first << pw
+										z.empty? ? [ IB::Symbols::Unspecified, pw.contract, pw ] : z.first + pw
 			end.group_by{|a,_,_| a }.map{|x,y|[x, y.map{|_,d,e|[d,e]}.group_by{|e,_| e}.map{|f,z| [f, z.map(&:last)]} ] }.to_h
 			# group:by --> [a,b,c] .group_by {|_g,_| g} --->{ a => [a,b,c] }
 			# group_by+map --> removes "a" from the resulting array

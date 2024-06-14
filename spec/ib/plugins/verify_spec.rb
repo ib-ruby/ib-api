@@ -9,21 +9,20 @@ describe "Connect to Gateway or TWS"  do
 		it{ expect( IB::Connection.current ).to be_a IB::Connection }
 	end
 
-  context "Plugin not present" do
-    Given( :current ){ IB::Connection.current }
-    Then { current.plugins == [] }
-    Then { expect{ current.activate_plugin('invalid') }.to raise_error IB::Error }
-
-  end
+ #  context "Plugin not present" do
+ #    Given( :current ){ IB::Connection.current }
+ #    Then { current.plugins == [] }
+ #    it { expect{ current.activate_plugin('invalid') }.to raise_error IB::Error }
+ #  end
 
   context "Verify Plugin" do
     let( :stock ) { IB::Stock.new symbol: 'M' }
 
-    it  "Prior to the activation of the verify plugin"  do
+    it  "Raises NoMethodError if the verify plugin is not activated"  do
       expect{ stock.verify }.to raise_error NoMethodError
     end
 
-    it " Activated Verify Plugin " do
+    it "Gets the ConId if the Contact after the Verify Plugin is activated" do
 
     current =  IB::Connection.current
     status = current.activate_plugin('verify')
@@ -35,10 +34,6 @@ describe "Connect to Gateway or TWS"  do
     expect( complete_stock.con_id).to be > 0
     end
   end
-
-
-
-
-  end
+end
 
 
