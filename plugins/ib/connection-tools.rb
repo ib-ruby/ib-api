@@ -3,7 +3,15 @@ module IB
 =begin
 Plugin for advanced Connections
 
-Provides `check_connection` and `safe_connect`
+Public API
+==========
+
+Extends IB::Connection
+
+Provides
+ * IB::Connection.current.check_connection
+ * IB::Connection.current.safe_connect
+ * IB::Connection.reconect
 
 
 =end
@@ -51,7 +59,7 @@ Provides `check_connection` and `safe_connect`
 
     # Alternative to `Connection#connect'.
     #
-    # Trys to connect to the api. If the connection could not be established, waits
+    # Tries to connect to the api. If the connection could not be established, waits
     # 10 sec. or one minute and reconnects.
     #
     # Unsuccessful connecting attemps are logged.
@@ -89,7 +97,27 @@ Provides `check_connection` and `safe_connect`
     end # def
   end
 
+  module ReConnect
+    def safe_reconnect
+      used_plugins = current.plugins
+      used_client_id = current.client_id
+      used_received =  if current.received.nil? || current.received.empty?
+                         false
+                       else
+                         true
+                       end
+      current.disconnect
+      current = nil
+      c = Connection.new client_id: used_client_id
+
+
+    end
+
+  end
+
   class Connection
     include ConnectionTools
+    extend Reconnect
   end
+
 end

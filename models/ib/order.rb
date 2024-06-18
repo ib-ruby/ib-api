@@ -11,9 +11,9 @@ module IB
     # your own Order IDs to avoid conflicts between orders placed from your API application.
 
     # Main order fields
-    prop :local_id, #  int: Order id associated with client (volatile).
-      :client_id, # int: The id of the client that placed this order.
-      :perm_id, #   int: TWS permanent id, remains the same over TWS sessions.
+    prop :local_id,  # int: Order id associated with client (volatile).
+      :client_id,    # int: The id of the client that placed this order.
+      :perm_id,      # int: TWS permanent id, remains the same over TWS sessions.
       :quantity, :total_quantity, # int: The order quantity.
 
       :order_type, #  String: Order type.
@@ -28,9 +28,10 @@ module IB
       :limit_price, # double: LIMIT price, used for limit, stop-limit and relative
       #               orders. In all other cases specify zero. For relative
       #               orders with no limit price, also specify zero.
-      :aux_price, #  => 0.0,  default set to "" (as implemented in python code)
-      #:aux_price, #   double: STOP price for stop-limit orders, and the OFFSET amount
-      #               for relative orders. In all other cases, specify zero.
+      :aux_price, #  double: default is set to "" (as implemented in python code)
+      #            STOP price for stop-limit orders,
+      #            OFFSET amount for relative orders.
+      #            In all other cases, specify zero.
 
       :oca_group, #   String: Identifies a member of a one-cancels-all group.
       :oca_type, # int: Tells how to handle remaining orders in an OCA group
@@ -77,8 +78,8 @@ module IB
       #            IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M',
       #            IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
       :min_quantity, #     int: Identifies a minimum quantity order type.
-      :percent_offset, #   double: percent offset amount for relative (REL)orders only
-      :trail_stop_price, # double: for TRAILLIMIT orders only
+      :percent_offset, #   double: REL-Ordes – percent offset amount
+      :trail_stop_price, # double: TRAILLIMIT orders only
       # As of client v.56, we receive trailing_percent in openOrder
       :trailing_percent,
 
@@ -232,8 +233,7 @@ module IB
 		      #	format: "#{name}=#{value},#{display_name}", name and value are used in the
 		      #	      order-specification. Its included as ["#{name}","#{value}"] pair
 
-      :cash_qty,                     # 111: MIN_SERVER_VER_CASH_QTY
-			# decimal : The native cash quantity
+      :cash_qty,   # decimal : The native cash quantity
 			:mifid_2_decision_maker,
 		  :mifid_2_decision_algo,
 		  :mifid_2_execution_maker,
@@ -259,29 +259,29 @@ module IB
 
     # Properties with complex processing logics
     prop :tif, #  String: Time in Force (time to market): DAY/GAT/GTD/GTC/IOC
-      :random_size => :bool,			# Vers 76
-      :random_price => :bool,			# Vers 76
+      :random_size => :bool,
+      :random_price => :bool,
       :scale_auto_reset => :bool,
       :scale_random_percent => :bool,
-      :solicided  => :bool,			# Vers 73
-      :what_if => :bool, # Only return pre-trade commissions and margin info, do not place
-      :not_held => :bool, # Not Held
-      :outside_rth => :bool, # Order may trigger or fill outside of regular hours. (WAS: ignore_rth)
-      :hidden => :bool, # Order will not be visible in market depth. ISLAND only.
-      :transmit => :bool, #  If false, order will be created but not transmitted.
-      :block_order => :bool, #   This is an ISE Block order.
-      :sweep_to_fill => :bool, # This is a Sweep-to-Fill order.
+      :solicided  => :bool,
+      :what_if => :bool,                # Only return pre-trade commissions and margin info, do not place
+      :not_held => :bool,               # Not Held
+      :outside_rth => :bool,            # Order may trigger or fill outside of regular hours. (WAS: ignore_rth)
+      :hidden => :bool,                 # Order will not be visible in market depth. ISLAND only.
+      :transmit => :bool,               # If false, order will be created but not transmitted.
+      :block_order => :bool,            # This is an ISE Block order.
+      :sweep_to_fill => :bool,          # This is a Sweep-to-Fill order.
       :override_percentage_constraints => :bool,
       # TWS Presets page constraints ensure that your price and size order values
       # are reasonable. Orders sent from the API are also validated against these
       # safety constraints, unless this parameter is set to True.
-      :all_or_none => :bool, #     AON
-      :etrade_only => :bool, #     Trade with electronic quotes.
-      :firm_quote_only => :bool, # Trade with firm quotes.
-      :opt_out_smart_routing => :bool, # Australian exchange only, default false
+      :all_or_none => :bool,             #  AON
+      :etrade_only => :bool,             #  Trade with electronic quotes.
+      :firm_quote_only => :bool,         # Trade with firm quotes.
+      :opt_out_smart_routing => :bool,   # Australian exchange only, default false
       :open_close => PROPS[:open_close], # Originally String: O=Open, C=Close ()
       # for ComboLeg compatibility: SAME = 0; OPEN = 1; CLOSE = 2; UNKNOWN = 3;
-      [:side, :action] => PROPS[:side] # String: Action/side: BUY/SELL/SSHORT/SSHORTX
+      [:side, :action] => PROPS[:side]   # String: Action/side: BUY/SELL/SSHORT/SSHORTX
 
     prop :placed_at,
       :modified_at,
@@ -381,7 +381,7 @@ module IB
 			:conditions => [],
       :continuous_update => 0,
       :designated_location => '', # order.java # 487
-      :display_size => 0,
+      :display_size => nil,
       :discretionary_amount => 0,
 			:etrade_only => true,	# stolen from python client
       :exempt_code => -1,

@@ -35,7 +35,7 @@ module IB
 						@buffer = source
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 			#  if uncommented, the raw-input from the tws is included in the logging
-		  ##		  puts "BUFFER :> #{buffer.inspect} "
+##		  	  puts "BUFFER :> \n #{buffer.inspect} \n"
 			### DEBUG  DEBUG  DEBUG  RAW STREAM                            ###############
 						@data = Hash.new
 						self.load

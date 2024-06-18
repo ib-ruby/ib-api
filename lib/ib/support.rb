@@ -18,7 +18,8 @@ module IB
 		def read_int
 			i= self.shift  rescue nil
 			i = i.to_i unless i.blank?			# this includes conversion of string to zero(0)
-			i.is_a?( Integer ) ?  i : nil
+			i.is_a?( Integer ) && i != 2147483647 ?  i : nil
+
 		end
 
 		def read_float
@@ -134,48 +135,48 @@ module IB
 		def read_hash
 			tags = read_array( hashmode: true )  # { |_| [read_string, read_string] }
       result =   if	tags.nil? || tags.flatten.empty?
-								 tags
+                   {}
 							 else
 								 interim = if  tags.size.modulo(2).zero?
-														 Hash[*tags.flatten]
-													 else 
+                             Hash[*tags.flatten]
+													 else
 														 Hash[*tags[0..-2].flatten]  # omit the last element
 													 end
 								 # symbolize Hash
-								 Hash[interim.map { |k, v| [k.to_sym, v] unless k.nil? }.compact]
+                 interim.map { |k, v| [k.to_sym, v] unless k.nil? }.compact.to_h
 							 end
 		end
 		#
 
     def read_contract  # read a standard contract and return als hash
-      {	 con_id: read_int,
-         symbol: read_string,
-         sec_type: read_string,
-         expiry: read_string,
-         strike: read_decimal,
-         right: read_string,
-         multiplier: read_int,		
-         exchange: read_string,
-         currency: read_string,
+      {	 con_id:          read_int,
+         symbol:       read_string,
+         sec_type:     read_string,
+         expiry:       read_string,
+         strike:      read_decimal,
+         right:        read_string,
+         multiplier:      read_int,
+         exchange:     read_string,
+         currency:     read_string,
          local_symbol: read_string,
-         trading_class: read_string }  # new Version 8
+         trading_class: read_string }
     end
 
 
-    def read_bar  # read a Historical data bar  
-#                  ** historicalDataUpdate: time open close high low  **  covered hier 
+    def read_bar  # read a Historical data bar
+#                  ** historicalDataUpdate: time open close high low  **  covered here
 #                     historicalData        time open high low close  <- covered in messages/incomming
       { :time => read_int_date, # conversion of epoche-time-integer to Dateime
                                 # requires format_date in request to be "2"
                                 # (outgoing/bar_requests # RequestHistoricalData#Encoding)
-        :open => read_float,
-        :close => read_float,
-        :high => read_float,
-        :low => read_float,
-        :wap => read_float,   
-        :volume => read_int,
+        :open =>  read_decimal,
+        :close => read_decimal,
+        :high =>  read_decimal,
+        :low =>   read_decimal,
+        :wap =>   read_decimal,
+        :volume =>    read_int,
         #  :has_gaps => read_string,  # only in ServerVersion  < 124
-        :trades => read_int  }
+        :trades =>    read_int  }
 
     end
 
@@ -187,7 +188,7 @@ module IB
         nil.tws
       else
         self.flatten.map( &:tws ).join  # [ "", [] , nil].flatten -> ["", nil]
-        # elemets with empty array's are cut 
+        # elements with empty array's are cut
         # this is the desired behavior!
       end
     end

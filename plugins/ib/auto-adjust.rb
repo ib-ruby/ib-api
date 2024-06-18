@@ -1,7 +1,33 @@
-
 module IB
-  module AutoAdjust
+=begin
 
+Plugin that provides helper methods for orders
+
+Requires  activation of the `verify`-Plugin
+
+Extends IB::Order
+
+Changes the IB::Order-object
+
+
+Public API
+==========
+
+* auto_adjust
+
+Standard usage
+
+```ruby
+c =  IB::Stock.new symbol = 'GE'
+o =  IB::Limit.order contract: c, price: 150.0998, size: 100
+o.auto_adjust
+
+o.limit_price  => 151
+
+```
+=end
+
+  module AutoAdjust
 
     # Auto Adjust implements a simple algorithm  to ensure that an order is accepted
 
@@ -23,7 +49,7 @@ module IB
     # |    0.1       |   111.1    |
     # |    0.01      |   111.11   |
     # |    0.001     |   111.111  |
-    # |    0.0001    |   111.1111 |
+    # |    0.0001    |   111.111  |
     # |--------------|------------|
     #
     def auto_adjust
@@ -43,7 +69,7 @@ module IB
 
         min_tick = contract.then{ |y| y.contract_detail.is_a?( IB::ContractDetail ) ? y.contract_detail.min_tick : y.verify.first.contract_detail.min_tick }
         # there are two attributes to consider: limit_price and aux_price
-        # limit_price +  aux_price may be nil or an empty string. Then ".to_f.zero?" becomes true 
+        # limit_price +  aux_price may be nil or an empty string. Then ".to_f.zero?" becomes true
         self.limit_price= adjust_price.call(limit_price.to_f, min_tick) unless limit_price.to_f.zero?
         self.aux_price= adjust_price.call(aux_price.to_f, min_tick) unless aux_price.to_f.zero?
       end

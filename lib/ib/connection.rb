@@ -27,12 +27,14 @@ module IB
     attr_accessor  :client_id
     attr_accessor  :server_version
     attr_accessor  :client_version
+    attr_accessor  :host
+    attr_accessor  :port
     attr_accessor  :plugins
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
-    def initialize host: '127.0.0.1',
-      port: '4002', # IB Gateway connection (default --> demo) 4001:  production
+    def initialize host: '127.0.0.1:4002',
+      port: nil, # IB Gateway connection (default --> demo) 4001:  production
       #:port => '7497', # TWS connection  --> demo				  7496:  production
       connect: true, # Connect at initialization
       received:  true, # Keep all received messages in a @received Hash
@@ -68,13 +70,13 @@ module IB
       end
 
       @connected = false
-      self.next_local_id = nil
+      @next_local_id = nil
 
       # TWS always sends NextValidId message at connect -subscribe save this id
       self.subscribe(:NextValidId) do |msg|
         self.logger.progname = "Connection#connect"
-        self.next_local_id = msg.local_id
-        self.logger.info { "Got next valid order id: #{next_local_id}." }
+        @next_local_id = msg.local_id
+        self.logger.info { "Got next valid order id: #{@next_local_id}." }
       end
       #
       # this block is executed before tws-communication is established
@@ -83,7 +85,7 @@ module IB
 
       if connect
         update_next_order_id
-        Kernel.exit if self.next_local_id.nil?  # emergency exit.
+        Kernel.exit if @next_local_id.nil?  # emergency exit.
         # update_next_order_id should have raised an error
       end
       Connection.current = self
@@ -104,14 +106,14 @@ module IB
         send_message :RequestIds
       end
       th = Thread.new { sleep 5; q.close }
-      local_id = q.pop
+      @next_local_id = q.pop
       if q.closed?
         error "Could not get NextValidID", :reader
       else
         th.kill
       end
       unsubscribe subscription
-      local_id  # return next_id
+      @next_local_id  # return next_id
     end
 
 		### Working with connection
@@ -360,11 +362,11 @@ module IB
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
     def place_order order, contract
      # order.place contract, self  ## old
-      error "Unable to place order, next_local_id not known" unless next_local_id
+      error "Unable to place order, next_local_id not known" unless @next_local_id
 			error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
       order.client_id = client_id
-      order.local_id = next_local_id
-      self.next_local_id += 1
+      order.local_id = @next_local_id
+      @next_local_id += 1
       order.placed_at = Time.now
 			modify_order order, contract
     end
