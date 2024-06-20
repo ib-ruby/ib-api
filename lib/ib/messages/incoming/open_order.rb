@@ -199,22 +199,22 @@ module IB
              [ :order, :solicided, :boolean ],
 
 ## whatif   serverVersion >= MIN_SERVER_VER_WHAT_IF_EXT_FIELDS
-             [ :order, :what_if,   :boolean ],
-             [ :order_state, :status,              :string ],
-             [ :order_state, :init_margin_before,         :decimal ], #  nil unless what_if is true
-             [ :order_state, :maint_margin_before,        :decimal ], #  nil unless what_if is true
-             [ :order_state, :equity_with_loan_before,    :decimal ], #  nil unless what_if is true
-             [ :order_state, :init_margin_change,         :decimal ], #  nil unless what_if is true
-             [ :order_state, :maint_margin_change,        :decimal ], #  nil unless what_if is true
-             [ :order_state, :equity_with_loan_change,    :decimal ], #  nil unless what_if is true
+             [ :order, :what_if,                         :boolean ],
+             [ :order_state, :status,                     :string ],
+             [ :order_state, :init_margin_before,        :decimal ], #  nil unless what_if is true
+             [ :order_state, :maint_margin_before,       :decimal ], #  nil unless what_if is true
+             [ :order_state, :equity_with_loan_before,   :decimal ], #  nil unless what_if is true
+             [ :order_state, :init_margin_change,        :decimal ], #  nil unless what_if is true
+             [ :order_state, :maint_margin_change,       :decimal ], #  nil unless what_if is true
+             [ :order_state, :equity_with_loan_change,   :decimal ], #  nil unless what_if is true
              [ :order_state, :init_margin_after,         :decimal ], #  nil unless what_if is true
              [ :order_state, :maint_margin_after,        :decimal ], #  nil unless what_if is true
              [ :order_state, :equity_with_loan_after,    :decimal ], #  nil unless what_if is true
-             [ :order_state, :commission,          :decimal ], #  nil unless what_if is true
-             [ :order_state, :min_commission,      :decimal ], #  nil unless what_if is true
-             [ :order_state, :max_commission,      :decimal ], #  nil unless what_if is true
-             [ :order_state, :commission_currency, :string ],  #  nil unless what_if is true
-             [ :order_state, :warning_text,        :string ],  #  nil unless what_if is true
+             [ :order_state, :commission,                :decimal ], #  nil unless what_if is true
+             [ :order_state, :min_commission,            :decimal ], #  nil unless what_if is true
+             [ :order_state, :max_commission,            :decimal ], #  nil unless what_if is true
+             [ :order_state, :commission_currency,        :string ],  #  nil unless what_if is true
+             [ :order_state, :warning_text,               :string ],  #  nil unless what_if is true
 
 
              [ :order, :random_size, :boolean ],

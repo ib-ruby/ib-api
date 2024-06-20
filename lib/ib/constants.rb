@@ -202,7 +202,8 @@ module IB
        'PEG MKT' => :pegged_to_market, # Pegged-to-Market
        'PEG STK' => :pegged_to_market, #   Pegged-to-Stock
        'PEG MID' => :pegged_to_midpoint, # Pegged-to-Midpoint
-       'PEG BENCH' => :pegged_to_benchmark, # Pegged-to-Benmchmark # Vers. 102
+       'PEG BENCH' => :pegged_to_benchmark, # Pegged-to-Benchmark # Vers. 102
+       'PEG BEST' => :pegged_to_best,
        'VWAP' => :vwap, #                  VWAP-Guaranted
        'VOL' => :volatility, #             Volatility
        'SCALE' => :scale, #                Scale

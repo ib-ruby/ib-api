@@ -135,7 +135,7 @@ module IB
 		def read_hash
 			tags = read_array( hashmode: true )  # { |_| [read_string, read_string] }
       result =   if	tags.nil? || tags.flatten.empty?
-                   {}
+                  tags #  {}
 							 else
 								 interim = if  tags.size.modulo(2).zero?
                              Hash[*tags.flatten]

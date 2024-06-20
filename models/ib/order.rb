@@ -106,7 +106,6 @@ module IB
       # SMART routing only
       :discretionary_amount, # double: The amount off the limit price
       #                        allowed for discretionary orders.
-      :nbbo_price_cap, #  double: Maximum Smart order distance from the NBBO.
 
       # BOX or VOL ORDERS ONLY
       :auction_strategy, # For BOX exchange only. Valid values:
@@ -276,8 +275,6 @@ module IB
       # are reasonable. Orders sent from the API are also validated against these
       # safety constraints, unless this parameter is set to True.
       :all_or_none => :bool,             #  AON
-      :etrade_only => :bool,             #  Trade with electronic quotes.
-      :firm_quote_only => :bool,         # Trade with firm quotes.
       :opt_out_smart_routing => :bool,   # Australian exchange only, default false
       :open_close => PROPS[:open_close], # Originally String: O=Open, C=Close ()
       # for ComboLeg compatibility: SAME = 0; OPEN = 1; CLOSE = 2; UNKNOWN = 3;
@@ -295,7 +292,7 @@ module IB
 				#			 CondPriceMax, 62.0;		 -- max and min-price
 				#			 CondPriceMin.;60.0
 
-
+      prop :etrade_only, :firm_quote_only, :nbbo_price_cap
 #    prop :misc1, :misc2, :misc3, :misc4, :misc5, :misc6, :misc7, :misc8 # just 4 debugging
 
     alias order_combo_legs leg_prices
@@ -371,56 +368,108 @@ module IB
 
 
     def default_attributes				# default valus are taken from order.java
-																	#  public Order() { }
+																	# public Order() { }
       super.merge(
       :active_start_time => "",		# order.java # 470		# Vers 69
-      :active_stop_time => "",		#order.java # 471	# Vers 69
+      :active_stop_time => "",		# order.java # 471	# Vers 69
+      :algo_params => Hash.new, #{},
       :algo_strategy => '',
-			:algo_id => '' ,								# order.java # 495
+			:algo_id => '' ,						# order.java # 495
+      :all_or_none => false,
 			:auction_strategy => :none,
+      :aux_price => server_version < KNOWN_SERVERS[ :min_server_ver_trailing_percent ] ?  0 : '',
+      :block_order => false,
+      :combo_params =>[], #{},
 			:conditions => [],
       :continuous_update => 0,
+      :delta => "",
       :designated_location => '', # order.java # 487
       :display_size => nil,
       :discretionary_amount => 0,
-			:etrade_only => true,	# stolen from python client
       :exempt_code => -1,
 			:ext_operator  => '' ,  # order.java # 499
-			:firm_quote_only  => true,  # stolen from python client
+      :hedge_param => [],
+      :hidden => false,
+      :leg_prices => [],
+      :limit_price => server_version < KNOWN_SERVERS[ :min_server_ver_order_combo_legs_price ] ?  0 : '',
+      :min_quantity => "",
+      :model_code => "",
 			:not_held => false,  # order.java # 494
       :oca_type => :none,
 			:order_type => :limit,
       :open_close => :open,	  # order.java #
 			:opt_out_smart_routing => false,
+     :order_state => IB::OrderState.new( :status => 'New',
+                                         :filled => 0,
+                                      :remaining => 0,
+                                          :price => 0,
+                                  :average_price => 0 ),
       :origin => :customer,
 			:outside_rth => false, # order.java # 472
+      :override_percentage_constraints => false,
+      :percent_offset =>"",
       :parent_id => 0,
 			:random_size => false,	  #oder.java 497			# Vers 76
 			:random_price => false,	  # order.java # 498		# Vers 76
+      :reference_price_type => "",
 			:scale_auto_reset => false,  # order.java # 490
 			:scale_random_percent => false, # order.java # 491
 			:scale_table => "", # order.java # 492
+      :stock_range_lower => "",
+      :stock_range_upper => "",
+      :stock_ref_price =>"",
       :short_sale_slot => :default,
       :solicided =>  false,  # order.java #  496
+      :sweep_to_fill => false,
       :tif => :day,
+      :trail_stop_price => "",
+      :trailing_percent => "",
       :transmit => true,
 			:trigger_method => :default,
+      :use_price_management_algo => "",
+      :volatility_type => :annual,
       :what_if => false,  # order.java # 493
-      :leg_prices => [],
-      :algo_params => Hash.new, #{},
-      :combo_params =>[], #{},
-  #      :soft_dollar_tier_params => HashWithIndifferentAccess.new(
-	#				    :name => "",
-	#				    :val => "",
-	#				    :display_name => ''),
-       :order_state => IB::OrderState.new(:status => 'New',
-                                           :filled => 0,
-                                           :remaining => 0,
-                                           :price => 0,
-                                           :average_price => 0)
+
       )  # closing of merge
         end
 
+    def serialize_main_order_fields
+        include_short = -> (s) { if s == :short then 'SSHORT' else s == :short_exempt ? 'SSHORTX' : s.to_sup end }
+        include_total_quantity = -> (q) { server_version >= KNOWN_SERVERS[ :min_server_ver_fractional_positions ] ?             q.to_d : q.to_i }
+
+          [ include_short[ side ],
+           include_total_quantity[ total_quantity ],
+           self[ :order_type ], # Internal code, 'LMT' instead of :limit
+           limit_price ,
+           aux_price  ]
+    end
+
+    def serialize_extended_order_fields
+
+          [ self[ :tif ],
+           oca_group,
+           account,
+           open_close.to_sup[0],  # "O" or "C"
+           self[ :origin ],  # translates :customer, :firm  to 0,1
+           order_ref,
+           transmit,
+           parent_id,
+           block_order,
+           sweep_to_fill,
+           display_size,
+           self[ :trigger_method ],
+           outside_rth,
+           hidden ]
+    end
+
+    def serialize_auxilery_order_fields
+          [ "", # deprecated shares_allocation field
+           discretionary_amount,
+           good_after_time,
+           good_till_date,
+           serialize_advisory_order_fields
+           ]
+    end
 
 =begin rdoc
 Format of serialisation
@@ -430,26 +479,125 @@ Format of serialisation
 =end
 		def serialize_conditions
 			if conditions.empty?
-			  [conditions.size]
+			  [ 0 ]
 			else
-			  [conditions.size]	+ conditions.map(&:serialize) + [conditions_ignore_rth, conditions_cancel_order]
+			  [ conditions.size ]	+ conditions.map( &:serialize ) + [ conditions_ignore_rth, conditions_cancel_order ]
 			end
 		end
 
     def serialize_algo
       return [''] if algo_strategy.blank?
-
       [algo_strategy, algo_params.size] + algo_params.to_a
     end
 
-   # def serialize_soft_dollar_tier
-   #   [soft_dollar_tier_params[:name],soft_dollar_tier_params[:val]]
-   # end
+    def serialize_advisory_order_fields
+         aof = [ fa_group, fa_method, fa_percentage, fa_profile ]
+         if server_version < KNOWN_SERVERS[:min_server_ver_fa_profile_desupport]
+           aof
+         else
+           aof[ 0..-2 ]
+         end
+    end
 
-   # def initialize_soft_dollar_tier *fields
-   #   self.soft_dollar_tier_params= HashWithIndifferentAccess.new(
-   #   name:   fields.pop, val:  fields.pop, display_name:  fields.pop )
-   # end
+    def serialize_volatility_order_fields
+					 if volatility.present?
+           [ volatility ,       #              Volatility orders
+           self[:volatility_type] ] #     default: annual volatility
+						else
+						["",""]
+					 end
+    end
+
+    def serialize_delta_neutral_order_fields
+
+           if delta_neutral_order_type && delta_neutral_order_type != :none
+             [
+              delta_neutral_con_id,
+              delta_neutral_settling_firm,
+              delta_neutral_clearing_account,
+              self[ :delta_neutral_clearing_intent ],
+							delta_neutral_open_close,
+							delta_neutral_short_sale,
+							delta_neutral_short_sale_slot,
+							delta_neutral_designated_location
+             ]
+           else
+             ['', '']
+           end
+    end
+
+    def serialize_scale_order_fields
+
+      a=  [ scale_init_level_size || "",
+            scale_subs_level_size || "",
+            scale_price_increment || "" ]
+
+      # Support for extended scale orders parameters
+      if scale_price_increment.to_i > 0
+      a << [ scale_price_adjust_value || "",
+             scale_price_adjust_interval || "",
+             scale_profit_offset || "",
+             scale_auto_reset, #  default: false,
+             scale_init_position || "",
+             scale_init_fill_qty || "",
+             scale_random_percent # default: false,
+        ]
+      end
+
+      a << scale_table
+      a << active_start_time || ""
+      a << active_stop_time || ""
+      a
+    end
+    def serialize_pegged_order_fields
+	    if order_type == :pegged_to_benchmark && server_version >= KNOWN_SERVERS[ :min_server_ver_pegged_to_benchmark ]
+	    [ reference_contract_id,
+	      is_pegged_change_amount_decrease,
+	      pegged_change_amount,
+	      reference_change_amount,
+	      reference_exchange_id ]
+      else
+        [ "do not include" ]
+      end
+    end
+
+   def serialize_soft_dollar_tier
+      [ soft_dollar_tier_name,
+        soft_dollar_tier_value
+      ]
+    end
+
+
+   def serialize_mifid_order_fields
+          a = []
+            if server_version >= KNOWN_SERVERS[:min_server_ver_decision_maker]  #  138
+            a <<  [ mifid_2_decision_maker, mifid_2_decision_algo ]
+            end
+            if server_version >= KNOWN_SERVERS[:min_server_ver_mifid_execution]  # 139
+            a << [ mifid_2_execution_maker, mifid_2_execution_algo ]
+            end
+           a
+   end
+
+   def serialize_peg_best_and_mid
+     return [] unless server_version >= KNOWN_SERVERS[:min_server_ver_pegbest_pegmid_offsets]
+     a =  []
+     send_mid_offsets = false
+     a << min_trade_qty  if contract.exchange == 'IBKRATS'
+     if order.type == :pegged_to_best
+       a << min_compete_size
+       a << compete_against_best_offset
+       send_mid_offsets = true if compete_against_best_offset.nil? # TODO: float max?
+     end
+     if order.type == :pegged_to_midpoint
+       send_mid_offsets = true
+     end
+     if send_mid_offsets
+       a << mid_offset_at_whole
+       a << mid_offset_at_half
+     end
+     a
+   end
 
     def serialize_misc_options
       ""		  # Vers. 70

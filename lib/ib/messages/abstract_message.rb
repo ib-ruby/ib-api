@@ -21,6 +21,10 @@ module IB
         @version || 1
       end
 
+      # including server-version as method to every message class
+      def server_version
+          Connection.current &.server_version || 165
+      end
       def self.message_id
         @message_id
       end

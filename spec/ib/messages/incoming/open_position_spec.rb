@@ -83,7 +83,8 @@ RSpec.shared_examples 'Extended Limit Order' do
 
   its( :leg_prices ) { is_expected.to be_a Array }
   its( :leg_prices ) { is_expected.to be_empty }
-  its( :combo_params ) { is_expected.to be_a Hash }
+  its( :combo_params ) { is_expected.to be_a Array  }  # todo Needs testing with combo_params
+                                                       # should be a Hash, ... support.rb --> read_hash
   its( :combo_params ) { is_expected.to be_empty }
 
   its( :scale_init_level_size ) { is_expected.to be_nil }

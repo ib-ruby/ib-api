@@ -21,6 +21,12 @@ module IB
       end
     end
 
+
+    # define server version for any model class
+    def server_version
+      Connection.current &.server_version || 165
+    end
+
     # ActiveModel API (for serialization)
 
     def attributes
