@@ -557,7 +557,7 @@ Format of serialisation
 	      reference_change_amount,
 	      reference_exchange_id ]
       else
-        [ "do not include" ]
+        []
       end
     end
 
