@@ -5,11 +5,11 @@ module IB
       class << self
 
       def defaults
-	  super.merge order_type: :limit 
+	  super.merge order_type: :limit
       end
 
       def aliases
-	super.merge  limit_price: :price 
+	super.merge  limit_price: :price
       end
 
       def requirements

@@ -202,7 +202,6 @@ module IB
       :active_stop_time,		# Vers 69
       # pegged to benchmark
       :reference_contract_id,
-      :is_pegged_change_amount_decrease,
       :pegged_change_amount,
       :reference_change_amount,
       :reference_exchange_id ,
@@ -276,6 +275,7 @@ module IB
       # safety constraints, unless this parameter is set to True.
       :all_or_none => :bool,             #  AON
       :opt_out_smart_routing => :bool,   # Australian exchange only, default false
+      :is_pegged_change_amount_decrease => :bool, # pegged_to_benchmark-oders, default false (increase)
       :open_close => PROPS[:open_close], # Originally String: O=Open, C=Close ()
       # for ComboLeg compatibility: SAME = 0; OPEN = 1; CLOSE = 2; UNKNOWN = 3;
       [:side, :action] => PROPS[:side]   # String: Action/side: BUY/SELL/SSHORT/SSHORTX
@@ -372,6 +372,7 @@ module IB
       super.merge(
       :active_start_time => "",		# order.java # 470		# Vers 69
       :active_stop_time => "",		# order.java # 471	# Vers 69
+      :adjusted_order_type => "",
       :algo_params => Hash.new, #{},
       :algo_strategy => '',
 			:algo_id => '' ,						# order.java # 495
@@ -390,6 +391,7 @@ module IB
 			:ext_operator  => '' ,  # order.java # 499
       :hedge_param => [],
       :hidden => false,
+      :is_pegged_change_amount_decrease => false,
       :leg_prices => [],
       :limit_price => server_version < KNOWN_SERVERS[ :min_server_ver_order_combo_legs_price ] ?  0 : '',
       :min_quantity => "",
@@ -409,9 +411,13 @@ module IB
       :override_percentage_constraints => false,
       :percent_offset =>"",
       :parent_id => 0,
+      :pegged_change_amount => 0.0,
 			:random_size => false,	  #oder.java 497			# Vers 76
 			:random_price => false,	  # order.java # 498		# Vers 76
       :reference_price_type => "",
+      :reference_contract_id => 0,
+      :reference_change_amount => 0.0,
+      :reference_exchange_id => "",
 			:scale_auto_reset => false,  # order.java # 490
 			:scale_random_percent => false, # order.java # 491
 			:scale_table => "", # order.java # 492

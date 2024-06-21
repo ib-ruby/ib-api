@@ -198,6 +198,7 @@ module IB
        'TRAIL LIT' => :trailing_limit_if_touched, #  Trailing Limit if Touched
        'TRAIL MIT' => :trailing_market_if_touched, # Trailing Market If Touched
        'REL' => :relative, #               Relative
+       'REL' => :pegged_to_primary ,
        'BOX TOP' => :box_top, #            Box Top
        'PEG MKT' => :pegged_to_market, # Pegged-to-Market
        'PEG STK' => :pegged_to_market, #   Pegged-to-Stock

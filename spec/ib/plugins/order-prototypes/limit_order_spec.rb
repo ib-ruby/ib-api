@@ -1,6 +1,6 @@
 require 'main_helper'
 
-RSpec.describe IB::Messages::Outgoing  do
+RSpec.describe IB::Order  do
 
   before(:all) do
     establish_connection
@@ -10,21 +10,28 @@ RSpec.describe IB::Messages::Outgoing  do
 
   end
 
-  context 'Stock' do
+  context 'Limit Order to buy 100 Microsoft shares at 200 $ a piece' do
 
-    Given( :soft ){ IB::Symbols::Stocks.msft }
-    When( :limit_order ){ IB::Limit.order size: 100, price: 200, contract: soft, account: ACCOUNT }
-    Then { limit_order.serialize_main_order_fields  == [ "BUY", 100, "LMT", 200, ""] }
-    Then { limit_order.serialize_extended_order_fields  == ["GTC", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
-    Then { limit_order.serialize_auxilery_order_fields  == ["", 0, nil, nil, [nil, nil, nil, nil]] }
-    Then { limit_order.serialize_conditions  == [ 0 ] }
-    Then { limit_order.serialize_algo  == [ "" ] }
-    Then { limit_order.serialize_volatility_order_fields == [ "", ""] }
-    Then { limit_order.serialize_scale_order_fields ==  ["", "", "", "", "", ""] }
-    Then { limit_order.serialize_delta_neutral_order_fields == [ "", ""] }
-    Then { limit_order.serialize_pegged_order_fields == [] }
-    Then { limit_order.serialize_mifid_order_fields == [[nil, nil], [nil, nil]] }
-    Then { limit_order.serialize_peg_best_and_mid == [] }
+    Given( :soft ){ IB::Stock.new symbol: 'MSFT' }
+    Given( :size ){ 100 }
+    Given( :price){ 200 }
+    When( :order ){ IB::Limit.order size: size, price: price, contract: soft, account: ACCOUNT }
+    it { puts order.as_table }
+    context "Main Order Fields show a Limit  order" do
+      Then { order.serialize_main_order_fields  == [ "BUY", size, "LMT", price, ""] }
+    end
+    context "Normal order conditions apply" do
+      Then { order.serialize_extended_order_fields  == ["GTC", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
+      Then { order.serialize_auxilery_order_fields  == ["", 0, nil, nil, [nil, nil, nil, nil]] }
+      Then { order.serialize_conditions  == [ 0 ] }
+      Then { order.serialize_algo  == [ "" ] }
+      Then { order.serialize_volatility_order_fields == [ "", ""] }
+      Then { order.serialize_scale_order_fields ==  ["", "", "", "", "", ""] }
+      Then { order.serialize_delta_neutral_order_fields == [ "", ""] }
+      Then { order.serialize_pegged_order_fields == [] }
+      Then { order.serialize_mifid_order_fields == [[nil, nil], [nil, nil]] }
+      Then { order.serialize_peg_best_and_mid == [] }
+    end
 
   end
 

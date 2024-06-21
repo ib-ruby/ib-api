@@ -4,11 +4,12 @@ module IB
       class << self
 
     def defaults
-	  super.merge order_type: 'REL' , tif: :day
+	  super.merge order_type: :pegged_to_primary , tif: :day
     end
 
       def aliases
-	super.merge  limit_price: :price_cap, aux_price: :offset_amount
+	super.merge  limit_price: :price_cap,
+                 aux_price: :offset_amount
       end
 
       def requirements
@@ -85,7 +86,7 @@ module IB
       class << self
 
     def defaults
-	  super.merge order_type: 'PEG STK' 
+	  super.merge order_type: 'PEG STK'
     end
 
       def aliases
@@ -93,9 +94,9 @@ module IB
       end
 
       def requirements
-	super.merge total_quantity: :decimal, 
-		    delta: 'required Delta of the Option', 
-		    starting_price: 'initial Limit-Price for the Option' 
+	super.merge total_quantity: :decimal,
+		    delta: 'required Delta of the Option',
+		    starting_price: 'initial Limit-Price for the Option'
       end
 
       def optional
@@ -130,44 +131,45 @@ module IB
       extend OrderPrototype
       class << self
 
-    def defaults
-	  super.merge order_type: 'PEG BENCH' 
-    end
+        def defaults
+          super.merge             order_type: :pegged_to_benchmark,
+            is_pegged_change_amount_decrease: false,
+                                         tif: :day
+        end
+
+        def requirements
+          super.merge total_quantity: :decimal,
+                      starting_price: 'initial Limit-Price for the contract to trade' ,
+                pegged_change_amount: ' (increase/decrease) by... (and likewise for price moving in opposite direction)',
+             reference_change_amount: ' ... whenever there is a price change of...',
+               reference_contract_id: 'the conid of the reference contract'
+        end
+
+        def aliases
+          super.merge  reference_change_amount: :reference_change_by,
+                          pegged_change_amount: :change_by,
+              is_pegged_change_amount_decrease: :decrease,
+                         reference_contract_id: :reference
+
+        end
 
 
+        def optional
+          super.merge stock_ref_price: 'starting price of the reference contract',
+                    stock_range_lower: 'Lowest acceptable  Price of the reference contract',
+                    stock_range_upper: 'Highest accepable  Price of the reference contract',
+     is_pegged_change_amount_decrease: 'increase(true) / decrease(false) Price (default: false)',
+                reference_exchange_id: "Exchange of the reference contract"
+        end
 
-
-
-      def requirements
-	super.merge total_quantity: :decimal, 
-		    delta: 'required Delta of the Option', 
-		    starting_price: 'initial Limit-Price for the Option' ,
-		    is_pegged_change_amount_decrease: 'increase(true) / decrease(false) Price',
-		    pegged_change_amount: ' (increase/decrceas) by... (and likewise for price moving in opposite direction)',
-		    reference_change_amount: ' ... whenever there is a price change of...',
-		    reference_contract_id: 'the conid of the reference contract',
-		    reference_exchange: "Exchange of the reference contract"
-
-
-		  
-
-
-      end
-
-      def optional
-	 super.merge stock_ref_price: 'starting price of the reference contract',
-	   stock_range_lower: 'Lowest acceptable  Price of the reference contract',
-	   stock_range_upper: 'Highest accepable  Price of the reference contract'
-      end
-
-      def summary
-	<<-HERE
-	The Pegged to Benchmark order is similar to the Pegged to Stock order for options, 
-	except that the Pegged to Benchmark allows you to specify any asset type as the 
-	reference (benchmark) contract for a stock or option order. Both the primary and 
-	reference contracts must use the same currency. 
-	HERE
-      end
+        def summary
+          <<-HERE
+  The Pegged to Benchmark order is similar to the Pegged to Stock order for options, 
+  except that the Pegged to Benchmark allows you to specify any asset type as the 
+  reference (benchmark) contract for a stock or option order. Both the primary and 
+  reference contracts must use the same currency. 
+          HERE
+        end
       end
     end
 end
