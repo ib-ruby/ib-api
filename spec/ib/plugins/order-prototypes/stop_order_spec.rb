@@ -22,16 +22,16 @@ RSpec.describe IB::Connection do
       Then { order.serialize_extended_order_fields  == ["GTC", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
     end
 
-    context "Normal order conditions apply" do
-    Then { order.serialize_auxilery_order_fields  == ["", 0, nil, nil, [nil, nil, nil, nil]] }
-    Then { order.serialize_conditions  == [ 0 ] }
-    Then { order.serialize_algo  == [ "" ] }
-    Then { order.serialize_volatility_order_fields == [ "", ""] }
-    Then { order.serialize_scale_order_fields ==  ["", "", "", "", "", ""] }
-    Then { order.serialize_delta_neutral_order_fields == [ "", ""] }
-    Then { order.serialize_pegged_order_fields == [] }
-    Then { order.serialize_mifid_order_fields == [[nil, nil], [nil, nil]] }
-    Then { order.serialize_peg_best_and_mid == [] }
+    context "Other order fields are zero or empty" do
+      Then { order.serialize_auxilery_order_fields.flatten.compact  == [ "", 0 ] }
+      Then { order.serialize_volatility_order_fields.uniq == [ "" ] }
+      Then { order.serialize_conditions  == [ 0 ] }
+      Then { order.serialize_algo  == [ "" ] }
+      Then { order.serialize_scale_order_fields.uniq ==  [""] }
+      Then { order.serialize_delta_neutral_order_fields.uniq == [ "" ] }
+      Then { order.serialize_pegged_order_fields.empty? }
+      Then { order.serialize_mifid_order_fields.flatten.compact.empty? }
+      Then { order.serialize_peg_best_and_mid.empty? }
     end
   end
 

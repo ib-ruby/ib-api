@@ -567,6 +567,16 @@ Format of serialisation
       end
     end
 
+    def serialize_advanced_option_order_fields
+
+            [ starting_price ,  # pegged to stock
+            stock_ref_price ,   # pegged to stock
+            delta ,             # pegged to stock
+            stock_range_lower , # pegged
+            stock_range_upper   # pegged
+            ]
+    end
+
    def serialize_soft_dollar_tier
       [ soft_dollar_tier_name,
         soft_dollar_tier_value

@@ -80,26 +80,17 @@ module IB
                             exchange: 'SMART',
                                right: :put,
                               expiry: IB::Option.next_expiry ,
-												 description: 'IBM-Option Chain ( monthly expiry)'),
+												 description: 'IBM-Option'),
 			:ibm_lazy_expiry => IB::Option.new( symbol: 'IBM',
                                            right: :put,
                                           strike: 180,
                                         exchange: 'SMART',
-																		 description: 'IBM-Option Chain with strike 140'),
+																		 description: 'IBM-Option Chain with strike 180'),
 			:ibm_lazy_strike => IB::Option.new( symbol: 'IBM',
                                            right: :put,
 																        exchange: 'SMART',
                                           expiry: IB::Option.next_expiry,
-																		 description: 'IBM-Option Chain ( monthly expiry)'),
-
-	    :goog100 => IB::Option.new( symbol: 'GOOG',
-					                      currency: 'USD',
-				                          strike: 100,
-				                      multiplier: 100,
-				                           right: :call,
-                                exchange: 'SMART',
-				                          expiry:  IB::Option.next_expiry,
-				  description: 'Google Call Option with monthly expiry')
+																		 description: 'IBM-Option Chain ( monthly expiry)')
         }
       end
     end

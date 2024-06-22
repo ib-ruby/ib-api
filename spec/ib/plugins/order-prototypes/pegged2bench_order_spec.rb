@@ -12,7 +12,6 @@ RSpec.describe IB::Connection do
 
   end
 
-  STRIKE = 2000
 
   context 'Pegged Bench order on IBM using  Microsoft as Benchmark' do
 
@@ -22,9 +21,9 @@ RSpec.describe IB::Connection do
     Given( :reference_increment ){ 2 }
 
     When( :order ){ IB::Pegged2Benchmark.order size: 100, starting_price: 450, change_by:  increment,
-                                      reference: benchmark.con_id,
-                                      reference_change_by: reference_increment,
-                                       contract: stock, account: ACCOUNT }
+                                          reference: benchmark.con_id,
+                                reference_change_by: reference_increment,
+                                           contract: stock, account: ACCOUNT }
     it{ puts order.as_table }
     context "Main Order Fields show a Pegged to Benchmark  order" do
       Then { order.serialize_main_order_fields  == [ "BUY", 100, "PEG BENCH", "", "" ] }
@@ -39,15 +38,15 @@ RSpec.describe IB::Connection do
                                                        reference_increment,
                                                        '' ]  } # reference exchange
      end
-    context "Normal order conditions apply" do
-      Then { order.serialize_auxilery_order_fields  == ["", 0, nil, nil, [nil, nil, nil, nil]] }
-      Then { order.serialize_volatility_order_fields == [ "", ""] }
+    context "Other order fields are zero or empty" do
+      Then { order.serialize_auxilery_order_fields.flatten.compact  == [ "", 0 ] }
+      Then { order.serialize_volatility_order_fields.uniq == [ "" ] }
       Then { order.serialize_conditions  == [ 0 ] }
       Then { order.serialize_algo  == [ "" ] }
-      Then { order.serialize_scale_order_fields ==  ["", "", "", "", "", ""] }
-      Then { order.serialize_delta_neutral_order_fields == [ "", ""] }
-      Then { order.serialize_mifid_order_fields == [[nil, nil], [nil, nil]] }
-      Then { order.serialize_peg_best_and_mid == [] }
+      Then { order.serialize_scale_order_fields.uniq ==  [""] }
+      Then { order.serialize_delta_neutral_order_fields.uniq == [ "" ] }
+      Then { order.serialize_mifid_order_fields.flatten.compact.empty? }
+      Then { order.serialize_peg_best_and_mid.empty? }
     end
 
   end

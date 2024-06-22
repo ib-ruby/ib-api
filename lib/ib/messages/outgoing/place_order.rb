@@ -72,11 +72,7 @@ module IB
             false, # was: order.firm_quote_only || false,    desupported in TWS > 981
             '', ## desupported in TWS > 981, too. maybe we have to insert a hard-coded "" here
             order[:auction_strategy], # AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
-            order.starting_price ,
-            order.stock_ref_price ,
-            order.delta ,
-            order.stock_range_lower ,
-            order.stock_range_upper ,
+            order.serialize_advanced_option_order_fields,
             order.override_percentage_constraints,
             order.serialize_volatility_order_fields,
             order.serialize_delta_neutral_order_fields

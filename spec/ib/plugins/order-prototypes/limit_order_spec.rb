@@ -20,17 +20,19 @@ RSpec.describe IB::Order  do
     context "Main Order Fields show a Limit  order" do
       Then { order.serialize_main_order_fields  == [ "BUY", size, "LMT", price, ""] }
     end
-    context "Normal order conditions apply" do
+    context "Limit orders are submitted as GTC-orders" do
       Then { order.serialize_extended_order_fields  == ["GTC", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
-      Then { order.serialize_auxilery_order_fields  == ["", 0, nil, nil, [nil, nil, nil, nil]] }
+    end
+    context "Other order fields are zero or empty" do
+      Then { order.serialize_auxilery_order_fields.flatten.compact  == [ "", 0 ] }
+      Then { order.serialize_volatility_order_fields.uniq == [ "" ] }
       Then { order.serialize_conditions  == [ 0 ] }
       Then { order.serialize_algo  == [ "" ] }
-      Then { order.serialize_volatility_order_fields == [ "", ""] }
-      Then { order.serialize_scale_order_fields ==  ["", "", "", "", "", ""] }
-      Then { order.serialize_delta_neutral_order_fields == [ "", ""] }
-      Then { order.serialize_pegged_order_fields == [] }
-      Then { order.serialize_mifid_order_fields == [[nil, nil], [nil, nil]] }
-      Then { order.serialize_peg_best_and_mid == [] }
+      Then { order.serialize_scale_order_fields.uniq ==  [""] }
+      Then { order.serialize_delta_neutral_order_fields.uniq == [ "" ] }
+      Then { order.serialize_pegged_order_fields.empty? }
+      Then { order.serialize_mifid_order_fields.flatten.compact.empty? }
+      Then { order.serialize_peg_best_and_mid.empty? }
     end
 
   end

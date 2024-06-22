@@ -86,24 +86,19 @@ module IB
       class << self
 
     def defaults
-	  super.merge order_type: 'PEG STK'
+      super.merge order_type: 'PEG STK', tif: :day
     end
 
-      def aliases
-	Limit.aliases.merge  limit_price: :stock_reference_price
-      end
-
       def requirements
-	super.merge total_quantity: :decimal,
-		    delta: 'required Delta of the Option',
-		    starting_price: 'initial Limit-Price for the Option'
+        super.merge total_quantity: :decimal,
+		                         delta: 'required Delta of the Option',
+                    starting_price: 'initial Limit-Price for the Option'
       end
 
       def optional
-	 super.merge limit_price: 'Stock Reference Price',
-	   stock_ref_price: '',
-	   stock_range_lower: 'Lowest acceptable Stock Price',
-	   stock_range_upper: 'Highest accepable Stock Price'
+	 super.merge stock_ref_price:  'Stock Reference Price',
+	           stock_range_lower: 'Lowest acceptable Stock Price',
+             stock_range_upper: 'Highest accepable Stock Price'
       end
 
       def summary
@@ -121,7 +116,6 @@ module IB
 	You may also enter a high/low stock price range which cancels the order when reached. The 
 	delta times the change in stock price will be rounded to the nearest penny in favor of the order.
 	------------
-	Supported Exchanges: (as of Jan 2018):  BOX, NASDAQOM, PHLX
 	HERE
       end
       end
