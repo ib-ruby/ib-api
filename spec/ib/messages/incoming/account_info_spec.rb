@@ -67,7 +67,7 @@ RSpec.describe IB::Messages::Incoming do
 
 		it_behaves_like 'Valid AccountValue Object' do
 			let( :the_account_value_object ){ IB::Connection.current.received[:AccountValue].first.account_value }
-		end
+	end
   end #
 end # describe IB::Messages:Incoming
 

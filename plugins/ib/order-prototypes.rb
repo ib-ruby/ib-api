@@ -112,7 +112,7 @@ Creates IB::Order objects
 		end
 
 	end
-[ :forex, :market, :limit, :stop, :volatility, :premarket, :pegged, :combo ].each do | pt |
+[ :forex, :market, :limit, :stop, :volatility, :premarket, :pegged, :combo, :adaptive ].each do | pt |
   Connection.current.activate_plugin "order_prototypes/#{pt.to_s}"
 end
 end

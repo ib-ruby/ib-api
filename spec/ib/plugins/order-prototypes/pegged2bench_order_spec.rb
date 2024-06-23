@@ -13,7 +13,7 @@ RSpec.describe IB::Connection do
   end
 
 
-  context 'Pegged Bench order on IBM using  Microsoft as Benchmark' do
+  context 'Pegged Bench Order ft as Benchmark' do
 
     Given( :stock ){ IB::Stock.new( symbol: 'IBM' ) }
     Given( :benchmark ){ IB::Symbols::Stocks.msft_conid } # benchmark is always identified by its conid

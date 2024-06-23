@@ -2,9 +2,9 @@
 #  Array :  read several formats
 #  Array, String, Symbol, true, false, nil : apply tws.method
 #
-#  Apply through:  `module aaxx
-#                     using IB::Support a
-#                     `
+#  Apply through:  module aaxx
+#                     using IB::Support
+#
 module IB
   module Support
 
@@ -51,7 +51,7 @@ module IB
 		def read_string
 			self.shift rescue ""
 		end
-		## reads a string and proofs if NULL ==  IB::TWS_MAX is present.
+		## reads a string and checks if NULL ==  IB::TWS_MAX is present.
 		## in that case: returns nil. otherwise: returns the string
 		def read_string_not_null
 			r = read_string

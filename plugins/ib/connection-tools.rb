@@ -24,7 +24,7 @@ Provides
 		#
 		# check_connection reconnects if necessary and returns false if the connection is lost.
 		#
-		# It delays the process by 6 ms (150 MBit Cable connection)
+    # It delays the process by 6 ms (150 MBit Cable connection, loc. Europe)
 		#
 		#  a =  Time.now; G.check_connection; b= Time.now ;b-a
 		#   => 0.00066005
@@ -117,7 +117,7 @@ Provides
 
   class Connection
     include ConnectionTools
-    extend Reconnect
+    extend ReConnect
   end
 
 end

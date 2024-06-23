@@ -11,22 +11,21 @@ RSpec.describe IB::Order do
 
   end
 
-  STRIKE = 2000
+  context 'Volatility Order Prototype' do
 
-  context 'Volatility order on RUT Options' do
+    Given( :strike ){ 2000 }
+    Given( :option ){ IB::Symbols::Options.rutw.merge( strike: strike, expiry: IB::Future.next_expiry[0..-3] ).verify.first }
 
-    Given( :option ){ IB::Symbols::Options.rutw.merge( strike: STRIKE, expiry: IB::Future.next_expiry[0..-3] ).verify.first }
-
-    When( :order ){ IB::Volatility.order size: -1, volatility: 20, contract: option, account: ACCOUNT }
+    When( :order ){ IB::Volatility.order size: -1, volatility: 0.2, contract: option, account: ACCOUNT }
     it{ puts order.as_table }
-    context "Main Order Fields show a VOL order" do
+    context "Main Order Fields show a VOL Order" do
       Then { order.serialize_main_order_fields  == [ "SELL", 1, "VOL", "", "" ] }
     end
-    context "Volatility orders are submitted as daily orders" do
+    context "Volatility Orders are submitted as daily orders" do
       Then { order.serialize_extended_order_fields  == ["DAY", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
     end
     context "Volatility specific orderfields are populated; volatility is expessed annualy" do
-      Then { order.serialize_volatility_order_fields == [ 20, 2] }
+      Then { order.serialize_volatility_order_fields == [ 0.2, 2] }
     end
     context "Other order fields are zero or empty" do
       Then { order.serialize_auxilery_order_fields.flatten.compact  == [ "", 0 ] }

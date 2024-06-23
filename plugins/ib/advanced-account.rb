@@ -117,9 +117,14 @@ Example
   def place_order  order:, contract: nil, auto_adjust: true, convert_size: true
     # adjust the order price to  min-tick
     result = ->(l){ orders.detect{|x| x.local_id == l  && x.submitted? } }
+    qualified_contract = ->(c) do
+       c.is_a?(IB::Contract) &&
     #·IB::Symbols are always qualified. They carry a description-field
-    qualified_contract = ->(c) { c.is_a?(IB::Contract) && ( c.description.present? || !c.con_id.to_i.zero? || (c.con_id.to_i <0  && c.sec_type == :bag )) }
+         ( c.description.present? || !c.con_id.to_i.zero? ||
+          (c.con_id.to_i <0  && c.sec_type == :bag ) )   # bags that carry a negative con_id are qualified
+    end
 
+    # assign qualificated contract to the order object if not present
     order.contract ||= if qualified_contract[ contract ]
                          contract
                        else
@@ -131,6 +136,7 @@ Example
     ## sending of plain vanilla IB::Bags will fail using account.place, unless a (negative) con-id is provided!
     error "place order: ContractVerification failed. No con_id assigned"  unless qualified_contract[order.contract]
 
+    # declare some variables
     ib = IB::Connection.current
     wrong_order = nil
     the_local_id =  nil
@@ -140,7 +146,7 @@ Example
     ### Default action:  raise IB::Transmission Error
     sa = ib.subscribe( :Alert ) do | msg |
       #      puts "local_id: #{the_local_id}"a
-      puts msg.inspect
+      # puts msg.inspect
       if msg.error_id == the_local_id
         if [ 110, #  The price does not confirm to the minimum price variation for this contract
             201, # Order rejected, No Trading permissions
@@ -156,6 +162,7 @@ Example
         end
       end
     end
+    # transfer the received openOrder to the queue
     sb = ib.subscribe( :OpenOrder ){|m| q << m.order if m.order.local_id.to_i == the_local_id.to_i }
     #  modify order (parameter)
     order.account =  account  # assign the account_id to the account-field of IB::Order
