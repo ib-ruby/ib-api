@@ -113,6 +113,8 @@ module IB
        # :exchange => 'SMART',
         :include_expired => false
     end
+
+
 #    This returns an Array of data from the given contract and is used to represent
 #    contracts in outgoing messages.
 #
@@ -121,7 +123,7 @@ module IB
 #    Note that it does NOT include the combo legs.
 #    serialize :option, :con_id, :include_expired, :sec_id
 #
-#    18/1/18: serialise always includes conid
+#    18/1/18: serialise always includes con_id
 
     def serialize *fields  # :nodoc:
       print_default = ->(field, default="") { field.blank? ? default : field }
@@ -201,7 +203,7 @@ module IB
     end
 
 		# extracts essential attributes of the contract,
-		# and returns a new contract.
+		# and returns a new contract. Used for comparism of equality of contracts
 		#
 		# the link to contract-details is __not__ maintained.
 		def  essential
@@ -209,7 +211,7 @@ module IB
 			the_attributes = [ :sec_type, :symbol , :con_id,   :exchange, :right,
 									  :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
 								:multiplier,  :primary_exchange, :trading_class, :description ]
-			new_contract= self.class.new invariant_attributes.select{|k,_| the_attributes.include? k }.compact
+      new_contract= self.class.new invariant_attributes.select{|k,_| the_attributes.include? k }.compact
       new_contract[:description] = if @description.present?
                                      @description
                                    elsif contract_detail.present?
@@ -268,53 +270,16 @@ module IB
     # Contract comparison
 
     def == other  # :nodoc:
-			return false if !other.is_a?(Contract)
-      return true if super(other)
-			return true if !con_id.to_i.zero?  && con_id == other.con_id
-
-      return false unless other.is_a?(self.class)
-
-      # Different sec_id_type
-      return false if sec_id_type && other.sec_id_type && sec_id_type != other.sec_id_type
-
-      # Different sec_id
-      return false if sec_id && other.sec_id && sec_id != other.sec_id
-
-      # Different symbols
-      return false if symbol && other.symbol && symbol != other.symbol
-
-      # Different currency
-      return false if currency && other.currency && currency != other.currency
-
-      # Same con_id for all Bags, but unknown for new Contracts...
-      # 0 or nil con_id  matches any
-      return false if con_id != 0 && other.con_id != 0 &&
-        con_id && other.con_id && con_id != other.con_id
-
-      # SMART or nil exchange matches any
-      return false if exchange != 'SMART' && other.exchange != 'SMART' &&
-        exchange && other.exchange && exchange != other.exchange
-
-      # Comparison for Bonds and Options
-      if bond? || option?
-        return false if right != other.right || strike != other.strike
-        return false if multiplier && other.multiplier &&
-          multiplier != other.multiplier
-        return false if expiry && expiry[0..5] != other.expiry[0..5]
-        return false unless expiry && (expiry[6..7] == other.expiry[6..7] ||
-                                       expiry[6..7].empty? || other.expiry[6..7].empty?)
-      end
-
-      # All else being equal...
-      sec_type == other.sec_type
+      a = ->(e){ e.invariant_attributes.select{|y,_| ![:description, :include_expired].include? y} }
+      self.call(a) == other.call(a)
     end
 
-    def to_s
-      "<Contract: " + instance_variables.map do |key|
-        value = send(key[1..-1])
-        " #{key}=#{value} (#{value.class}) " unless value.blank?
-      end.compact.join(',') + " >"
-    end
+#    def to_s
+#      "<Contract: " + instance_variables.map do |key|
+#        value = send(key[1..-1])
+#        " #{key}=#{value} (#{value.class}) " unless value.blank?
+#      end.compact.join(',') + " >"
+#    end
 
     def to_human
       "<Contract: " +
@@ -328,15 +293,8 @@ module IB
          ].compact.join(" ") + ">"
     end
 
-    def to_short
-      if expiry.blank? && last_trading_day.blank?
-      "#{symbol}# {exchange}# {currency}"
-      elsif expiry.present?
-      "#{symbol}(#{strike}) #{right} #{expiry} /#{exchange}/#{currency}"
-			else
-      "#{symbol}(#{strike}) #{right} #{last_trading_day} /#{exchange}/#{currency}"
-      end
-    end
+    alias to_s to_human
+
     # Testing for type of contract:
 		# depreciated :  use is_a?(IB::Stock, IB::Bond, IB::Bag etc) instead
 		def bag?  #  :nodoc:
@@ -369,9 +327,6 @@ module IB
     end
 
 
-#		def verify  # :nodoc:
-#			error "verify must be overloaded. Please require at least `ib/verify` from the `ib-extenstions` gem "
-#		end
 =begin
 From the release notes of TWS 9.50
 
@@ -421,7 +376,7 @@ In places where these terms are used to indicate a concept, we have left them as
          expiry,
          { value: multiplier.zero??  "" : multiplier, alignment: :center},
          { value: trading_class, alignment: :center},
-         {value: right == :none ? "": right, alignment: :center },
+         { value: right == :none ? "": right, alignment: :center },
          { value: strike.zero? ? "": strike, alignment: :right},
          { value: currency, alignment: :center} ]
 
