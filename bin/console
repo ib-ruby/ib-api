@@ -66,30 +66,44 @@ read_yml = -> (key) do
   C =  Connection.new  client_id: client_id, host: host, connect: false do |c|  # future use__ , optional_capacities: "+PACEAPI"  do |c|
     c.activate_plugin 'connection-tools'
     c.activate_plugin 'verify'
+    c.activate_plugin 'process-orders'
+    c.activate_plugin 'advanced-account'
     c.activate_plugin 'managed-accounts'
-    c.subscribe( :ContractData, :BondContractData) { |msg| c.logger.info { msg.contract.to_human } }
-    c.subscribe( :Alert, :ContractDataEnd, :ManagedAccounts, :OrderStatus ) {| m| c.logger.info { m.to_human } }
-    c.subscribe( :PortfolioValue, :AccountValue, :OrderStatus, :OpenOrderEnd, :ExecutionData ) {| m| c.logger.info { m.to_human }}
+
+   # c.subscribe( :ContractData, :BondContractData) { |msg| c.logger.info { msg.contract.to_human } }
+   # c.subscribe( :Alert, :ContractDataEnd, :ManagedAccounts, :OrderStatus ) {| m| c.logger.info { m.to_human } }
+   # c.subscribe( :PortfolioValue, :AccountValue, :OrderStatus, :OpenOrderEnd, :ExecutionData ) {| m| c.logger.info { m.to_human }}
 #    c.subscribe :ManagedAccounts do  |msg|
 #        puts "------------------------------- Managed Accounts ----------------------------------"
 #				puts "Detected Accounts: #{msg.accounts.account.join(' -- ')} "
 #				puts
 #    end
 
-    c.subscribe( :OpenOrder){ |msg|  "Open Order detected and stored: C.received[:OpenOrders] " }
+#    c.subscribe( :OpenOrder){ |msg|  "Open Order detected and stored: C.received[:OpenOrders] " }
+    c.subscribe(IB::Messages::Incoming::AccountUpdateTime){  }
 
     c.initialize_managed_accounts
+    c.initialize_order_handling
+    c.get_account_data
+    c.request_open_orders
 	end
-  #C.logger.level = Logger::FATAL
-  unless  C.received[:OpenOrder].blank?
-        puts "------------------------------- OpenOrders ----------------------------------"
-    puts C.received[:OpenOrder].to_human.join "\n"
-  end
   puts  "Connection established on  #{host}, client_id #{client_id} used"
+
+  C.activate_plugin "symbols"
+  C.activate_plugin "market-price"
+  C.activate_plugin "order-prototypes"
+  C.activate_plugin "spread-prototypes"
+  C.logger.level = Logger::ERROR
+  unless  C.received[:OpenOrder].blank?
+        puts "---------------------------------------- OpenOrders -------------------------------------------"
+        puts C.clients.map{ |c| c.orders.map &:to_human }.flatten.join("\n")
+  end
+  puts
+        puts "--------------------------------- Active Plugins  ---------------------------------------------"
+  puts  C.plugins.delete_if{ |x| x =~ /\// }.sort.join(" - ")
   puts
   puts  "----> C    points to the connection-instance"
   puts
-  puts  "some basic Messages are subscribed and accordingly displayed"
   puts '-'* 45
 
   IRB.start(__FILE__)

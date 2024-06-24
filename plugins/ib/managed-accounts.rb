@@ -228,17 +228,6 @@ Raises an IB::Error if less then 100 items are received.
 	end  # def
 
 
-		def account_data account_or_id=nil
-
-				if account_or_id.present?
-					account = account_or_id.is_a?(IB::Account) ? account_or_id :  @accounts.detect{|x| x.account == account_or_id }
-				  yield account
-				else
-					@accounts.map{|a| yield a}
-				end
-
-		end
-
   end
 
   class Connection

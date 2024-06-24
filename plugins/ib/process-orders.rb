@@ -19,28 +19,9 @@ Extends IB::Connection
 
 =end
   module ProcessOrders
-=begin
-UpdateOrderDependingObject
-
-Generic method which enables operations on the order-Object,
-which is associated to OrderState-, Execution-, CommissionReport-
-events fired by the tws.
-The order is identified by local_id and perm_id
-
-Everything is carried out in a mutex-synchonized environment
-=end
-  def update_order_dependent_object order_dependent_object  # :nodoc:
-   account_data  do  | a |
-      order = if order_dependent_object.local_id.present?
-                a.locate_order( :local_id => order_dependent_object.local_id)
-              else
-                a.locate_order( :perm_id => order_dependent_object.perm_id)
-              end
-      yield order if order.present?
-    end
-  end
   def initialize_order_handling
-    tws.subscribe( :CommissionReport, :ExecutionData, :OrderStatus, :OpenOrder, :OpenOrderEnd, :NextValidId ) do |msg|
+
+    subscribe( :CommissionReport, :ExecutionData, :OrderStatus, :OpenOrder, :OpenOrderEnd, :NextValidId ) do |msg|
       case msg
 
       when IB::Messages::Incoming::CommissionReport
@@ -52,21 +33,21 @@ Everything is carried out in a mutex-synchonized environment
         # There is no reference to a contract or an account
 
         success = update_order_dependent_object( msg.order_state) do |o|
-          o.order_states.update_or_create msg.order_state, :status
+          o.order_states.save_insert msg.order_state, :status
         end
 
-        logger.info {  "Order State not assigned-- #{msg.order_state.to_human} ----------" } if success.nil?
+        logger.warn {  "Order State not assigned-- #{msg.order_state.to_human} ----------" } if success.nil?
 
       when IB::Messages::Incoming::OpenOrder
         account_data(msg.order.account) do | this_account |
           # first update the contracts
           # make open order equal to IB::Spreads (include negativ con_id)
           msg.contract[:con_id] = -msg.contract.combo_legs.map{|y| y.con_id}.sum  if msg.contract.is_a? IB::Bag
-          msg.contract.orders.update_or_create msg.order, :local_id
-          this_account.contracts.first_or_create msg.contract, :con_id
+          msg.contract.orders.save_insert msg.order, :local_id
+          this_account.contracts.save_insert msg.contract, :con_id, false
           # now save the order-record
           msg.order.contract = msg.contract
-          this_account.orders.update_or_create msg.order, :local_id
+          this_account.orders.save_insert msg.order, :local_id
         end
 
         #     update_ib_order msg  ## aus support
@@ -81,9 +62,9 @@ Everything is carried out in a mutex-synchonized environment
           o.executions << msg.execution
           if msg.execution.cumulative_quantity.to_i == o.total_quantity.abs
             logger.info{ "#{o.account} --> #{o.contract.symbol}: Execution completed" }
-            o.order_states.first_or_create( IB::OrderState.new( perm_id: o.perm_id,
-                                                               local_id: o.local_id,
-                                                               status: 'Filled' ), :status )
+            o.order_states << IB::OrderState.new( perm_id: o.perm_id,
+                                                 local_id: o.local_id,
+                                                   status: 'Filled' )
             # update portfoliovalue
             a = @accounts.detect{ | x | x.account == o.account } #  we are in a mutex controlled environment
             pv = a.portfolio_values.detect{ | y | y.contract.con_id == o.contract.con_id}
@@ -98,7 +79,7 @@ Everything is carried out in a mutex-synchonized environment
           end  # branch
         end # block
 
-        logger.error { "Execution-Record not assigned-- #{msg.execution.to_human} ----------" } if success.nil?
+        logger.warn { "Execution-Record not assigned-- #{msg.execution.to_human} ----------" } if success.nil?
 
       end  # case msg.code
     end # do
@@ -113,7 +94,7 @@ Everything is carried out in a mutex-synchonized environment
   def request_open_orders
 
     q =  Queue.new
-    subscription = tws.subscribe( :OpenOrderEnd ) { q.push(true) }  # signal succsess
+    subscription = subscribe( :OpenOrderEnd ) { q.push(true) }  # signal succsess
     account_data {| account | account.orders = [] }
     send_message :RequestAllOpenOrders
     ## the OpenOrderEnd-message usually appears after 0.1 sec.
@@ -122,7 +103,7 @@ Everything is carried out in a mutex-synchonized environment
 
     q.pop # wait for OpenOrderEnd or finishing of thread
 
-    tws.unsubscribe subscription
+    unsubscribe subscription
     if q.closed?
       5.times do
       logger.fatal { "Is the API in read-only modus?  No Open Order Message received! "}
@@ -137,15 +118,34 @@ Everything is carried out in a mutex-synchonized environment
 
   alias update_orders request_open_orders
 
+  private
+=begin
+UpdateOrderDependingObject
 
+Generic method which enables operations on the order-Object,
+which is associated to OrderState-, Execution-, CommissionReport-
+events fired by the tws.
+The order is identified by local_id and perm_id
+
+Everything is carried out in a mutex-synchonized environment
+=end
+  def update_order_dependent_object order_dependent_object  # :nodoc:
+   account_data  do  | a |
+      order = if order_dependent_object.local_id.present?
+                a.locate_order local_id: order_dependent_object.local_id
+              else
+                a.locate_order perm_id: order_dependent_object.perm_id
+              end
+      yield order if order.present?
+    end
+  end
 
 
 end # module
 
 class Connection
-  inlcude ProcessOrders
+  include ProcessOrders
 end
 
 end   ##  module IB
 
-end  # module

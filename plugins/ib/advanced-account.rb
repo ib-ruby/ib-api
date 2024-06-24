@@ -40,9 +40,10 @@ Thus if several Orders are placed with the same order_ref, the active one is ret
 							perm_id.present? ? [:perm_id, perm_id] : nil,
 							order_ref.present? ? [:order_ref , order_ref ] : nil ].compact.first
 		matched_items = if search_option.nil?
-							orders
+							orders  # select all orders of the current account
 						else
-							orders.find_all{|x| x[search_option.first].to_i == search_option.last.to_i }
+              key,value = search_option
+							orders.find_all{|x| x[key].to_i == value.to_i }
             end
 
       if contract.present?
@@ -145,8 +146,6 @@ Example
     ### Handle Error messages
     ### Default action:  raise IB::Transmission Error
     sa = ib.subscribe( :Alert ) do | msg |
-      #      puts "local_id: #{the_local_id}"a
-      # puts msg.inspect
       if msg.error_id == the_local_id
         if [ 110, #  The price does not confirm to the minimum price variation for this contract
             201, # Order rejected, No Trading permissions
@@ -166,7 +165,7 @@ Example
     sb = ib.subscribe( :OpenOrder ){|m| q << m.order if m.order.local_id.to_i == the_local_id.to_i }
     #  modify order (parameter)
     order.account =  account  # assign the account_id to the account-field of IB::Order
-    self.orders.update_or_create order, :order_ref
+    self.orders.save_insert order, :order_ref
     order.auto_adjust  if respond_to?( :auto_adjust ) && auto_adjust # /defined in  file order_handling.rb
     if convert_size
       order.action = order.total_quantity.to_i < 0 ? :sell : :buy unless order.action == :sell
@@ -177,7 +176,7 @@ Example
     order.attributes.merge! order.contract.order_requirements unless order.contract.order_requirements.blank?
     #  con_id and exchange fully qualify a contract, no need to transmit other data
     #  if no contract is passed to order.place, order.contract is used for placement
-    the_contract = order.contract.con_id.to_i >0 ? Contract.new( con_id: order.contract.con_id, exchange: order.contract.exchange) : nil
+    the_contract = order.contract.con_id.to_i > 0 ? Contract.new( con_id: order.contract.con_id, exchange: order.contract.exchange) : nil
     the_local_id = order.place the_contract # return the local_id
     # if transmit is false, just include the local_id in the order-record
     Thread.new{  if order.transmit  || order.what_if  then sleep 1 else sleep 0.001 end ;  q.close }
