@@ -1,10 +1,10 @@
 # ib-api
 Ruby interface to Interactive Brokers' TWS API 
 
-Reimplementation of the basic functions of ib-ruby
+Reimplementation of ib-ruby
 
 ---
-__STATUS: Placement of orders is currently broken__
+__STATUS: Gem-Release is still pending
 
 ---
 
@@ -22,7 +22,7 @@ Install in the usual way
 $ gem install ib-api
 ```
 
-In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `received-Array`.
+In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `received-array`.
 
 It needs just a few lines of code to place an order
 
@@ -71,10 +71,15 @@ Currently implemented plugins
 
 * connection-tools: ensure that a connection is established and active
 * verify:  get contract details from the tws
+* symbols: use predefined symbols 
 * managed-accounts: fetch and organize account- and portfoliovalues
+* advanced-account: perform account-based previewing, opening, modifying and closing of Positions
+* process-orders: account-based bookkeeping of orders
+* auto-adjust: properly adjust the orderprice to the next valid min-tick of the contract
 * market-price: fetch the current market-price of a contract
 * eod:  retrieve EOD-Data for the given contract
 * greeks: read current option greeks
+* roll: easy rolling of futures and options
 * option-chain: build option-chains for given strikes and expiries 
 * spread-prototypes:  create limit, stop, market, etc. orders through prototypes
 * probability-of-expiring: calculate the probability of expiring for the option-contract
