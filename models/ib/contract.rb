@@ -211,7 +211,8 @@ module IB
 			the_attributes = [ :sec_type, :symbol , :con_id,   :exchange, :right,
 									  :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
 								:multiplier,  :primary_exchange, :trading_class, :description ]
-      new_contract= self.class.new invariant_attributes.select{|k,_| the_attributes.include? k }.compact
+      new_contract= self.class.new( invariant_attributes.select{|k,_| the_attributes.include? k }
+                                                        .transform_values{|v| v.is_a?(Numeric)? v : v.to_s.upcase } )
       new_contract[:description] = if @description.present?
                                      @description
                                    elsif contract_detail.present?
@@ -227,7 +228,7 @@ module IB
 		#
     # for convenience
 		# con_id, local_symbol and last_trading_day are resetted,
-    # the link to contract-details is  savaged
+    # the link to contract-details is savaged
     #
     # Example
     #   ge =  Stock.new( symbol: :ge).verify.first
@@ -270,8 +271,8 @@ module IB
     # Contract comparison
 
     def == other  # :nodoc:
-      a = ->(e){ e.invariant_attributes.select{|y,_| ![:description, :include_expired].include? y} }
-      self.call(a) == other.call(a)
+      a = ->(e){ e.essential.invariant_attributes.select{|y,_| ![:description, :include_expired].include? y} }
+      a.call(self) == a.call(other)
     end
 
 #    def to_s

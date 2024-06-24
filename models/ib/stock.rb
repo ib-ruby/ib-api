@@ -8,9 +8,13 @@ module IB
 			super.merge :sec_type => :stock, currency:'USD', exchange:'SMART'
 		end
 
-		def to_human 
-			att =  [ symbol, 
-						  currency, ( exchange == 'SMART' ? nil: exchange ), 
+    def merge **new_attributes
+      super( **{ trading_class: '', primary_exchange: '' }.merge(new_attributes) )
+    end
+
+		def to_human
+			att =  [ symbol,
+						  currency, ( exchange == 'SMART' ? nil: exchange ),
 							(primary_exchange.present? && !primary_exchange.empty? ? primary_exchange : nil),
 							@description.present? ? " (#{@description}) " : nil,
 			       ].compact
