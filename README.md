@@ -5,10 +5,9 @@ Reimplementation of the basic functions of ib-ruby
 
 ---
 
-Try the V10 branch  (V 10.19)   
-*    Completed Zeitwerk integration.  
-*    Submitting of orders is still pending.  (Aprl 2024)
-
+Try the V10 branch  (TWS V 10.19 and above)   
+*    Zeitwerk integration.  
+*    Plugin's to ease automations
 ---
 
 __Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__  (_work in progress_)
