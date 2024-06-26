@@ -209,7 +209,7 @@ Example
 Account#ModifyOrder operates in two modi:
 
 First: The order is specified  via local_id, perm_id or order_ref.
-  It is checked, whether the order is still modifiable.
+  It is checked, whether the order is still modifyable.
   Then the Order ist provided through  the block. Any modification is done there.
   Important: The Block has to return the modified IB::Order
 

@@ -89,6 +89,19 @@ shared_examples_for 'OpenOrder message' do
 
 end
 
+RSpec.shared_examples_for "serialize limit order fields" do
+    it "Other Order Fields are zero or empty" do
+      expect( subject.serialize_auxilery_order_fields.flatten.compact).to eq [ "", 0 ]
+      expect( subject.serialize_volatility_order_fields.uniq).to eq [ "" ]
+      expect( subject.serialize_conditions).to eq [ 0 ]
+      expect( subject.serialize_scale_order_fields.uniq).to eq [""]
+      expect( subject.serialize_delta_neutral_order_fields.uniq).to eq [ "" ]
+      expect( subject.serialize_pegged_order_fields).to be_empty
+      expect( subject.serialize_mifid_order_fields.flatten.compact).to be_empty
+      expect( subject.serialize_peg_best_and_mid).to be_empty
+    end  # it
+
+end
 
 #RSpec.shared_examples_for 'OpenOrder message' do
 ##	let( :subject ){ the_returned_message }

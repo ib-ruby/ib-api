@@ -6,7 +6,7 @@ Plugin to automate the creation of common spreads
    Strangle build from: Contract. expiry:,  p: , c:
    Vertical.build from: Contract, expiry:, right: , buy: (a strike), sell: (a strike)
    Calendar.build from: Contract. right:, :strike:, front: (an expiry), back: (an expiry)
-   Butterfly.buiild from: Contract, right:, strike: , expiry: ,  front: (long-option strike), back: (long option strike)
+   Butterfly.build from: Contract, right:, strike: , expiry: ,  front: (long-option strike), back: (long option strike)
 
    StockSpread.fabricate  symbol1, symbol2, ratio:[ n, m ]  # only for us-stocks
 

@@ -37,12 +37,17 @@ end
 ## Connection helpers
 def establish_connection *plugins
 
-    if plugins.include? "managed-accounts"
+  if plugins.map( &:to_s ).include?("managed-accounts") || plugins.include?("process-orders") || plugins.include?('gateway')
       OPTS[:connection].merge connect: false
 		   ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger) do |c|
+           c.activate_plugin 'verify'
+           c.activate_plugin 'process-orders'
+           c.activate_plugin 'advanced-account'
            c.activate_plugin 'managed-accounts'
            c.initialize_managed_accounts
+           c.initialize_order_handling
            c.get_account_data
+           c.request_open_orders
        end
     else
       ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)

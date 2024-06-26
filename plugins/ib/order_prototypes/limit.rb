@@ -32,7 +32,7 @@ module IB
       class << self
 
     def defaults
-     Limit.defaults 
+     Limit.defaults
     end
 
       def aliases
@@ -44,7 +44,7 @@ module IB
       end
 
       def optional
-	 super.merge discretionary_amount: :decimal 
+	 super.merge discretionary_amount: :decimal
       end
 
       def summary
@@ -54,8 +54,24 @@ module IB
 	to increase the price range over which the limit order is eligible to execute.
 	The market sees only the limit price.
 	The discretionary amount adds to the given limit price. The main effort is
-	to hide your real intentions from the public.
+	to hide your real intentions from the public. Discretionary orders can be placed
+  for stocks and option on us exchanges, using 'SMART' routing.
 	HERE
+      end
+
+      def example
+  <<-HERE
+  You want to by a stock for 65 $ or less. Its trading is volatile, the spread is large.
+  There is a technical resistence at 64.5 $ and you think, that there will be a price
+  floor somewhere between 64.5 and 65 $. You place a limit order
+  at 64.5 $, which appears in the order book. Secretly, you instruct your broker to
+  fill the order, if the price is lower then 65 $. Chances for a filling are inceased.
+
+  ```
+  dc_order =  IB::Discretionary.order size: 1000, price: 65, dc: 0.5
+  account.place order: dc_order, contract: IB::Stock.new( symbol: 'BN' )
+  ```
+  HERE
       end
       end
     end

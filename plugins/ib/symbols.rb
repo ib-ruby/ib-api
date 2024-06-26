@@ -108,6 +108,8 @@ module IB
 
 
  Connection.current.activate_plugin "verify"
+ Connection.current.activate_plugin "roll"
+ Connection.current.activate_plugin "spread-prototypes"
  [ :forex, :futures, :stocks, :index, :cfd, :commodity, :options, :combo, :bonds, :abstract ].each do  |pt|
     Connection.current.activate_plugin "symbols/#{pt.to_s}"
  end
