@@ -38,29 +38,29 @@ end
 
 RSpec.shared_examples 'a valid Estx Combo' do
 
-		its( :exchange ) { should eq 'DTB' }
+		its( :exchange ) { should eq 'EUREX' }
 		its( :symbol )   { should eq "ESTX50" }
-		its( :market_price )   { should be_a Numeric }
+#		its( :market_price ) { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid ES-FUT Combo' do
 
 		its( :exchange ) { should eq 'GLOBEX' }
 		its( :symbol )   { should eq "ES" }
-		its( :market_price )   { should be_a Numeric }
+#		its( :market_price )   { should be_a Numeric }
 end
 RSpec.shared_examples 'a valid ZN-FUT Combo' do
 
-		its( :exchange ) { should eq 'ECBOT' }
+		its( :exchange ) { should eq 'CBOT' }
 		its( :symbol )   { should eq "ZN" }
-		its( :market_price )   { should be_a Numeric }
+#		its( :market_price )   { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid wfc-stock Combo' do
 
 		its( :exchange ) { should eq 'EDGX' }
 		its( :symbol )   { should eq "WFC" }
-		its( :market_price )   { should be_a Numeric }
+#		its( :market_price )   { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid Spread' do

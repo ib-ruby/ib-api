@@ -684,14 +684,14 @@ Format of serialisation
       misc << "benchmark con-id: #{reference_contract_id}" if reference_contract_id.to_i >0
       misc << "vola: #{volatility}" if volatility.present?
       misc << "fee: #{commission}" if commission.present?
-      misc << "id: #{local_id}" if local_id.to_i > 0
+      misc << "dc: #{discretionary_amount}," if discretionary_amount.to_i != 0
       "<Order: " + (order_ref.present? ? order_ref.to_s : '') +
         "#{self[:order_type]} #{self[:tif]} #{action} #{total_quantity} " + " @ " +
         (limit_price ? "#{limit_price} " : '') + "#{status} " +
         ((aux_price && aux_price != 0) ? "/#{aux_price}" : '') +
         "##{local_id}/#{perm_id} from #{client_id}" +
         (account ? "/#{account}" : '') +
-        misc.join( " " ) + ">"
+        (misc.empty? ? "" : " ") + misc.join( " " ) + ">"
     end
 
 
@@ -702,11 +702,12 @@ Format of serialisation
     def table_row
       misc = []
       misc <<  algo_strategy if algo_strategy.present?
-      misc << "benchmark con-id: #{reference_contract_id}" if reference_contract_id.to_i >0
-      misc << "vola: #{volatility}" if volatility.present?
-      misc << "fee: #{commission}" if commission.present?
-      misc << "id: #{local_id}" if local_id.to_i > 0
-      [ account,  order_ref.present? ? order_ref.to_s : status,
+      misc << " benchmark con-id: #{reference_contract_id}" if reference_contract_id.to_i > 0
+      misc << " vola: #{volatility}" if volatility.present?
+      misc << " fee: #{commission}" if commission.present?
+      misc << " id: #{local_id}" if local_id.to_i > 0
+      misc << " dc: #{discretionary_amount}," if discretionary_amount.to_i != 0
+        [ account,  order_ref.present? ? order_ref.to_s : status,
         contract.to_human[1..-2],
         self[:order_type] ,
         self[:tif],

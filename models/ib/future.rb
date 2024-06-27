@@ -32,6 +32,7 @@ module IB
       # This returns the next
       # quarterly expiration month after the current month.
       #
+      # IB::Future.next_expiry returns the next quaterly expiration
       # IB::Option.next_expiry returns the next monthly expiration
       #
       #

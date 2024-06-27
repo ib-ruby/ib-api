@@ -12,13 +12,12 @@ module IB
                                              expiry: IB::Option.next_expiry, trading_class: 'OESX' ) ,
           stoxx_calendar: IB::Calendar.build( from: IB::Symbols::Index.stoxx, strike: 5000, back: '2m' ,
                                              front: IB::Option.next_expiry, trading_class: 'OESX' ),
-         stoxx_butterfly: IB::Butterfly.fabricate( IB::Symbols::Options.stoxx.merge( strike: 4900 ),
-                                                   front: 4500, back: 5300,
-                                                   expiry: IB::Option.next_expiry
-                                                 ),
+         stoxx_butterfly: IB::Butterfly.fabricate( IB::Symbols::Options.stoxx.merge( strike: 4900,
+                                                                    expiry: IB::Option.next_expiry),
+                                                                    front: 4500, back: 5300),
           stoxx_vertical: IB::Vertical.build( from: IB::Symbols::Index.stoxx, sell: 4500, buy: 5000, right: :put,
                                             expiry: IB::Option.next_expiry, trading_class: 'OESX'),
-             zn_calendar: IB::Calendar.fabricate( IB::Symbols::Futures.zn, '3m') ,
+          zn_calendar: IB::Calendar.fabricate( IB::Symbols::Futures.zn.next_expiry, '3m') ,
 
              dbk_straddle: Bag.new( symbol: 'DBK', currency: 'EUR', exchange: 'EUREX', combo_legs:
 												 [  ComboLeg.new( con_id: 270581032 , action: :buy, exchange: 'DTB', ratio: 1),   #DBK Dez20 2018 C

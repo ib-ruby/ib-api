@@ -20,10 +20,16 @@ module IB
         error "Argument is a #{master.class}, but Verification failed" unless m.is_a? IB::Contract
         the_other_expiry =  the_other_expiry.values.first if the_other_expiry.is_a?(Hash)
         back = IB::Spread.transform_distance m.expiry, the_other_expiry
-        calendar =  m.roll expiry: back
-        error "Initialisation of Legs failed" if calendar.legs.size != 2
-				calendar.description =  the_description( calendar )
-        calendar  #  return fabricated spread
+        the_other_contract =  m.merge( expiry: back ).verify.first
+        error "Verification of second leg failed" unless the_other_contract.is_a? IB::Contract
+        target = IB::Spread.new exchange: m.exchange, symbol: m.symbol, currency: m.currency
+        target.add_leg m, action:  :buy
+        target.add_leg the_other_contract, action: :sell
+
+#        calendar =  m.roll expiry: back
+        error "Initialisation of Legs failed" if target.legs.size != 2
+				target.description =  the_description( target )
+        target  #  return fabricated spread
 			end
 
 
@@ -51,7 +57,7 @@ module IB
 											 from
 										 end
 				kind = { :front => fields.delete(:front), :back => fields.delete(:back) }
-				error "Specifiaction of :front and :back expiries necessary, got: #{kind.inspect}" if kind.values.any?(nil)
+				error "Specification of :front and :back expiries necessary, got: #{kind.inspect}" if kind.values.any?(nil)
 				initialize_spread( underlying ) do | the_spread |
           leg_prototype  = IB::Option.new underlying.attributes
             .slice( :currency, :symbol, :exchange)
@@ -81,7 +87,12 @@ module IB
 
 			def the_description spread
 			x= [ spread.combo_legs.map(&:weight) , spread.legs.map( &:last_trading_day )].transpose
-		 "<Calendar #{spread.symbol} #{spread.legs.first.right}(#{spread.legs.first.strike})[#{x.map{|w,l_t_d| "#{w} :#{Date.parse(l_t_d).strftime("%b %Y")} "}.join( '|+|' )} >"
+      f_or_o = if spread.legs.first.is_a?(IB::Future)
+                 "Future"
+               else
+                 "#{spread.legs.first.right}(#{spread.legs.first.strike})"
+               end
+      "<Calendar #{spread.symbol} #{f_or_o} [#{x.map{|w,l_t_d| "#{w}:#{Date.parse(l_t_d).strftime("%b %Y")}"}.join( '|+|' )}]>"
 			end
 		 end # class
     end	# module vertical

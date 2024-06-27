@@ -78,10 +78,12 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
       error "cannot add leg if no con_id is provided" if contract.con_id.blank?
 			#			weigth = 1 --> sets Combo.side to buy and overwrites the action statement
 #			leg_params[:weight] = 1 unless leg_params.key?(:weight) || leg_params.key?(:ratio)
+      leg_description = leg_params.extract!( :description )
+      leg_description = "#{leg_params[:action] || 'buy'} #{leg_params[:weight] || "1"} #{contract.to_human}" if leg_description.empty?
       self.combo_legs <<  ComboLeg.new( contract.attributes.slice( :con_id, :exchange ).merge( leg_params ))
-      self.description = "#{description.nil? ? "": description} added #{contract.to_human}" rescue "Spread: #{contract.to_human}"
+      self.description = "#{description.nil? ? "": description + " / "} #{leg_description}" rescue "Spread: #{contract.to_human}"
 
-			self  # return value to enable chaining
+			self  # return object to enable chaining
 
 
 		end

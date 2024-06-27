@@ -18,8 +18,8 @@ after(:all) do
 	close_connection
 end
 
-	let ( :the_option ){ IB::Symbols::Options.stoxx.merge( strike: 5000 ) }
-	let ( :the_bag ){ IB::Symbols::Combo::stoxx_butterfly }
+	let( :the_option ){ IB::Symbols::Options.stoxx.merge( strike: 5000 ) }
+	let( :the_bag ){ IB::Symbols::Combo::stoxx_butterfly }
 
 context "initialize with master-option"  do
 	subject { IB::Butterfly.fabricate(  the_option, back: the_option.strike - 50, front: the_option.strike + 50 )}
