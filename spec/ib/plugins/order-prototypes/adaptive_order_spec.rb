@@ -35,6 +35,7 @@ RSpec.describe IB::Order  do
       Then { order.serialize_pegged_order_fields.empty? }
       Then { order.serialize_mifid_order_fields.flatten.compact.empty? }
       Then { order.serialize_peg_best_and_mid.empty? }
+      Then { order.serialize_combo_legs.empty? }
     end
 
   end

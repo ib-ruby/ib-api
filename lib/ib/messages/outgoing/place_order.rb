@@ -17,37 +17,7 @@ module IB
           fields << contract.serialize_short(:primary_exchange, :sec_id_type)
           fields << order.serialize_main_order_fields
           fields << order.serialize_extended_order_fields
-
-          # Send combo legs for BAG requests (srv v8 and above)
-          if contract.bag?
-            fields.push(combo_legs.size)
-            fields += combo_legs.map do |the_leg|
-              array = [
-                the_leg.con_id,
-                the_leg.ratio,
-                the_leg.side.to_sup,
-                the_leg.exchange,
-                the_leg[:open_close],
-                the_leg[:short_sale_slot],
-                the_leg.designated_location,
-              ]
-              array.push(the_leg.exempt_code) if server_version >= KNOWN_SERVERS[:min_server_ver_sshortx_old] # 51
-              array
-            end.flatten
-
-            # TODO: order_combo_leg?
-            if server_version >= KNOWN_SERVERS[:min_server_ver_order_combo_legs_price]  # 61
-              fields.push(contract.combo_legs.size)
-              fields += contract.combo_legs.map { |leg| leg.price || '' }
-            end
-
-            # TODO: smartComboRoutingParams
-            if server_version >= KNOWN_SERVERS[:min_server_ver_smart_combo_routing_params]  # 57
-              fields.push(order.combo_params.size)
-              fields += order.combo_params.to_a
-            end
-          end
-
+          fields << order.serialize_combo_legs
           fields << order.serialize_auxilery_order_fields # incluing advisory order fields
 
           if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]
@@ -94,7 +64,7 @@ module IB
           fields.push  order.clearing_account
           fields.push  order.clearing_intent
 
-          fields.push(order.not_held) if server_version >= KNOWN_SERVERS[:min_server_ver_not_held] #44
+          fields.push(order.not_held) # if server_version >= KNOWN_SERVERS[:min_server_ver_not_held] #44
 
           if server_version >= KNOWN_SERVERS[:min_server_ver_delta_neutral]  # 40
             fields += contract.serialize_under_comp
@@ -108,14 +78,14 @@ module IB
           end
 
           fields.push(order.what_if)
-          fields.push(order.serialize_misc_options) if server_version >= KNOWN_SERVERS[:min_server_ver_linking] # 70
-          fields.push(order.solicided) if server_version >= KNOWN_SERVERS[:min_server_ver_order_solicited] # 73
-          if server_version >= KNOWN_SERVERS[:min_server_ver_randomize_size_and_price]   # 76
+          fields.push(order.serialize_misc_options) # if server_version >= KNOWN_SERVERS[:min_server_ver_linking] # 70
+          fields.push(order.solicided) #if server_version >= KNOWN_SERVERS[:min_server_ver_order_solicited] # 73
+#          if server_version >= KNOWN_SERVERS[:min_server_ver_randomize_size_and_price]   # 76
             fields += [
               order.random_size,
               order.random_price
             ]
-          end
+#          end
 
           fields << order.serialize_pegged_order_fields
 #          if server_version >= KNOWN_SERVERS[:min_server_ver_pegged_to_benchmark]  #  102

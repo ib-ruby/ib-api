@@ -1,10 +1,30 @@
-require 'combo_helper'
+require 'order_helper'
 
 RSpec.shared_examples 'a valid NQ-FUT Combo' do
 
 		its( :exchange ) { should eq 'CME' }
 		its( :symbol )   { should eq "NQ" }
 #		its( :market_price )   { should be_a Numeric }
+end
+
+RSpec.shared_examples 'serialize two Combo-legs' do
+
+		it "the con_id's are serialized" do
+      con_ids =  subject.contract.combo_legs.map &:con_id
+      buy_and_sell =  subject.contract.combo_legs.map{|y| y.action.to_s.upcase}
+      exchanges =  subject.contract.combo_legs.map &:exchange
+      expect( subject.serialize_combo_legs.size ).to eq 5
+      expect( subject.serialize_combo_legs.flatten.slice(1,8 )).to eq [ con_ids[0],
+                                                                        1,                # quantity
+                                                                        buy_and_sell[0],
+                                                                        exchanges[0],0,0,"",-1 ]
+      expect( subject.serialize_combo_legs.flatten.slice(9,8 )).to eq [ con_ids[1],
+                                                                        1,                # quantity
+                                                                        buy_and_sell[1],
+                                                                        exchanges[1],0,0,"",-1 ]
+
+#      expect( subject.serialize_combo_legs[1..2].map{|y| y.at 2} ).to eq con_ids
+    end
 end
 
 RSpec.describe "IB::Spread" do
@@ -39,22 +59,18 @@ RSpec.describe "IB::Spread" do
     end
 	end
 
-#	context "serialize the spread" do 
-#				subject { the_spread.serialize_rabbit }
-#
-#				its(:keys){ should eq ["Spread", "legs", "combo_legs", 'misc'] }
-#
-#				it "serializes the contract" do
-#					expect( IB::Spread.build_from_json( subject)).to eq the_spread 
-#				end
-#
-#
-#				it "json acts as valid transport medium" do
-#					json_medium =  subject.to_json
-#					expect( IB::Spread.build_from_json( JSON.parse( json_medium ))).to eq the_spread 
-#				end
-#
-#	end
+  context "serialize the spread in the order process" do
+    subject { IB::Limit.order contract: the_spread, size: 1, price: 45 }
+
+				it_behaves_like "serialize limit order fields"
+				it_behaves_like "serialize two Combo-legs"
+        it { expect( subject.serialize_combo_legs ).to eq [ the_spread.serialize_legs,
+                                                           0 ,[], 0 , [] ] }
+                                                   # leg-prices  + combo-params
+
+
+
+	end
 
 	context "leg management"   do
 		subject { the_spread }

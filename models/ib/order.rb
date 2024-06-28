@@ -292,7 +292,7 @@ module IB
 				#			 CondPriceMax, 62.0;		 -- max and min-price
 				#			 CondPriceMin.;60.0
 
-      prop :etrade_only, :firm_quote_only, :nbbo_price_cap
+      prop :etrade_only, :firm_quote_only, :nbbo_price_cap  #  depreciated, needed for open-order message
 #    prop :misc1, :misc2, :misc3, :misc4, :misc5, :misc6, :misc7, :misc8 # just 4 debugging
 
     alias order_combo_legs leg_prices
@@ -380,7 +380,7 @@ module IB
 			:auction_strategy => :none,
       :aux_price => server_version < KNOWN_SERVERS[ :min_server_ver_trailing_percent ] ?  0 : '',
       :block_order => false,
-      :combo_params =>[], #{},
+      :combo_params => Hash.new,
 			:conditions => [],
       :continuous_update => 0,
       :delta => "",
@@ -439,6 +439,18 @@ module IB
       )  # closing of merge
         end
 
+    def serialize_combo_legs
+      if contract.bag?
+        [ contract.serialize_legs,
+          leg_prices.size,
+          leg_prices,
+          combo_params.size,
+          combo_params.to_a
+        ]
+      else
+        []
+      end
+    end
     def serialize_main_order_fields
         include_short = -> (s) { if s == :short then 'SSHORT' else s == :short_exempt ? 'SSHORTX' : s.to_sup end }
         include_total_quantity = -> (q) { server_version >= KNOWN_SERVERS[ :min_server_ver_fractional_positions ] ?             q.to_d : q.to_i }
