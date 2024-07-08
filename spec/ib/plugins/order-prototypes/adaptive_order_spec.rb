@@ -1,4 +1,5 @@
 require 'main_helper'
+require 'order_helper'
 
 RSpec.describe IB::Order  do
 
@@ -23,19 +24,12 @@ RSpec.describe IB::Order  do
     context "Limit Orders are submitted as GTC" do
       Then { order.serialize_extended_order_fields  == ["GTC", nil, ACCOUNT, "O", 0, nil, true, 0, false, false, nil, 0, false, false] }
     end
-    context "Algo specific fields are serialized" do 
+    context "Algo specific fields are serialized" do
       Then { order.serialize_algo  == [ "Adaptive", 1, ["adaptivePriority", "Normal"] ] }
     end
-    context "Other Order Fields are zero or empty" do
-      Then { order.serialize_auxilery_order_fields.flatten.compact  == [ "", 0 ] }
-      Then { order.serialize_volatility_order_fields.uniq == [ "" ] }
-      Then { order.serialize_conditions  == [ 0 ] }
-      Then { order.serialize_scale_order_fields.uniq ==  [""] }
-      Then { order.serialize_delta_neutral_order_fields.uniq == [ "" ] }
-      Then { order.serialize_pegged_order_fields.empty? }
-      Then { order.serialize_mifid_order_fields.flatten.compact.empty? }
-      Then { order.serialize_peg_best_and_mid.empty? }
-      Then { order.serialize_combo_legs.empty? }
+    context "Order specifies as Limit" do
+      subject{ order }
+      it_behaves_like "serialize limit order fields"
     end
 
   end
