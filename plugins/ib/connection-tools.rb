@@ -57,7 +57,6 @@ Provides
 			result #  return value
 		end
 
-    # Alternative to `Connection#connect'.
     #
     # Tries to connect to the api. If the connection could not be established, waits
     # 10 sec. or one minute and reconnects.
@@ -65,11 +64,11 @@ Provides
     # Unsuccessful connecting attemps are logged.
     #
     #
-    def safe_connect maximal_count_of_retry=100
+    def try_connection maximal_count_of_retry=100
 
       i= -1
       begin
-        connect
+        _try_connection
       rescue  Errno::ECONNREFUSED => e
         i+=1
         if i < maximal_count_of_retry
@@ -93,22 +92,25 @@ Provides
       rescue IB::Error => e
         logger.info e
       end
-      true #  return success-flag
+      self #  return connection
     end # def
+
   end
 
   module ReConnect
     def safe_reconnect
       used_plugins = current.plugins
       used_client_id = current.client_id
+      used_host =  current.host
+      used_port =  current.port
       used_received =  if current.received.nil? || current.received.empty?
                          false
                        else
                          true
                        end
-      current.disconnect
+      current &.disconnect
       current = nil
-      c = Connection.new client_id: used_client_id
+      c = Connection.new client_id: used_client_id, host: used_host, port: used_port
 
 
     end
@@ -116,8 +118,10 @@ Provides
   end
 
   class Connection
+    alias _try_connection try_connection
     include ConnectionTools
-    extend ReConnect
+    #extend ReConnect
   end
+
 
 end

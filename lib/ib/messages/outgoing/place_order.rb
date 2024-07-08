@@ -13,14 +13,15 @@ module IB
           error 'contract has to be specified' unless contract.is_a? IB::Contract
 
           # send place order msg
-          fields = [ super ]
-          fields << contract.serialize_short(:primary_exchange, :sec_id_type)
-          fields << order.serialize_main_order_fields
-          fields << order.serialize_extended_order_fields
-          fields << order.serialize_combo_legs
-          fields << order.serialize_auxilery_order_fields # incluing advisory order fields
+          fields = [ super ,
+                    contract.serialize_short(:primary_exchange, :sec_id_type),
+                    order.serialize_main_order_fields,
+                    order.serialize_extended_order_fields,
+                    order.serialize_combo_legs,
+                    order.serialize_auxilery_order_fields # incluing advisory order fields
+                    ]
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]  # 103
             fields.push(order.model_code )
           end
 
@@ -29,7 +30,7 @@ module IB
             order.designated_location # only populate when short_sale_slot == 2    (Institutional)
           ]
 
-          fields.push(order.exempt_code) if server_version >= KNOWN_SERVERS[:min_server_ver_sshortx_old]
+          fields.push(order.exempt_code) #if server_version >= KNOWN_SERVERS[:min_server_ver_sshortx_old]
 
           fields.push(order[:oca_type])
           fields += [
@@ -38,10 +39,10 @@ module IB
             order.all_or_none,
             order.min_quantity,
             order.percent_offset,
-            false, # was: order.etrade_only || false,  desupported in TWS > 981
-            false, # was: order.firm_quote_only || false,    desupported in TWS > 981
-            '', ## desupported in TWS > 981, too. maybe we have to insert a hard-coded "" here
-            order[:auction_strategy], # AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
+            false, # etrade_only ,  desupported in TWS > 981
+            false, # firm_quote_only ,    desupported in TWS > 981
+            '', ## desupported in TWS > 981, too.
+            order[:auction_strategy], # one of: AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
             order.serialize_advanced_option_order_fields,
             order.override_percentage_constraints,
             order.serialize_volatility_order_fields,
@@ -64,43 +65,20 @@ module IB
           fields.push  order.clearing_account
           fields.push  order.clearing_intent
 
-          fields.push(order.not_held) # if server_version >= KNOWN_SERVERS[:min_server_ver_not_held] #44
+          fields.push(order.not_held)
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_delta_neutral]  # 40
-            fields += contract.serialize_under_comp
-          end
+          fields << contract.serialize_under_comp
+          fields << order.serialize_algo
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_algo_orders]  # 41
-            fields += order.serialize_algo
-          end
-          if server_version >= KNOWN_SERVERS[:min_server_ver_algo_id]   # 71 
-            fields.push(order.algo_id)
-          end
-
+          fields.push(order.algo_id)
           fields.push(order.what_if)
-          fields.push(order.serialize_misc_options) # if server_version >= KNOWN_SERVERS[:min_server_ver_linking] # 70
-          fields.push(order.solicided) #if server_version >= KNOWN_SERVERS[:min_server_ver_order_solicited] # 73
-#          if server_version >= KNOWN_SERVERS[:min_server_ver_randomize_size_and_price]   # 76
-            fields += [
-              order.random_size,
-              order.random_price
-            ]
-#          end
+          fields.push(order.serialize_misc_options)
+          fields.push(order.solicided)
+          fields << [ order.random_size, order.random_price ]
 
           fields << order.serialize_pegged_order_fields
-#          if server_version >= KNOWN_SERVERS[:min_server_ver_pegged_to_benchmark]  #  102
-#            if order[:order_type] == 'PEG BENCH'
-#              fields += [
-#                order.reference_contract_id,
-#                order.is_pegged_change_amount_decrease,
-#                order.pegged_change_amount,
-#                order.reference_change_amount,
-#                order.reference_exchange_id
-#              ]
-#            end
-#
-            fields += order.serialize_conditions
-            fields += [
+          fields << order.serialize_conditions
+          fields << [
               order.adjusted_order_type,
               order.trigger_price,
               order.limit_price_offset,
@@ -109,9 +87,8 @@ module IB
               order.adjusted_trailing_amount,
               order.adjustable_trailing_unit
             ]
-#          end
 
-          fields.push(order.ext_operator) if server_version >= KNOWN_SERVERS[:min_server_ver_ext_operator]
+          fields.push(order.ext_operator) if server_version >= KNOWN_SERVERS[:min_server_ver_ext_operator] #  105
 
           fields << order.serialize_soft_dollar_tier
 
@@ -119,47 +96,47 @@ module IB
 
           fields << order.serialize_mifid_order_fields
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_price_for_hedge]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_price_for_hedge]  # 141
             fields.push(order.dont_use_auto_price_for_hedge)
           end
 
-          fields.push(order.is_O_ms_container) if server_version >= KNOWN_SERVERS[:min_server_ver_order_container]
+          fields.push(order.is_O_ms_container) if server_version >= KNOWN_SERVERS[:min_server_ver_order_container] # 145
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_d_peg_orders]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_d_peg_orders]  # 148
             fields.push(order.discretionary_up_to_limit_price)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_price_mgmt_algo]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_price_mgmt_algo] # 151
             fields.push(order.use_price_management_algo)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_duration]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_duration]  # 158
             fields.push(order.duration)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_post_to_ats]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_post_to_ats]  # 160
             fields.push(order.post_to_ats)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_cancel_parent]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_cancel_parent] # 162
             fields.push(order.auto_cancel_parent)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_advanced_order_reject]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_advanced_order_reject] # 166
             fields.push(order.advanced_order_reject)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_manual_order_time]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_manual_order_time] # 169
             fields.push(order.manual_order_time)
           end
 
           fields << order.serialize_peg_best_and_mid
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_customer_account]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_customer_account]  # 183
             fields.push(order.customer_account)
           end
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_professional_customer]
+          if server_version >= KNOWN_SERVERS[:min_server_ver_professional_customer]  # 184
             fields.push(order.professional_account)
           end
 

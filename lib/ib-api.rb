@@ -6,6 +6,7 @@ require 'active_support/core_ext/module/attribute_accessors.rb'
 require 'class_extensions'
 require 'logger'
 require 'terminal-table'
+require 'workflow'
 
 #require 'ib/version'
 #require 'ib/connection'
@@ -22,6 +23,8 @@ loader.ignore("#{__dir__}/ib/contract.rb")
 loader.ignore("#{__dir__}/ib/constants.rb")
 loader.ignore("#{__dir__}/ib/errors.rb")
 loader.ignore("#{__dir__}/ib/order_condition.rb")
+loader.ignore("#{__dir__}/ib/messages/outgoing/old-place-order.rb")
+loader.ignore("#{__dir__}/ib/messages/outgoing/new-place-order.rb")
 #loader.ignore("#{__dir__}/models")
 loader.inflector.inflect(
                          "ib" => "IB",

@@ -377,8 +377,10 @@ This has to be done manually in the provided block
 #<PortfolioValue: DU167348 Pos=-3 @ 168.933;Value=-5067.99;PNL=603.51 unrealized;<Option: ESTX50 20181221 call 3000.0  EUR>
 #<PortfolioValue: DU167348 Pos=-3 @ 142.574;Value=-4277.22;PNL=-867.72 unrealized;<Option: ESTX50 20181221 put 3200.0  EUR>
 # => nil
-#		#
-
+#
+  #
+  #	load  managed-accounts first and switch to gateway-mode
+Connection.current.activate_plugin 'managed-accounts'
 class Account 
    include Advanced
 end

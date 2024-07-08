@@ -285,9 +285,9 @@ module IB
       :leg_prices,
       :algo_params,
       :combo_params   # Valid tags are LeginPrio, MaxSegSize, DontLeginNext, ChangeToMktTime1,
-		      # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed,
-		      # CondPriceMin, CondPriceMax, and PriceCondConid.
-		# to set an execuction-range of a security:
+		                  # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed,
+            		      # CondPriceMin, CondPriceMax, and PriceCondConid.
+    		# to set an execuction-range of a security:
 				#			 PriceCondConid, 10375;  -- conid of the combo-leg
 				#			 CondPriceMax, 62.0;		 -- max and min-price
 				#			 CondPriceMin.;60.0

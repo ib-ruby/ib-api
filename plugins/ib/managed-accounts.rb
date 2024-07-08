@@ -72,16 +72,13 @@ transmission of available managed-accounts.
       @accounts = []
 
       if connected?
-        disconnect
+        disconnect!
         sleep(0.1)
       end
-      if @plugins.include? "connection-tools"
-        safe_connect
-      else
-        connect()
-      end
+      try_connection!
       result = queue.pop
       unsubscribe man_id, rec_id, error_id
+
       @accounts
 
 		end # def
@@ -125,6 +122,8 @@ Raises an IB::Error if less then 100 items are received.
 
 		subscription = subscribe_account_updates( continuously: false )
     download_end = nil  # declare variable
+    received_array_status = received
+    self.received = false
 
 		accounts = clients if accounts.empty?
     logger.warn{ "No active account present. AccountData are NOT requested" } if accounts.empty?
@@ -167,6 +166,8 @@ Raises an IB::Error if less then 100 items are received.
 		end
     send_message :RequestAccountData, subscribe: false  ## do this only once
     unsubscribe subscription
+
+    self.received = received_array_status
   rescue IB::TransmissionError => e
         unsubscribe download_end unless download_end.nil?
         unsubscribe subscription
@@ -227,10 +228,13 @@ Raises an IB::Error if less then 100 items are received.
 		end # subscribe
 	end  # def
 
+  alias activate_managed_accounts subscribe_account_updates
+
 
   end
 
   class Connection
     include ManagedAccounts
+    current.activate_managed_accounts!
   end
 end

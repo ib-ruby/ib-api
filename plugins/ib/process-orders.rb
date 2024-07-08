@@ -146,6 +146,9 @@ end # module
 class Connection
   include ProcessOrders
 end
+Connection.current.activate_plugin 'managed-accounts'
+Connection.current.initialize_managed_accounts!
+Connection.current.initialize_order_handling!
 
 end   ##  module IB
 

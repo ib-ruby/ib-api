@@ -1,4 +1,3 @@
-
 module IB
   # Encapsulates API connection to TWS or Gateway
   class Connection
@@ -15,12 +14,9 @@ module IB
 
   include ::Support::Logging   # provides default_logger
   include  Plugins
-
+  include Workflow
 
     mattr_accessor :current
-    # Please note, we are realizing only the most current TWS protocol versions,
-    # thus improving performance at the expense of backwards compatibility.
-    # Older protocol versions support can be found in older gem versions.
 
     attr_accessor  :socket #   Socket to IB server (TWS or Gateway)
     attr_accessor  :next_local_id # Next valid order id
@@ -28,17 +24,58 @@ module IB
     attr_accessor  :server_version
     attr_accessor  :client_version
     attr_accessor  :host
+    attr_accessor  :received
     attr_accessor  :port
     attr_accessor  :plugins
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
-    def initialize host: '127.0.0.1:4002',
-      port: nil, # IB Gateway connection (default --> demo) 4001:  production
+      def workflow_state
+            @workflow_state
+      end
+
+    workflow do
+      state :virgin do
+        event :try_connection,            transitions_to: :ready
+        event :activate_managed_accounts, transitions_to: :gateway_mode
+        event :collect_data,              transitions_to: :lean_mode
+      end
+
+      state :lean_mode do
+        event :try_connection,            transitions_to: :ready
+      end
+
+      state :gateway_mode do
+        event :try_connection,            transitions_to: :ready
+        event :initialize_managed_accounts, transitions_to: :account_based_operations
+      end
+      state :ready do
+        event :initialize_managed_accounts, transitions_to: :account_based_operations
+        event :disconnect,                transitions_to: :disconnected
+      end
+      state :disconnected do
+        event :try_connection,            transitions_to: :ready
+      end
+
+      state :account_based_operations do
+        event :disconnect,                transitions_to: :disconnected
+        event :initialize_order_handling, transitions_to: :account_based_orderflow
+      end
+
+      state :account_based_orderflow
+
+       on_transition do |from, to, triggering_event, *event_args|
+         logger.warn{ "Workflow:: #{workflow_state} -> #{to}" }
+       end
+    end
+
+
+    def initialize host: '127.0.0.1:4002',  # combination of host +  port
+      port: nil,
       #:port => '7497', # TWS connection  --> demo				  7496:  production
-      connect: true, # Connect at initialization
-      received:  true, # Keep all received messages in a @received Hash
-      #									 redis: false,    # future plans
+      # connect: true, # Connect at initialization                           ---> disabled in favour of Connection.new.try_connection!
+      # received:  true, # Keep all received messages in a @received Hash    ---> disabled; automatically disabled in lean- and
+      #                                                                                     gateway-modus
       logger: nil,
       client_id:  rand( 1001 .. 9999 ) ,
       client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
@@ -49,6 +86,7 @@ module IB
     # V 974 release motes
     # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
+      Connection.current = self
       self.class.configure_logger logger
       # enable specification of host and port through host: 'localhost:4002' as parameter
 			host, port = (host+':'+port.to_s).split(':')
@@ -64,17 +102,18 @@ module IB
       @subscribe_lock = Mutex.new
       @receive_lock = Mutex.new
       @message_lock = Mutex.new
+      @connected = false
 
       @plugins.each do |name|
+        puts "activating #{name}"
         activate_plugin name
       end
 
-      @connected = false
       @next_local_id = nil
 
       # TWS always sends NextValidId message at connect -subscribe save this id
       self.subscribe(:NextValidId) do |msg|
-        self.logger.progname = "Connection#connect"
+        self.logger.progname = "Connection"
         @next_local_id = msg.local_id
         self.logger.info { "Got next valid order id: #{@next_local_id}." }
       end
@@ -83,12 +122,10 @@ module IB
       # Its intended for globally available subscriptions of tws-messages
       yield self if block_given?
 
-      if connect
-        update_next_order_id
-        Kernel.exit if @next_local_id.nil?  # emergency exit.
+#      if connect
+#        Kernel.exit if @next_local_id.nil?  # emergency exit.
         # update_next_order_id should have raised an error
-      end
-      Connection.current = self
+#      end
     end
 
 		# read actual order_id and
@@ -96,15 +133,8 @@ module IB
 		def update_next_order_id
       q = Queue.new
       subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
-      unless connected?
-        if @plugins.include? "connection-tools"
-          safe_connect
-        else
-          connect() # connect implies requesting NextValidId
-        end
-      else
-        send_message :RequestIds
-      end
+      try_connection! unless connected?
+      send_message :RequestIds
       th = Thread.new { sleep 5; q.close }
       @next_local_id = q.pop
       if q.closed?
@@ -117,10 +147,13 @@ module IB
     end
 
 		### Working with connection
+    def connected?
+      @connected
+    end
     #
-    ### connect can be called directly, but is mostly addressed through update_next_order_id
-		def connect
-			logger.progname='IB::Connection#connect'
+    ### Event  –  call through  Connection-object.try_connection!
+		def try_connection
+			logger.progname='IB::Connection#Event:TryConnection'
 			if connected?
 				error  "Already connected!"
 				return
@@ -135,6 +168,7 @@ module IB
 
         @remote_connect_time = DateTime.parse the_message.shift.freeze
         @local_connect_time = Time.now.freeze
+        @connected = true
 			end
 
 			# V100 initial handshake
@@ -143,33 +177,26 @@ module IB
 			version = 2
 			#			optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
 			socket.send_messages start_api, version, @client_id  , @optional_capacities
-			@connected = true
 			logger.fatal{ "Connected to server, version: #{@server_version}, " +
                  "using client-id: #{client_id},\n   connection time: " +
 								 "#{@local_connect_time} local, " +
-									 "#{@remote_connect_time} remote." }
-
+								 "#{@remote_connect_time} remote." }
 			start_reader
+    #  update_next_order_id
 		end
 
-    alias open connect # Legacy alias
 
+    ### Event  –  call through  Connection-object.disconnect!
     def disconnect
       if reader_running?
         @reader_running = false
         @reader_thread.join
       end
-      if connected?
-        socket.close
-        @connected = false
-      end
+      socket.close
+      @connected = false
     end
 
-    alias close disconnect # Legacy alias
 
-    def connected?
-      @connected
-    end
 
     ### Working with message subscribers
 
@@ -262,8 +289,7 @@ module IB
     # Wait for specific condition(s) - given as callable/block, or
     # message type(s) - given as Symbol or [Symbol, times] pair.
     # Timeout after given time or 1 second.
-		#
-		# wait_for depends heavyly on Connection#received. If collection of messages through recieved
+		# wait_for depends on Connection#received. If collection of messages through recieved
 		# is turned off, wait_for loses most of its functionality
 
     def wait_for *args, &block
@@ -348,8 +374,8 @@ module IB
       end
 			rescue Errno::EPIPE
 				logger.error{ "Broken Pipe, trying to reconnect"  }
-				disconnect
-				connect
+				disconnect!
+				try_connection!
 				retry
 			end
 			## return the transmitted message
@@ -396,7 +422,7 @@ module IB
     def start_reader
       if @reader_running
         @reader_thread
-      elsif connected?
+      else # connected?  # if called frm try_connection, the connected state is not set
         begin
         Thread.abort_on_exception = true
         @reader_running = true
@@ -405,8 +431,8 @@ module IB
           logger.fatal e.message
           Kernel.exit
         end
-      else
-        error "Could not start reader, not connected!", :reader, true
+#      else
+#        error "Could not start reader, not connected!", :reader, true
       end
     end
 
@@ -473,7 +499,7 @@ module IB
 			end
 		end
 	end
-  private
+#  private
     # safe access to account-data
 		def account_data account_or_id=nil
 

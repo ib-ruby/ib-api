@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-### loads the active-orient environment 
+### loads the active-orient environment
 ### and starts an interactive shell
 ###
 ### Parameter: t)ws | g)ateway (or number of port ) Default: Gateway ,
@@ -33,13 +33,12 @@ end # Array
 
 
 # read items from console.yml
-read_yml = -> (key) do
+  read_yml = -> (key) do
 		YAML::load_file( File.expand_path('../console.yml',__FILE__))[key]
 	end
 
-
   puts
-  puts ">> IB-Core Interactive Console <<"
+  puts ">> IB-API Interactive Console <<"
   puts '-'* 45
   puts
   puts "Namespace is IB ! "
@@ -50,57 +49,39 @@ read_yml = -> (key) do
   client_id = ARGV[1] || read_yml[:client_id]
   specified_host = ARGV[0] || 'Gateway'
 	host =  case specified_host
-					when Integer
-						specified_port  # just use the number
 					when /^[gG]/ 
 						read_yml[:gateway]
 					when /^[Tt]/
 						read_yml[:tws]
+          else
+            raise "Specify target from console.yml: `g|t` instead of #{specified_host}"
 					end
-
   ARGV.clear
 
-  ## The Block takes instructions which are executed  after initializing all instance-variables
-  ## and prior to the connection-process
-  ## Here we just subscribe to some events
-  C =  Connection.new  client_id: client_id, host: host, connect: false do |c|  # future use__ , optional_capacities: "+PACEAPI"  do |c|
-    c.activate_plugin 'connection-tools'
-    c.activate_plugin 'verify'
-    c.activate_plugin 'process-orders'
-    c.activate_plugin 'advanced-account'
-    c.activate_plugin 'managed-accounts'
+  C =  Connection.new  client_id: client_id, host: host
+  C.logger.level = Logger::WARN
 
-   # c.subscribe( :ContractData, :BondContractData) { |msg| c.logger.info { msg.contract.to_human } }
-   # c.subscribe( :Alert, :ContractDataEnd, :ManagedAccounts, :OrderStatus ) {| m| c.logger.info { m.to_human } }
-   # c.subscribe( :PortfolioValue, :AccountValue, :OrderStatus, :OpenOrderEnd, :ExecutionData ) {| m| c.logger.info { m.to_human }}
-#    c.subscribe :ManagedAccounts do  |msg|
-#        puts "------------------------------- Managed Accounts ----------------------------------"
-#				puts "Detected Accounts: #{msg.accounts.account.join(' -- ')} "
-#				puts
-#    end
+  C.subscribe(:Alert){ |m| puts "A: "+ m.message }
+  C.subscribe(:AccountUpdateTime){  }
 
-#    c.subscribe( :OpenOrder){ |msg|  "Open Order detected and stored: C.received[:OpenOrders] " }
-    c.subscribe(IB::Messages::Incoming::AccountUpdateTime){  }
-
-    c.initialize_managed_accounts
-    c.initialize_order_handling
-    c.get_account_data
-    c.request_open_orders
-	end
-  puts  "Connection established on  #{host}, client_id #{client_id} used"
-
-  C.activate_plugin "symbols"
-  C.activate_plugin "market-price"
-  C.activate_plugin "order-prototypes"
-  C.activate_plugin "spread-prototypes"
+  C.received = true
+  C.activate_plugin :connection_tools, :symbols, :market_price,
+                    "order-prototypes", "spread-prototypes",
+                    "advanced_account", 'process_orders'
+  C.logger.level = Logger::INFO
+  C.get_account_data
+  C.request_open_orders
   C.logger.level = Logger::ERROR
+  puts  "Connection established on  #{host}"
+
   unless  C.received[:OpenOrder].blank?
         puts "---------------------------------------- OpenOrders -------------------------------------------"
         puts C.clients.map{ |c| c.orders.map &:to_human }.flatten.join("\n")
   end
-  puts
-        puts "--------------------------------- Active Plugins  ---------------------------------------------"
-  puts  C.plugins.delete_if{ |x| x =~ /\// }.sort.join(" - ")
+  puts ""
+  puts  Terminal::Table.new title: 'Active Plugins',
+                             rows: C.plugins.delete_if{ |x| x =~ /\// }.sort.each_slice(4),
+                            style: { border: :unicode  }
   puts
   puts  "----> C    points to the connection-instance"
   puts
