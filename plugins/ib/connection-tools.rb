@@ -45,10 +45,10 @@ Provides
 					count +=1
           retry
 				rescue IB::Error # not connected
-					disconnect
+					disconnect!
           logger.info{"not connected ... trying to reconnect "}
           sleep 0.1
-          connect
+          try_connection!
 					count = 0
 					retry
 				end
@@ -94,6 +94,19 @@ Provides
       end
       self #  return connection
     end # def
+
+    private
+    def submit_to_alert_1102
+      current.subscribe( :Alert ) do
+        if [2102, 1101].include? msg.id.to_i # Connectivity between IB and Trader Workstation
+                                 #has been restored - data maintained.
+          current.disconnect!
+          sleep 0.1
+          current.check_connection
+        end
+      end
+
+    end
 
   end
 

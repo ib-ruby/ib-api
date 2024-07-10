@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe  IB::Connection do
-  Given( :ib  ) { IB::Connection.new connect: false }
+  Given( :ib  ) { IB::Connection.new }
   Then { ib.is_a? IB::Connection }
 
   # Check if all Messages are defined
@@ -17,16 +17,16 @@ end
 
 describe "Connection tests" do
   it "connect to localhost" do
-    c = IB::Connection.new host: OPTS[:connection][:host], port: OPTS[:connection][:port], connect: false
+    c = IB::Connection.new host: OPTS[:connection][:host], port: OPTS[:connection][:port]
     expect( c ).to be_a IB::Connection
-    c.connect
+    c.try_connection!
     expect( c.connected? ).to be_truthy
 
   end
   it "connect to localhost with host:port syntax" do  # expected: no GUI-TWS is running on localhost
     c = IB::Connection.new host: '127.0.0.1:4001', connect: false
     expect( c ).to be_a IB::Connection
-    expect{ c.connect }.to raise_error Errno::ECONNREFUSED
+    expect{ c.try_connection! }.to raise_error Errno::ECONNREFUSED
 
   end
 end

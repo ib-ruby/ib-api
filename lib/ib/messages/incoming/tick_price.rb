@@ -47,7 +47,7 @@ module IB
       TickPrice = def_message [1, 6], AbstractTick,
                               [:ticker_id, :int],
                               [:tick_type, :int],
-                              [:price, :float],
+                              [:price, :decimal],
                               [:size, :int],
                               [:can_auto_execute, :int]
 			class TickPrice

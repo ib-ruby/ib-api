@@ -166,11 +166,11 @@ Example
     #  modify order (parameter)
     order.account =  account  # assign the account_id to the account-field of IB::Order
     self.orders.save_insert order, :order_ref
-    order.auto_adjust  if respond_to?( :auto_adjust ) && auto_adjust # /defined in  file order_handling.rb
+    order.auto_adjust  if ib.plugins.include?( "auto-adjust" ) && auto_adjust
     if convert_size
-      order.action = order.total_quantity.to_i < 0 ? :sell : :buy unless order.action == :sell
-      logger.info{ "Converted ordersize to #{order.total_quantity} and triggered a #{order.action}  order"} if  order.total_quantity.to_i < 0
-      order.total_quantity  = order.total_quantity.to_i.abs
+      order.action = order.total_quantity.to_d < 0 ? :sell : :buy unless order.action == :sell
+      logger.info{ "Converted ordersize to #{order.total_quantity} and triggered a #{order.action}  order"} if  order.total_quantity.to_d < 0
+      order.total_quantity  = order.total_quantity.to_d.abs
     end
     # apply non_guarenteed and other stuff bound to the contract to order.
     order.attributes.merge! order.contract.order_requirements unless order.contract.order_requirements.blank?

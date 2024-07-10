@@ -49,11 +49,10 @@ module IB
      # method returns the (running) thread
      th = Thread.new do
        # about 11 sec after the request, the TWS returns :TickSnapshotEnd if no ticks are transmitted
-       # we don't have to implement out own timeout-criteria
+       # we don't have to implement our own timeout-criteria
        s_id = tws.subscribe(:TickSnapshotEnd){|x| q.push(true) if x.ticker_id == the_id }
        a_id = tws.subscribe(:Alert){|x| q.push(x) if [200, 354, 10167, 10168].include?( x.code )  && x.error_id == the_id }
        # TWS Error 354: Requested market data is not subscribed.
-       #					r_id = tws.subscribe(:TickRequestParameters) {|x| } # raise_snapshot_alert =  true  if x.snapshot_permissions.to_i.zero?  && x.ticker_id == the_id  }
 
        # subscribe to TickPrices
        sub_id = tws.subscribe(:TickPrice ) do |msg| #, :TickSize,  :TickGeneric, :TickOption) do |msg|
