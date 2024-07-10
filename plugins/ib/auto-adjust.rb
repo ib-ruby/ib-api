@@ -70,8 +70,8 @@ o.limit_price  => 151
         min_tick = contract.then{ |y| y.contract_detail.is_a?( IB::ContractDetail ) ? y.contract_detail.min_tick : y.verify.first.contract_detail.min_tick }
         # there are two attributes to consider: limit_price and aux_price
         # limit_price +  aux_price may be nil or an empty string. Then ".to_f.zero?" becomes true
-        self.limit_price= adjust_price.call(limit_price.to_f, min_tick) unless limit_price.to_f.zero?
-        self.aux_price= adjust_price.call(aux_price.to_f, min_tick) unless aux_price.to_f.zero?
+        self.limit_price= adjust_price.call(limit_price.to_d, min_tick) unless limit_price.to_d.zero?
+        self.aux_price= adjust_price.call(aux_price.to_d, min_tick) unless aux_price.to_d.zero?
       end
     end
   end

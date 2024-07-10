@@ -271,8 +271,16 @@ module IB
     # Contract comparison
 
     def == other  # :nodoc:
-      a = ->(e){ e.essential.invariant_attributes.select{|y,_| ![:description, :include_expired].include? y} }
-      a.call(self) == a.call(other)
+#      a = ->(e){ e.essential.invariant_attributes.select{|y,_| ![:description, :include_expired, :con_id, :trading_class, :primary_exchange].include? y} }
+      return true if self.con_id == other.con_id
+#      a.call(self) == a.call(other)
+      common_keys = self.invariant_attributes.keys & other.invariant_attributes.keys
+      common_keys.all? do |key|
+          value1 = attributes[key]
+          value2 = other.attributes[key]
+          next true if value1 == value2
+          value1.to_i.zero? || value2.to_i.zero? rescue true
+      end
     end
 
 #    def to_s

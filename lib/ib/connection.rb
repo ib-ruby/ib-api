@@ -55,6 +55,7 @@ module IB
       end
       state :disconnected do
         event :try_connection,            transitions_to: :ready
+        event :activate_managed_accounts, transitions_to: :gateway_mode
       end
 
       state :account_based_operations do
@@ -62,7 +63,9 @@ module IB
         event :initialize_order_handling, transitions_to: :account_based_orderflow
       end
 
-      state :account_based_orderflow
+      state :account_based_orderflow do
+        event :disconnect,                transitions_to: :disconnected
+      end
 
        on_transition do |from, to, triggering_event, *event_args|
          logger.warn{ "Workflow:: #{workflow_state} -> #{to}" }
