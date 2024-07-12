@@ -36,35 +36,35 @@ module IB
 
     workflow do
       state :virgin do
-        event :try_connection,            transitions_to: :ready
-        event :activate_managed_accounts, transitions_to: :gateway_mode
-        event :collect_data,              transitions_to: :lean_mode
+        event :try_connection,              transitions_to: :ready
+        event :activate_managed_accounts,   transitions_to: :gateway_mode
+        event :collect_data,                transitions_to: :lean_mode
       end
 
       state :lean_mode do
-        event :try_connection,            transitions_to: :ready
+        event :try_connection,              transitions_to: :ready
       end
 
       state :gateway_mode do
-        event :try_connection,            transitions_to: :ready
+        event :try_connection,              transitions_to: :ready
         event :initialize_managed_accounts, transitions_to: :account_based_operations
       end
       state :ready do
         event :initialize_managed_accounts, transitions_to: :account_based_operations
-        event :disconnect,                transitions_to: :disconnected
+        event :disconnect,                  transitions_to: :disconnected
       end
       state :disconnected do
-        event :try_connection,            transitions_to: :ready
-        event :activate_managed_accounts, transitions_to: :gateway_mode
+        event :try_connection,              transitions_to: :ready
+        event :activate_managed_accounts,   transitions_to: :gateway_mode
       end
 
       state :account_based_operations do
-        event :disconnect,                transitions_to: :disconnected
-        event :initialize_order_handling, transitions_to: :account_based_orderflow
+        event :disconnect,                  transitions_to: :disconnected
+        event :initialize_order_handling,   transitions_to: :account_based_orderflow
       end
 
       state :account_based_orderflow do
-        event :disconnect,                transitions_to: :disconnected
+        event :disconnect,                  transitions_to: :disconnected
       end
 
        on_transition do |from, to, triggering_event, *event_args|
@@ -402,6 +402,7 @@ module IB
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
+      puts "contract: #{contract.to_human}"
  #      order.modify contract, self    ## old
 			error "Unable to modify order; local_id not specified" if order.local_id.nil?
       order.modified_at = Time.now
