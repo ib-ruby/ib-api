@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="dborientdb,  database">
+<title>OrientDB - Working with the Data | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="OrientDB - Working with the Data">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">ib-ruby </li>
+  
+  
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="The IB-Ruby Project" href="index.html">The IB-Ruby Project</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Introduction" href="ibruby_introduction.html">Introduction</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Support" href="ibruby_support.html">Support</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Installation" href="#">Installation</a>
+      <ul>
+          
+          
+          
+          <li><a title="Setup Ruby and Install the Software." href="Setup_Ruby_and_Install_the_Software.html">Setup Ruby and Install the Software.</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Create a new Project" href="Create_a_new_project.html">Create a new Project</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Connection / Plugins" href="#">Connection / Plugins</a>
+      <ul>
+          
+          
+          
+          <li><a title="Connect to the TWS" href="connect_to_tws.html">Connect to the TWS</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Connection" href="connection.html">IB-Connection</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Ruby Console" href="console.html">IB-Ruby Console</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Jupyter Notebooks" href="notebook.html">Jupyter Notebooks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Messages" href="#">Messages</a>
+      <ul>
+          
+          
+          
+          <li><a title="List of Messages" href="message_correct_arguments.html">List of Messages</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request-ID" href="message_request_id.html">Request-ID</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request Market-Data" href="message_marketdata.html">Request Market-Data</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Contracts" href="#">Contracts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Specify and Query" href="Specify_and_query_contracts.html">Specify and Query</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Verify" href="Verify_contracts.html">Verify</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Market Price" href="market_price.html">Market Price</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Historical Data" href="Historical_data.html">Historical Data</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Expiry vs. Last-Trading-Day" href="expiry_and_last_trading_day.html">Expiry vs. Last-Trading-Day</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Watchlists" href="watchlists.html">Watchlists</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Spread Prototypes" href="spreads.html">Spread Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Rolling of Options and Futures" href="roll-options.html">Rolling of Options and Futures</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Chains" href="atm_options.html">Option-Chains</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Greeks" href="option_greeks.html">Option-Greeks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Orders" href="#">Orders</a>
+      <ul>
+          
+          
+          
+          <li><a title="Prototypes" href="order_prototypes.html">Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (plain vanilla)" href="order_placement.html">Placing Orders (plain vanilla)</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (advanced)" href="order_workflow.html">Placing Orders (advanced)</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Accounts" href="#">Accounts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="account_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Database  & Rails Integration" href="#">Database  & Rails Integration</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="database_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">OrientDB - Working with the Data</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <p><strong><em>IB-Ruby</em></strong> translates  data received from the <em>TWS</em> in <code class="language-plaintext highlighter-rouge">IB::Model</code> objects which are subsequently stored
+in database classes prefixed by <code class="language-plaintext highlighter-rouge">'ib'</code>(Namespace: <code class="language-plaintext highlighter-rouge">IB</code>).</p>
+
+<p>The date-grid is implemented by database-classes prefixed by <code class="language-plaintext highlighter-rouge">'tg'</code> 
+(Namespace: <code class="language-plaintext highlighter-rouge">TG</code>).</p>
+
+<p>It is advisable to put calculations and further analyses to another namespace.</p>
+
+<h3 id="hcportfolio">HC::Portfolio</h3>
+
+<p>As living example, <code class="language-plaintext highlighter-rouge">HC::Portfolio</code> is included, which is initialized through <code class="language-plaintext highlighter-rouge">bake</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">HC</span>
+ <span class="k">class</span> <span class="nc">Portfolio</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">bake</span>  
+   <span class="n">gateway</span><span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">OrientGateway</span><span class="p">.</span><span class="nf">current</span>                 <span class="c1"># OrientDB-Instance</span>
+   <span class="n">gateway</span><span class="p">.</span><span class="nf">get_account_data</span>                           <span class="c1"># ask TWS for portfolio-data</span>
+   <span class="n">gateway</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span> <span class="n">the_client</span> <span class="o">|</span>              <span class="c1"># perform task for all clients</span>
+     <span class="nb">p</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">new</span>
+     <span class="nb">p</span><span class="p">.</span><span class="nf">import_account_data</span> <span class="ss">from: </span><span class="n">the_client</span>           <span class="c1"># implies update of p, assigns a rid</span>
+     <span class="nb">p</span><span class="p">.</span><span class="nf">import_positions</span>    <span class="ss">from: </span><span class="n">the_client</span>           <span class="c1"># assigns portfolio-values to the grid</span>
+     <span class="no">HC</span><span class="o">::</span><span class="no">MY_USER</span><span class="p">.</span><span class="nf">create</span>    <span class="ss">from: </span><span class="nb">p</span><span class="p">,</span> <span class="ss">to: </span><span class="n">the_client</span>    <span class="c1"># bidirectional link to account</span>
+     <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">assign</span> <span class="ss">vertex: </span><span class="nb">p</span><span class="p">,</span> <span class="ss">via: </span><span class="no">HC</span><span class="o">::</span><span class="no">D2F</span>  <span class="c1"># bidirectional link to the time-grid</span>
+     <span class="nb">p</span><span class="p">.</span><span class="nf">rid</span>                                            <span class="c1"># return_value</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+ <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The last command of the <em>bake</em>-method assigns the portfolio-object via <code class="language-plaintext highlighter-rouge">HC::D2F</code> to the time-grid.<br />
+In the process, a bidirectional link <code class="language-plaintext highlighter-rouge">TimeGrid -- out HC::D2F -- in -- Portfolio</code> is implemented.</p>
+
+<h4 id="to_human">to_human</h4>
+<p>Most classes in <strong><em>IB-Ruby</em></strong> ship with a <code class="language-plaintext highlighter-rouge">to_human</code>-method. <code class="language-plaintext highlighter-rouge">HC::Portfolio#to_human</code> summarizes
+the associated objects:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="no">HC</span><span class="o">::</span><span class="no">Portfolio</span><span class="p">.</span><span class="nf">last</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Portfolio[244:0]: account:&lt;user U1****12&gt;, 36 AccountValues; 18 Positions &gt;"</span>
+</code></pre></div></div>
+
+<h4 id="traverse-through-connected-nodes">Traverse through connected nodes</h4>
+<p><strong><em>Active-Orient</em></strong> provides an intuitive interface to connected nodes</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="s2">"7.12.2020"</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span> <span class="no">HC</span><span class="o">::</span><span class="no">D2F</span> <span class="p">).</span><span class="nf">in</span>         <span class="o">=&gt;</span> <span class="no">Array</span> <span class="n">of</span> <span class="n">assigned</span> <span class="no">Portfolio</span><span class="err">'</span><span class="n">s</span>
+<span class="o">&gt;</span> <span class="no">HC</span><span class="o">::</span><span class="no">Portfolio</span><span class="p">.</span><span class="nf">last</span><span class="p">.</span><span class="nf">in</span><span class="p">(</span> <span class="sr">/d2f/</span> <span class="p">).</span><span class="nf">out</span><span class="p">.</span><span class="nf">datum</span>    <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"7.12.2020"</span><span class="p">]</span> <span class="c1"># Array of time-grid-objects</span>
+</code></pre></div></div>
+<p>Edges can be pronounced either by the class-name or a regular expression, which relies on the database-class name.</p>
+
+<div class="alert alert-info" role="alert"><i class="fa fa-bars"></i> As shortcut, a method <code class="language-plaintext highlighter-rouge">portfolios</code> is provided for <code class="language-plaintext highlighter-rouge">TG::TAG</code> (TimeGrid)-Vertices.</div>
+
+<h4 id="get-account-data">Get Account-Data</h4>
+
+<p>In the <a href="account_overview.html">IB-Gateway</a>-Section a primitive approach to access Account-Value-Data is presented.</p>
+
+<p><code class="language-plaintext highlighter-rouge">HC::Portfolio#import_account_data</code> imports <code class="language-plaintext highlighter-rouge">IB::AccountValue</code>-Objects as hash into the database.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> HC::Portfolio.values[ :key ][:ALL][:EUR] =&gt; value
+                                   [:USD] =&gt; value
+                             [:S]  [:EUR] =&gt; Value
+                             [:C]  [:EUR] =&gt; value
+</code></pre></div></div>
+<p>Thus to access the data from yesterday:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">prev</span><span class="p">.</span><span class="nf">portfolios</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">values</span><span class="p">.</span><span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">y</span><span class="o">|</span> <span class="n">y</span><span class="p">[</span><span class="ss">:SMA</span><span class="p">][</span><span class="ss">:ALL</span><span class="p">][</span><span class="ss">:EUR</span><span class="p">]</span> <span class="p">}</span>
+ <span class="o">=&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mf">9033.37</span><span class="p">,</span> <span class="mf">12565.67</span><span class="p">]</span>
+ <span class="c1"># or</span>
+ <span class="no">Date</span><span class="p">.</span><span class="nf">yesterday</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">portfolios</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">values</span><span class="p">.</span><span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">y</span><span class="o">|</span> <span class="n">y</span><span class="p">.</span><span class="nf">slice</span> <span class="sr">/SM/</span> <span class="p">}</span>
+ <span class="o">=&gt;</span> <span class="p">[{</span><span class="ss">:SMA</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:ALL</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:EUR</span><span class="o">=&gt;-</span><span class="mf">4701.63</span><span class="p">},</span> <span class="ss">:S</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:EUR</span><span class="o">=&gt;-</span><span class="mf">4701.63</span><span class="p">}}},</span> <span class="p">(</span><span class="o">...</span><span class="p">)</span> 
+</code></pre></div></div>
+<div class="alert alert-info" role="alert"><i class="fa fa-bars"></i>  <code class="language-plaintext highlighter-rouge">slice</code> is a method of <code class="language-plaintext highlighter-rouge">OrienhtSupport::Array</code>. It overwrites <code class="language-plaintext highlighter-rouge">Array#slice</code> (available since ruby 2.6) </div>
+
+<p><strong>Database Solution</strong></p>
+
+<p>The same result is achieved using a simple database query</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  select values[ key ] as key from hc_portfolio
+</code></pre></div></div>
+
+<p>which can be send to the database through <code class="language-plaintext highlighter-rouge">execute</code></p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="no">V</span><span class="p">.</span><span class="nf">db</span><span class="p">.</span><span class="nf">execute</span><span class="p">{</span> <span class="s2">"select values[</span><span class="se">\"</span><span class="s2">SMA</span><span class="se">\"</span><span class="s2">] as SMA   from hc_portfolio "</span> <span class="p">}</span>
+  <span class="o">=&gt;</span> <span class="p">[{</span><span class="ss">:SMA</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:ALL</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:EUR</span><span class="o">=&gt;-</span><span class="mf">4701.63</span><span class="p">},</span> <span class="ss">:S</span><span class="o">=&gt;</span><span class="p">{</span><span class="ss">:EUR</span><span class="o">=&gt;-</span><span class="mf">4701.63</span><span class="p">}}},</span> <span class="o">...</span> 
+
+</code></pre></div></div>
+
+<div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> <b>::</b> In plain vanilla queries OrientDB-Database-class names have to bo used. </div>
+
+<h3 id="monitor-the-portfolio">Monitor the Portfolio</h3>
+
+<p><code class="language-plaintext highlighter-rouge">HC::Portfolio.bake</code> imports <code class="language-plaintext highlighter-rouge">IB::PortfolioValues</code> as well. The records are connected via 
+<code class="language-plaintext highlighter-rouge">HC::HAS_POSITION</code>-edges.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> `TG::Tag -- out  `HC::D2F` in --  `HC::Portfolio` -- `out` HC_HAS_POSITION `in` -- `IB::PortfolioValue` 
+</code></pre></div></div>
+
+<p>To access PortfolioValues  just join the edges.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span> <span class="sr">/d2F/</span><span class="p">).</span><span class="nf">in</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span> <span class="sr">/has/</span><span class="p">).</span><span class="nf">in</span><span class="p">.</span><span class="nf">contract</span>
+ <span class="o">=&gt;</span> <span class="p">[[</span><span class="s2">"#202:0"</span><span class="p">,</span> <span class="s2">"#203:0"</span><span class="p">,</span> <span class="s2">"#204:0"</span><span class="p">],</span> <span class="o">...</span> 
+<span class="c1"># contracts are stored as rid-valus which have to be expanded:</span>
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span><span class="no">HC</span><span class="o">::</span><span class="no">D2F</span><span class="p">).</span><span class="nf">in</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span> <span class="no">HC</span><span class="o">::</span><span class="no">HAS_POSITION</span> <span class="p">).</span><span class="nf">in</span><span class="p">.</span><span class="nf">contract</span><span class="p">.</span><span class="nf">expand</span><span class="p">.</span><span class="nf">to_human</span>
+     <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">J36</span> <span class="no">USD</span> <span class="no">SGX</span><span class="o">&gt;</span>
+     <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">PRX</span> <span class="no">EUR</span> <span class="no">AEB</span><span class="o">&gt;</span>
+     <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">WFC</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>
+     <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">ALB</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>
+		 <span class="p">(</span><span class="o">..</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Other properties of <code class="language-plaintext highlighter-rouge">IB::PortfolioValue</code> can be obtained through ruby methods</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">portfolio_values</span> <span class="o">=</span>  <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span><span class="no">TG</span><span class="o">::</span><span class="no">D2F</span><span class="p">).</span><span class="nf">in</span><span class="p">.</span><span class="nf">out</span><span class="p">(</span> <span class="no">HC</span><span class="o">::</span><span class="no">HAS_POSITION</span> <span class="p">).</span><span class="nf">in</span>
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="n">portfolio_values</span><span class="p">.</span><span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">y</span><span class="o">|</span> <span class="p">[</span> <span class="n">y</span><span class="p">.</span><span class="nf">contract</span><span class="p">.</span><span class="nf">expand</span><span class="p">.</span><span class="nf">to_human</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="nf">unrealized_pnl</span> <span class="p">].</span><span class="nf">join</span> <span class="s2">" -&gt; </span><span class="se">\t</span><span class="s2"> "</span><span class="p">}</span>
+  <span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">AIR</span> <span class="mi">20210115</span> <span class="n">put</span> <span class="mf">86.0</span> <span class="no">DTB</span> <span class="no">EUR</span><span class="o">&gt;</span>   <span class="o">-&gt;</span> <span class="mf">277.44</span>
+  <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">BABA</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>                    <span class="o">-&gt;</span> <span class="mf">222.84</span>
+  <span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">BEPC</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>                    <span class="o">-&gt;</span> <span class="mf">394.47</span>
+  <span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">BOSS</span> <span class="mi">20210219</span> <span class="n">put</span> <span class="mf">25.0</span> <span class="no">DTB</span> <span class="no">EUR</span><span class="o">&gt;</span>  <span class="o">-&gt;</span> <span class="o">-</span><span class="mf">83.07</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>  
+
+</code></pre></div></div>
+
+<p>Specific positions can be filtered in the process.</p>
+
+<p>Instead of <code class="language-plaintext highlighter-rouge">in</code> and <code class="language-plaintext highlighter-rouge">out</code>, edges have to be accessed through <a href="https://github.com/topofocus/active-orient/wiki/Bidirectional-Connections">Vertex#nodes</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Get Jardine Matheson
+&gt; jardine = IB::Contract.where symbol: 'J36'
+# Fetch PortfolioPositions
+&gt; portfolio = Date.today.to_tg.out(HC::D2F).in.first
+&gt; portfolio.nodes( via: /has/, where: { contract: jardine.rid } ).market_value
+  #INFO-&gt;select  outE('hc_has_position').in[ contract in [202:0] ]  from #246:20
+  =&gt; [6480.48] 
+</code></pre></div></div>
+
+<h3 id="monitor-the-progress-of-a-position">Monitor the progress of a position</h3>
+
+<p>This approach works with a range of datasets as well.</p>
+
+<p>Assume, we »baked« a few <code class="language-plaintext highlighter-rouge">HC::Portfolios</code> in the last days. Then <code class="language-plaintext highlighter-rouge">Date.today.to_tg.environment(7,0)</code>
+ addresses the <code class="language-plaintext highlighter-rouge">TG::Tag</code> vertices of the last week. <a href="https://github.com/topofocus/orientdb_time_graph">Documentation: Time-Grid Gem</a></p>
+
+<p>Then</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">to_tg</span>
+             <span class="p">.</span><span class="nf">environment</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">out</span><span class="p">(</span><span class="no">HC</span><span class="o">::</span><span class="no">D2F</span><span class="p">).</span><span class="nf">in</span>
+             <span class="p">.</span><span class="nf">nodes</span><span class="p">(</span> <span class="ss">via: </span><span class="sr">/has/</span><span class="p">,</span> <span class="ss">where: </span><span class="p">{</span> <span class="ss">contract: </span><span class="n">jardine</span><span class="p">.</span><span class="nf">rid</span> <span class="p">}</span> <span class="p">)</span>
+             <span class="p">.</span><span class="nf">market_value</span>
+ <span class="o">=&gt;</span> <span class="p">[[[</span><span class="mf">6424.77</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">6522.31</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">6480.48</span><span class="p">]]]</span>
+</code></pre></div></div>
+
+<p>In this case,  only one portfolio is monitored by <strong><em>IB-Ruby</em></strong>, thus only one element is left in each sub-array.</p>
+
+<p>Note that only three <code class="language-plaintext highlighter-rouge">TG_Tag</code> vertices were populated. Empty TimeGrid-Entries are silently ignored.</p>
+
+<h3 id="ibaccount-ibadvisor-ibuser">IB::Account, IB::Advisor, IB::User</h3>
+
+<p>Finally each <code class="language-plaintext highlighter-rouge">HC::Portfolio</code>-record is connected to an <code class="language-plaintext highlighter-rouge">IB::Account</code>-reference.  Again, the connection
+is bidirectional, each <code class="language-plaintext highlighter-rouge">IB::Account</code> knows how many <code class="language-plaintext highlighter-rouge">HC::Portfolio</code> records are saved and each 
+<code class="language-plaintext highlighter-rouge">HC::Portfolio</code> is bind to an Account. Inheritance is maintained.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="no">IB</span><span class="o">::</span><span class="no">Account</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="no">INFO</span><span class="o">-&gt;</span><span class="nb">select</span> <span class="n">from</span> <span class="n">ib_account</span> <span class="n">order</span> <span class="n">by</span> <span class="vi">@rid</span> <span class="n">limit</span>  <span class="mi">1</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;user U1****12&gt;"</span> 
+
+ <span class="o">&gt;</span>  <span class="nb">puts</span> <span class="no">IB</span><span class="o">::</span><span class="no">Account</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">in</span><span class="p">.</span><span class="nf">out</span><span class="p">.</span><span class="nf">to_human</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">242</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">35</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">19</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">243</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">35</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">19</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">244</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">36</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">18</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">245</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">36</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">18</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">246</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">36</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">18</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">247</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">36</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">18</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">248</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">34</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">20</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">249</span><span class="p">:</span><span class="mi">0</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">35</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">19</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">242</span><span class="p">:</span><span class="mi">1</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">38</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">21</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="no">Portfolio</span><span class="p">[</span><span class="mi">243</span><span class="p">:</span><span class="mi">1</span><span class="p">]:</span> <span class="n">account</span><span class="ss">:&lt;</span><span class="n">user</span> <span class="no">U12</span><span class="o">****</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">38</span> <span class="no">AccountValues</span><span class="p">;</span> <span class="mi">22</span> <span class="no">Positions</span> <span class="o">&gt;</span>
+
+<span class="o">&gt;</span> <span class="no">IB</span><span class="o">::</span><span class="no">Account</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">in</span><span class="p">.</span><span class="nf">out</span><span class="p">.</span><span class="nf">in</span><span class="p">(</span> <span class="sr">/d2F/</span><span class="p">).</span><span class="nf">out</span><span class="p">.</span><span class="nf">datum</span>
+  <span class="o">=&gt;</span> <span class="p">[[</span><span class="no">Mon</span><span class="p">,</span> <span class="mo">07</span> <span class="no">Dec</span> <span class="mi">2020</span><span class="p">],</span> <span class="p">[</span><span class="no">Tue</span><span class="p">,</span> <span class="mi">08</span> <span class="no">Dec</span> <span class="mi">2020</span><span class="p">],</span> <span class="p">[</span><span class="no">Wed</span><span class="p">,</span> <span class="mi">09</span> <span class="no">Dec</span> <span class="mi">2020</span><span class="p">],</span> <span class="o">...</span> 
+
+</code></pre></div></div>
+
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+<span>Page last updated:</span> December 16, 2020<br/> Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>

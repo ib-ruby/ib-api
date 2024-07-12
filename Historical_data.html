@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="contract,  contracts, historical-data, eod">
+<title>Get Historical Data | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Get Historical Data">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">ib-ruby </li>
+  
+  
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="The IB-Ruby Project" href="index.html">The IB-Ruby Project</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Introduction" href="ibruby_introduction.html">Introduction</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Support" href="ibruby_support.html">Support</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Installation" href="#">Installation</a>
+      <ul>
+          
+          
+          
+          <li><a title="Setup Ruby and Install the Software." href="Setup_Ruby_and_Install_the_Software.html">Setup Ruby and Install the Software.</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Create a new Project" href="Create_a_new_project.html">Create a new Project</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Connection / Plugins" href="#">Connection / Plugins</a>
+      <ul>
+          
+          
+          
+          <li><a title="Connect to the TWS" href="connect_to_tws.html">Connect to the TWS</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Connection" href="connection.html">IB-Connection</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Ruby Console" href="console.html">IB-Ruby Console</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Jupyter Notebooks" href="notebook.html">Jupyter Notebooks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Messages" href="#">Messages</a>
+      <ul>
+          
+          
+          
+          <li><a title="List of Messages" href="message_correct_arguments.html">List of Messages</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request-ID" href="message_request_id.html">Request-ID</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request Market-Data" href="message_marketdata.html">Request Market-Data</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Contracts" href="#">Contracts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Specify and Query" href="Specify_and_query_contracts.html">Specify and Query</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Verify" href="Verify_contracts.html">Verify</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Market Price" href="market_price.html">Market Price</a></li>
+          
+          
+          
+          
+          
+          
+          <li class="active"><a title="Historical Data" href="Historical_data.html">Historical Data</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Expiry vs. Last-Trading-Day" href="expiry_and_last_trading_day.html">Expiry vs. Last-Trading-Day</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Watchlists" href="watchlists.html">Watchlists</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Spread Prototypes" href="spreads.html">Spread Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Rolling of Options and Futures" href="roll-options.html">Rolling of Options and Futures</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Chains" href="atm_options.html">Option-Chains</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Greeks" href="option_greeks.html">Option-Greeks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Orders" href="#">Orders</a>
+      <ul>
+          
+          
+          
+          <li><a title="Prototypes" href="order_prototypes.html">Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (plain vanilla)" href="order_placement.html">Placing Orders (plain vanilla)</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (advanced)" href="order_workflow.html">Placing Orders (advanced)</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Accounts" href="#">Accounts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="account_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Database  & Rails Integration" href="#">Database  & Rails Integration</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="database_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Get Historical Data</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <div class="bs-callout bs-callout-info">
+To use the <em>End of Data Historical Data</em> feature activate the <em>eod</em> plugin    
+
+<pre> 
+require 'ib-api' 
+ib =  IB::Connection.new
+ib.activate_plugin :eod
+ib.try_connection!
+Stock.new(symbol: :sie, currency: :eur).eod.to_human
+&lt;Bar (10.07.24)00:00:00 
+ wap 175.522 
+ OHLC 173.48 177.24 170.66 176.38 
+ trades 20807 
+ vol 1302308&gt;
+
+</pre>
+
+</div>
+
+<h3 id="historical-data">Historical Data</h3>
+
+<p>The <em>historical data feature</em> of the <em>TWS</em> is invoked by sending a <code class="language-plaintext highlighter-rouge">:RequestHistoricalData</code>-Message.<br />
+Next the script has to listen for a <code class="language-plaintext highlighter-rouge">:HistoricalData</code>-Response.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">IB::Contract.eod</code>-method bundles the necessary steps to get <em>End of Day</em>-Data for specified date ranges.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">contract.eod( duration: '10 d' )</code>  gets closing price of the last 10 trading days.</li>
+  <li><code class="language-plaintext highlighter-rouge">contract.eod( duration: '10 w', start: Date.new(2019,3,14),
+                   what: :historical_volatility )</code>  gets the historical volatility for the  10 weeks starting on March 14th 2019.</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="no">IB</span><span class="o">::</span><span class="no">Contract</span><span class="p">.</span><span class="nf">eod</span> <span class="ss">start: </span><span class="p">{</span><span class="n">a</span> <span class="n">date</span><span class="p">},</span> <span class="ss">to: </span><span class="p">{</span><span class="n">a</span> <span class="n">date</span><span class="p">;</span> <span class="no">Default</span><span class="p">:</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">},</span>
+                 <span class="ss">duration: </span><span class="p">{</span><span class="n">string</span>  <span class="n">or</span> <span class="n">integer</span><span class="p">},</span>
+                 <span class="ss">what: </span><span class="p">{</span><span class="n">symbol</span><span class="p">;</span> <span class="no">Default</span><span class="p">:</span> <span class="ss">:trades</span> <span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>The duration can either be specified as Sting “ yx D”, “ yx W”, “yx M” , “xy Y” 
+or as Integer. If the string-notation is used, ensure to include a space.</p>
+
+<p>The parameter :what specifies the kind of received data.</p>
+
+<p>Valid values:</p>
+
+<ul>
+  <li>:trades, :midpoint, :bid, :ask, :bid_ask,</li>
+  <li>:historical_volatility, :option_implied_volatility,</li>
+  <li>:option_volume, :option_open_interest</li>
+</ul>
+
+<blockquote>
+  <p>IB::Contract.eod returns an array of IB::Bar objects unless they are  preprocessed in a block.</p>
+</blockquote>
+
+<p>thus</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">puts</span> <span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">mini_dax</span><span class="p">.</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">duration: </span><span class="mi">10</span> <span class="p">).</span><span class="nf">as_table</span>
+<span class="err">┌─────┬────────────┬─────────┬─────────┬─────────┬─────────┬────────┬─────────┬────────┐</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="n">time</span>       <span class="err">│</span> <span class="nb">open</span>    <span class="err">│</span> <span class="n">high</span>    <span class="err">│</span> <span class="n">low</span>     <span class="err">│</span> <span class="n">close</span>   <span class="err">│</span> <span class="n">volume</span> <span class="err">│</span> <span class="n">wap</span>     <span class="err">│</span> <span class="n">trades</span> <span class="err">│</span>
+<span class="err">╞═════╪════════════╪═════════╪═════════╪═════════╪═════════╪════════╪═════════╪════════╡</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">27</span> <span class="err">│</span> <span class="mf">18300.0</span> <span class="err">│</span> <span class="mf">18438.0</span> <span class="err">│</span> <span class="mf">18259.0</span> <span class="err">│</span> <span class="mf">18369.0</span> <span class="err">│</span> <span class="mi">23372</span>  <span class="err">│</span> <span class="mf">18369.5</span> <span class="err">│</span> <span class="mi">14833</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">28</span> <span class="err">│</span> <span class="mf">18417.0</span> <span class="err">│</span> <span class="mf">18526.0</span> <span class="err">│</span> <span class="mf">18360.0</span> <span class="err">│</span> <span class="mf">18403.0</span> <span class="err">│</span> <span class="mi">28560</span>  <span class="err">│</span> <span class="mf">18436.0</span> <span class="err">│</span> <span class="mi">18065</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mo">01</span> <span class="err">│</span> <span class="mf">18471.0</span> <span class="err">│</span> <span class="mf">18632.0</span> <span class="err">│</span> <span class="mf">18427.0</span> <span class="err">│</span> <span class="mf">18490.0</span> <span class="err">│</span> <span class="mi">30485</span>  <span class="err">│</span> <span class="mf">18512.4</span> <span class="err">│</span> <span class="mi">19796</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mo">02</span> <span class="err">│</span> <span class="mf">18487.0</span> <span class="err">│</span> <span class="mf">18487.0</span> <span class="err">│</span> <span class="mf">18190.0</span> <span class="err">│</span> <span class="mf">18315.0</span> <span class="err">│</span> <span class="mi">33725</span>  <span class="err">│</span> <span class="mf">18313.0</span> <span class="err">│</span> <span class="mi">20378</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mo">03</span> <span class="err">│</span> <span class="mf">18348.0</span> <span class="err">│</span> <span class="mf">18569.0</span> <span class="err">│</span> <span class="mf">18348.0</span> <span class="err">│</span> <span class="mf">18547.0</span> <span class="err">│</span> <span class="mi">26490</span>  <span class="err">│</span> <span class="mf">18470.9</span> <span class="err">│</span> <span class="mi">16228</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mo">04</span> <span class="err">│</span> <span class="mf">18575.0</span> <span class="err">│</span> <span class="mf">18628.0</span> <span class="err">│</span> <span class="mf">18546.0</span> <span class="err">│</span> <span class="mf">18609.0</span> <span class="err">│</span> <span class="mi">14495</span>  <span class="err">│</span> <span class="mf">18593.2</span> <span class="err">│</span> <span class="mi">9090</span>   <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mo">05</span> <span class="err">│</span> <span class="mf">18602.0</span> <span class="err">│</span> <span class="mf">18821.0</span> <span class="err">│</span> <span class="mf">18572.0</span> <span class="err">│</span> <span class="mf">18614.0</span> <span class="err">│</span> <span class="mi">30408</span>  <span class="err">│</span> <span class="mf">18693.9</span> <span class="err">│</span> <span class="mi">18529</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mi">08</span> <span class="err">│</span> <span class="mf">18563.0</span> <span class="err">│</span> <span class="mf">18784.0</span> <span class="err">│</span> <span class="mf">18563.0</span> <span class="err">│</span> <span class="mf">18645.0</span> <span class="err">│</span> <span class="mi">22899</span>  <span class="err">│</span> <span class="mf">18678.4</span> <span class="err">│</span> <span class="mi">14291</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mi">09</span> <span class="err">│</span> <span class="mf">18637.0</span> <span class="err">│</span> <span class="mf">18656.0</span> <span class="err">│</span> <span class="mf">18361.0</span> <span class="err">│</span> <span class="mf">18369.0</span> <span class="err">│</span> <span class="mi">29256</span>  <span class="err">│</span> <span class="mf">18493.6</span> <span class="err">│</span> <span class="mi">18122</span>  <span class="err">│</span>
+<span class="err">│</span> <span class="no">Bar</span> <span class="err">│</span> <span class="mi">2024</span><span class="o">-</span><span class="mo">07</span><span class="o">-</span><span class="mi">10</span> <span class="err">│</span> <span class="mf">18411.0</span> <span class="err">│</span> <span class="mf">18611.0</span> <span class="err">│</span> <span class="mf">18371.0</span> <span class="err">│</span> <span class="mf">18566.0</span> <span class="err">│</span> <span class="mi">21611</span>  <span class="err">│</span> <span class="mf">18489.1</span> <span class="err">│</span> <span class="mi">13335</span>  <span class="err">│</span>
+<span class="err">└─────┴────────────┴─────────┴─────────┴─────────┴─────────┴────────┴─────────┴────────┘</span>
+</code></pre></div></div>
+
+<h3 id="export-to-polars-dataframes">Export to Polars Dataframes</h3>
+
+<p>If »polars: true« is specified in the method call the response is stored as PolarsDataframe.</p>
+
+<p>For further processing: https://github.com/ankane/polars-ruby <br />
+                        https://pola-rs.github.io/polars/py-polars/html/index.html</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> <span class="nb">puts</span>  <span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: :iwm</span> <span class="p">).</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">start: </span><span class="no">Date</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span> <span class="ss">duration: </span><span class="mi">3</span><span class="p">,</span> <span class="ss">polars: </span><span class="kp">true</span> <span class="p">)</span>
+ <span class="o">=&gt;</span> <span class="ss">shape: </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+ <span class="err">┌────────────┬────────┬────────┬────────┬────────┬────────┬─────────┬────────┐</span>
+ <span class="err">│</span> <span class="n">time</span>       <span class="err">┆</span> <span class="nb">open</span>   <span class="err">┆</span> <span class="n">high</span>   <span class="err">┆</span> <span class="n">low</span>    <span class="err">┆</span> <span class="n">close</span>  <span class="err">┆</span> <span class="n">volume</span> <span class="err">┆</span> <span class="n">wap</span>     <span class="err">┆</span> <span class="n">trades</span> <span class="err">│</span>
+ <span class="err">│</span> <span class="o">---</span>        <span class="err">┆</span> <span class="o">---</span>    <span class="err">┆</span> <span class="o">---</span>    <span class="err">┆</span> <span class="o">---</span>    <span class="err">┆</span> <span class="o">---</span>    <span class="err">┆</span> <span class="o">---</span>    <span class="err">┆</span> <span class="o">---</span>     <span class="err">┆</span> <span class="o">---</span>    <span class="err">│</span>
+ <span class="err">│</span> <span class="n">date</span>       <span class="err">┆</span> <span class="n">f64</span>    <span class="err">┆</span> <span class="n">f64</span>    <span class="err">┆</span> <span class="n">f64</span>    <span class="err">┆</span> <span class="n">f64</span>    <span class="err">┆</span> <span class="n">i64</span>    <span class="err">┆</span> <span class="n">f64</span>     <span class="err">┆</span> <span class="n">i64</span>    <span class="err">│</span>
+ <span class="err">╞════════════╪════════╪════════╪════════╪════════╪════════╪═════════╪════════╡</span>
+ <span class="err">│</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">08</span> <span class="err">┆</span> <span class="mf">148.62</span> <span class="err">┆</span> <span class="mf">149.37</span> <span class="err">┆</span> <span class="mf">146.11</span> <span class="err">┆</span> <span class="mf">146.45</span> <span class="err">┆</span> <span class="mi">156625</span> <span class="err">┆</span> <span class="mf">146.831</span> <span class="err">┆</span> <span class="mi">88252</span>  <span class="err">│</span>
+ <span class="err">│</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">09</span> <span class="err">┆</span> <span class="mf">147.18</span> <span class="err">┆</span> <span class="mf">148.0</span>  <span class="err">┆</span> <span class="mf">145.38</span> <span class="err">┆</span> <span class="mf">145.85</span> <span class="err">┆</span> <span class="mi">94337</span>  <span class="err">┆</span> <span class="mf">147.201</span> <span class="err">┆</span> <span class="mi">51294</span>  <span class="err">│</span>
+ <span class="err">│</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">10</span> <span class="err">┆</span> <span class="mf">146.9</span>  <span class="err">┆</span> <span class="mf">148.74</span> <span class="err">┆</span> <span class="mf">146.87</span> <span class="err">┆</span> <span class="mf">148.24</span> <span class="err">┆</span> <span class="mi">134549</span> <span class="err">┆</span> <span class="mf">147.792</span> <span class="err">┆</span> <span class="mi">71084</span>  <span class="err">│</span>
+ <span class="err">└────────────┴────────┴────────┴────────┴────────┴────────┴─────────┴────────┘</span>
+</code></pre></div></div>
+
+<h3 id="examples">Examples</h3>
+
+<ul>
+  <li>Retrieve close prices of the last ten days.</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">.</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">duration: </span><span class="s1">'10 d'</span> <span class="p">){</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="n">r</span><span class="p">.</span><span class="nf">close</span>  <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Get  price-ranges  of the last ten days.</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">.</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">duration: </span><span class="s1">'10 d'</span> <span class="p">){</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="n">r</span><span class="p">.</span><span class="nf">high</span> <span class="o">-</span> <span class="n">r</span><span class="p">.</span><span class="nf">low</span>  <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Get close prices for General Electric between Jun 15 and Jun 21 2015</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: </span><span class="s1">'GE'</span> <span class="p">).</span>
+           <span class="nf">eod</span><span class="p">(</span> <span class="ss">start: </span><span class="no">Date</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="ss">to: </span><span class="no">Date</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">21</span><span class="p">)</span> <span class="p">).</span>
+           <span class="nf">map</span><span class="p">(</span> <span class="o">&amp;</span><span class="ss">:close</span> <span class="p">).</span>
+           <span class="nf">join</span><span class="p">(</span> <span class="s2">" : "</span> <span class="p">)</span>
+ <span class="o">=&gt;</span> <span class="s2">"26.19 : 26.17 : 26.24 : 26.18"</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Get Overnight Gaps for the stock</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">yesterdays_close</span> <span class="o">=</span> <span class="kp">nil</span>
+ <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: </span><span class="s1">'GE'</span><span class="p">).</span>
+           <span class="nf">eod</span><span class="p">(</span> <span class="ss">start: </span><span class="no">Date</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="ss">duration: </span><span class="mi">10</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span>
+                  <span class="n">z</span><span class="o">=</span> <span class="k">if</span>  <span class="n">yesterdays_close</span><span class="p">.</span><span class="nf">nil?</span> 
+                         <span class="mi">0</span>
+                     <span class="k">else</span> 
+                         <span class="p">(</span><span class="n">yesterdays_close</span> <span class="o">-</span> <span class="n">r</span><span class="p">.</span><span class="nf">open</span><span class="p">).</span><span class="nf">abs</span>
+                     <span class="k">end</span>
+                  <span class="n">yesterdays_close</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">close</span> 
+                  <span class="n">z</span>        <span class="c1">#   return value </span>
+          <span class="k">end</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span> <span class="s2">" : "</span> <span class="p">)</span>
+<span class="o">=&gt;</span> <span class="s2">"0 : 0.08 : 0.02 : 0.0 : 0.01 : 0.03 : 0.03 : 0.1 : 0.04 : 0.03"</span> 
+</code></pre></div></div>
+<p>We save the close of each day in <code class="language-plaintext highlighter-rouge">yesterdays_close</code> and pass it to the next iteration.  <code class="language-plaintext highlighter-rouge">yesterdays_close</code> has to be declared outside of the block!</p>
+
+<ul>
+  <li>Get the daily median of Implied Volatilities</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">ge</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span> <span class="ss">symbol: :ge</span>
+ <span class="n">ge</span><span class="p">.</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">duration: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">what: :option_implied_volatility</span><span class="p">){</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="nf">high</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="nf">low</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="p">}.</span><span class="nf">round</span> <span class="mi">3</span>
+<span class="o">=&gt;</span> <span class="p">[</span><span class="mf">0.434</span><span class="p">,</span> <span class="mf">0.425</span><span class="p">,</span> <span class="mf">0.437</span><span class="p">,</span> <span class="mf">0.442</span><span class="p">,</span> <span class="mf">0.441</span><span class="p">,</span> <span class="mf">0.436</span><span class="p">,</span> <span class="mf">0.491</span><span class="p">,</span> <span class="mf">0.491</span><span class="p">,</span> <span class="mf">0.491</span><span class="p">,</span> <span class="mf">0.494</span><span class="p">]</span> 
+
+</code></pre></div></div>
+
+<ul>
+  <li>Save historical data as csv file</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1"># reopen IB::Contract and add to_csv method</span>
+ <span class="k">module</span> <span class="nn">IB</span>
+   <span class="k">class</span> <span class="nc">Contract</span> 
+     <span class="k">def</span> <span class="nf">to_csv</span> <span class="n">file</span><span class="ss">:nil</span>
+       <span class="n">file</span> <span class="o">||=</span>  <span class="s2">"</span><span class="si">#{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">.csv"</span>
+       <span class="k">if</span> <span class="n">bars</span><span class="p">.</span><span class="nf">present?</span>
+         <span class="n">headers</span> <span class="o">=</span> <span class="n">bars</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">invariant_attributes</span><span class="p">.</span><span class="nf">keys</span>
+         <span class="no">CSV</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span> <span class="n">file</span><span class="p">,</span> <span class="s1">'w'</span>  <span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="n">headers</span> <span class="p">;</span> <span class="n">bars</span><span class="p">.</span><span class="nf">each</span> <span class="p">{</span><span class="o">|</span><span class="n">y</span><span class="o">|</span> <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="n">y</span><span class="p">.</span><span class="nf">invariant_attributes</span><span class="p">.</span><span class="nf">values</span> <span class="p">}</span> <span class="p">}</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+ <span class="k">end</span>
+
+ <span class="n">ge</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: :ge</span>  <span class="p">)</span>
+ <span class="n">ge</span><span class="p">.</span><span class="nf">eod</span><span class="p">(</span> <span class="ss">duration: </span><span class="s1">'200 D'</span> <span class="p">)</span>
+ <span class="n">ge</span><span class="p">.</span><span class="nf">to_csv</span>         <span class="c1"># writes ohlc-data to ge.csv</span>
+
+</code></pre></div></div>
+<div class="alert alert-info" role="alert"><i class="fa fa-bars"></i> A script is also included in the <a href="https://github.com/ib-ruby/ib-examples/blob/main/contract/create-eod-csv-file">Examples-Section</a></div>
+
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+<span>Page last updated:</span> Jul 11, 2024<br/> Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>

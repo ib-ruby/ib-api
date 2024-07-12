@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="symbols,  ">
+<title>Watchlists | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Watchlists">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">ib-ruby </li>
+  
+  
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="The IB-Ruby Project" href="index.html">The IB-Ruby Project</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Introduction" href="ibruby_introduction.html">Introduction</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Support" href="ibruby_support.html">Support</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Installation" href="#">Installation</a>
+      <ul>
+          
+          
+          
+          <li><a title="Setup Ruby and Install the Software." href="Setup_Ruby_and_Install_the_Software.html">Setup Ruby and Install the Software.</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Create a new Project" href="Create_a_new_project.html">Create a new Project</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Connection / Plugins" href="#">Connection / Plugins</a>
+      <ul>
+          
+          
+          
+          <li><a title="Connect to the TWS" href="connect_to_tws.html">Connect to the TWS</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Connection" href="connection.html">IB-Connection</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Ruby Console" href="console.html">IB-Ruby Console</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Jupyter Notebooks" href="notebook.html">Jupyter Notebooks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Messages" href="#">Messages</a>
+      <ul>
+          
+          
+          
+          <li><a title="List of Messages" href="message_correct_arguments.html">List of Messages</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request-ID" href="message_request_id.html">Request-ID</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request Market-Data" href="message_marketdata.html">Request Market-Data</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Contracts" href="#">Contracts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Specify and Query" href="Specify_and_query_contracts.html">Specify and Query</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Verify" href="Verify_contracts.html">Verify</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Market Price" href="market_price.html">Market Price</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Historical Data" href="Historical_data.html">Historical Data</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Expiry vs. Last-Trading-Day" href="expiry_and_last_trading_day.html">Expiry vs. Last-Trading-Day</a></li>
+          
+          
+          
+          
+          
+          
+          <li class="active"><a title="Watchlists" href="watchlists.html">Watchlists</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Spread Prototypes" href="spreads.html">Spread Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Rolling of Options and Futures" href="roll-options.html">Rolling of Options and Futures</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Chains" href="atm_options.html">Option-Chains</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Greeks" href="option_greeks.html">Option-Greeks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Orders" href="#">Orders</a>
+      <ul>
+          
+          
+          
+          <li><a title="Prototypes" href="order_prototypes.html">Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (plain vanilla)" href="order_placement.html">Placing Orders (plain vanilla)</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (advanced)" href="order_workflow.html">Placing Orders (advanced)</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Accounts" href="#">Accounts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="account_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Database  & Rails Integration" href="#">Database  & Rails Integration</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="database_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Watchlists</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <p>The GUI-Version of the TWS organizes symbols in different pages (Watchlists).</p>
+
+<p><strong><em>IB-Ruby</em></strong> uses the same concept to organize and optimize operational issues and to support research and systematic trading efforts. The lists are organized as <code class="language-plaintext highlighter-rouge">Enumerator</code>, which extents its use. This feature lives entirely in the filesystem, no database is required, no further dependency is involved.</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">symbols</code>-plugin has to be activated</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'ib-api'</span>
+<span class="n">ib</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">ib</span><span class="p">.</span><span class="nf">activate_plugin</span> <span class="ss">:symbols</span>
+</code></pre></div></div>
+<p>By default, Watchlists reside in the <code class="language-plaintext highlighter-rouge">symbols</code>-directory of <code class="language-plaintext highlighter-rouge">ib-api</code>-sourcecode. This can be changed anytime through</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="p">.</span><span class="nf">set_origin</span> <span class="s1">'.'</span>  <span class="c1"># (a valid path, either relative or absolute)</span>
+ <span class="o">=&gt;</span> <span class="c1">#&lt;Pathname:.&gt; </span>
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="p">.</span><span class="nf">set_origin</span><span class="p">(</span> <span class="s2">"."</span> <span class="p">).</span><span class="nf">realpath</span>
+ <span class="o">=&gt;</span> <span class="c1">#&lt;Pathname:/home/ubuntu/workspace/ib-ruby/bin&gt;</span>
+</code></pre></div></div>
+
+<h2 id="symbol-collections">Symbol Collections</h2>
+
+<p>Everything is kept elementary simple: Collections are stored as editable files. The format is YAML.</p>
+
+<p>The CRUD Cycle</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> IB::Symbols.allocate_collection :Demo
+  =&gt; IB::Symbols::Demo           # file /symbols/Demo is created 
+ IB::Symbols::Demo.add_contract :uso , IB::Stock.new( symbol: 'USO'  )
+  =&gt; 235                         # returns the count of written bytes to the file 
+ IB::Symbols::Demo.uso          # returns the stored contract
+	=&gt; #&lt;IB::Stock:0x0000000002c814f8 @attributes={:symbol=&gt;"USO", :created_at=&gt;2018-04-29 18:47:01 +0000, :con_id=&gt;0, :right=&gt;"", :exchange=&gt;"SMART", :include_expired=&gt;false, :sec_type=&gt;"STK", :currency=&gt;"USD"}&gt; 
+ IB::Symbols::Demo.add_contract :ford , IB::Stock.new( symbol: 'F'  )
+  =&gt; 465 
+ IB::Symbols::Demo.all
+	=&gt; [:ford, :uso]               # lists all stored contracts
+ IB::Symbols::Demo.remove_contract :uso
+ IB::Symbols::Demo.all
+  =&gt; [:ford] 
+ IB::Symbols::Demo.purge_collection  # deletes the file and erases contracts kept in memory
+	=&gt; nil 
+
+ IB::Symbols::Demo.all
+  =&gt; [] 
+</code></pre></div></div>
+<h2 id="using-the-collection-to-trade-complex-contracts">Using the Collection to Trade Complex Contracts</h2>
+
+<p>Any <code class="language-plaintext highlighter-rouge">IB::Contract</code> can be stored in the Collection. 
+The composition of suitable Contracts and their trading can be separated using Collections 
+as handy Contract-Stores.</p>
+
+<p>If – for instant – trading-ideas for several scenarios are outlined, 
+Collections can act as easy and transparent stores. 
+Occasionally the stored trading-concepts can be transmitted.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">bear</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="p">.</span><span class="nf">allocate_collection</span> <span class="ss">:BearishSzenario</span>
+ <span class="n">bear</span><span class="p">.</span><span class="nf">add_contract</span> <span class="ss">:bear_spread_3000_2400</span><span class="p">,</span> 
+       <span class="no">IB</span><span class="o">::</span><span class="no">Vertical</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>  <span class="ss">underlying: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">,</span> <span class="ss">sell: </span><span class="mi">2500</span><span class="p">,</span> <span class="ss">buy: </span><span class="mi">3000</span><span class="p">,</span>
+                         <span class="ss">right: :put</span><span class="p">,</span> <span class="ss">expiry: </span><span class="mi">201903</span><span class="p">)</span>
+ <span class="n">neutral</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="p">.</span><span class="nf">allocate_collection</span> <span class="ss">:NeurtalSzenario</span>
+ <span class="n">neutral</span><span class="p">.</span><span class="nf">add_contract</span> <span class="ss">:slight_defensive_straddle</span><span class="p">,</span> 
+       <span class="no">IB</span><span class="o">::</span><span class="no">Straddle</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">underlying: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">,</span> <span class="ss">strike: </span><span class="mi">3200</span><span class="p">,</span> <span class="ss">expiry: </span><span class="mi">291893</span> <span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="option-chains">Option Chains</h2>
+
+<p>Dynamically allocated Collections implement an <code class="language-plaintext highlighter-rouge">Enumerator</code> of <code class="language-plaintext highlighter-rouge">IB::Contracts</code>.
+This has neat consequences.</p>
+
+<p>First read an option chain into the collection</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="p">.</span><span class="nf">allocate_collection</span> <span class="ss">:Test</span>
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Options</span><span class="p">.</span><span class="nf">ibm_lazy_strike</span><span class="p">.</span><span class="nf">verify</span><span class="p">{</span><span class="o">|</span><span class="n">y</span><span class="o">|</span> <span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">add_contract</span> <span class="n">y</span><span class="p">.</span><span class="nf">strike</span><span class="p">.</span><span class="nf">to_i</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span>  
+</code></pre></div></div>
+
+<p>29 Options are stored in the collection.</p>
+
+<p>They can be inspected and manipulated as comfortably as ordinary arrays:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">size</span>                           <span class="o">=&gt;</span> <span class="mi">29</span>
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">to_human</span>                 
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Option: IBM 20180921 put 100.0 SMART USD&gt;"</span>  
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">map</span> <span class="o">&amp;</span><span class="ss">:strike</span>
+  <span class="o">=&gt;</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">,</span> <span class="mf">115.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">130.0</span><span class="p">,</span> <span class="mf">135.0</span><span class="p">,</span> <span class="mf">140.0</span><span class="p">,</span> <span class="mf">145.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">155.0</span><span class="p">,</span> <span class="mf">160.0</span><span class="p">,</span> <span class="mf">165.0</span><span class="p">,</span> <span class="mf">170.0</span><span class="p">,</span> <span class="mf">175.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">185.0</span><span class="p">,</span> <span class="mf">190.0</span><span class="p">,</span> <span class="mf">195.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">210.0</span><span class="p">,</span> <span class="mf">220.0</span><span class="p">,</span> <span class="mf">230.0</span><span class="p">,</span> <span class="mf">80.0</span><span class="p">,</span> <span class="mf">85.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">95.0</span><span class="p">,</span> <span class="mf">75.0</span><span class="p">]</span> 
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">[</span><span class="mi">100</span><span class="p">].</span><span class="nf">to_human</span>                
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Option: IBM 20180921 put 100.0 SMART USD&gt;"</span>
+ <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">find</span><span class="p">{</span><span class="o">|</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span><span class="p">.</span><span class="nf">strike</span> <span class="o">==</span> <span class="mi">130</span> <span class="p">}.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Option: IBM 20180921 put 130.0 SMART USD&gt;"</span> 
+ <span class="nb">puts</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">find_all</span> <span class="p">{</span><span class="o">|</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span><span class="p">.</span><span class="nf">strike</span> <span class="o">&gt;</span> <span class="mi">130</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="p">.</span><span class="nf">strike</span> <span class="o">&lt;</span> <span class="mi">190</span> <span class="p">}.</span><span class="nf">to_human</span><span class="p">.</span><span class="nf">join</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">135.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">140.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">145.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">150.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">155.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">160.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">165.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">170.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">175.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">180.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">185.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+ <span class="nb">puts</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Test</span><span class="p">.</span><span class="nf">sort</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">|</span> <span class="n">x</span><span class="p">.</span><span class="nf">strike</span> <span class="o">&lt;=&gt;</span> <span class="n">y</span><span class="p">.</span><span class="nf">strike</span> <span class="p">}.</span><span class="nf">to_human</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">75.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">80.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">85.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">90.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">95.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">100.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">105.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">110.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">115.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">120.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">125.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">130.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">135.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">140.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">145.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">150.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">155.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">160.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">165.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">170.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">175.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">180.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">185.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">190.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">195.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">200.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">210.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">220.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+		<span class="o">&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">IBM</span> <span class="mi">20180921</span> <span class="n">put</span> <span class="mf">230.0</span> <span class="no">SMART</span> <span class="no">USD</span><span class="o">&gt;</span>
+																																														
+</code></pre></div></div>
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+<span>Page last updated:</span> Jul 11, 2024<br/> Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>

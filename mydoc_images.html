@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Store images in the images folder and use the image.html include to insert images. This include has several options, including figcaptions, that extract the ...">
+<meta name="keywords" content="formatting,  images, screenshots, vectors, svg, markdown syntax">
+<title>Images | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Images">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle"> </li>
+  
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Images</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+    <div class="summary">Store images in the images folder and use the image.html include to insert images. This include has several options, including figcaptions, that extract the content from the formatting.</div>
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <h2 id="image-include-template">Image Include Template</h2>
+
+<p>Instead of using Markdown or HTML syntax directly in your page for images, the syntax for images has been extracted out into an image include that allows you to pass the parameters you need. Include the image.html like this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="p">{%</span><span class="w"> </span><span class="nt">include</span><span class="w"> </span>image.html<span class="w"> </span><span class="na">file</span><span class="o">=</span><span class="s2">"jekyll.png"</span><span class="w"> </span><span class="na">url</span><span class="o">=</span><span class="s2">"http://jekyllrb.com"</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="s2">"Jekyll"</span><span class="w"> </span><span class="na">caption</span><span class="o">=</span><span class="s2">"This is a sample caption"</span><span class="w"> </span><span class="p">%}</span>
+
+</code></pre></div></div>
+
+<p>The available include properties are as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>file</td>
+      <td>The name of the file. Store it in the /images folder. If you want to organize your images in subfolders, reference the subfolder path here, like this: <code class="language-plaintext highlighter-rouge">mysubfolder/jekyllrb.png</code></td>
+    </tr>
+    <tr>
+      <td>url</td>
+      <td>Whether to link the image to a URL</td>
+    </tr>
+    <tr>
+      <td>alt</td>
+      <td>Alternative image text for accessibility and SEO</td>
+    </tr>
+    <tr>
+      <td>caption</td>
+      <td>A caption for the image</td>
+    </tr>
+    <tr>
+      <td>max-width</td>
+      <td>a maximum width for the image (in pixels). Just specify the number, not px.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The properties of the include get populated into the image.html template.</p>
+
+<p>Here’s the result:</p>
+
+<figure><a class="no_icon" target="_blank" rel="noopener" href="http://jekyllrb.com"><img class="docimage" src="images/jekyll.png" alt="Jekyll" /></a><figcaption>This is a sample caption</figcaption></figure>
+
+<h2 id="inline-image-includes">Inline image includes</h2>
+
+<p>For inline images, such as with a button that you want to appear inline with text, use the inline_image.html include, like this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Click the **Android SDK Manager** button <span class="p">{%</span><span class="w"> </span><span class="nt">include</span><span class="w"> </span>inline_image.html<span class="err">
+</span><span class="na">file</span><span class="o">=</span><span class="s2">"androidsdkmanagericon.png"</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="s2">"SDK button"</span><span class="w"> </span><span class="p">%}</span>
+</code></pre></div></div>
+
+<p>Click the <strong>Android SDK Manager</strong> button <img class="inline" src="images/androidsdkmanagericon.png" alt="SDK button" /></p>
+
+<p>The inline_image.html include properties are as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>file</td>
+      <td>The name of the file</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>The type of file (png, svg, and so on)</td>
+    </tr>
+    <tr>
+      <td>alt</td>
+      <td>Alternative image text for accessibility and SEO</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="svg-images">SVG Images</h2>
+
+<p>You can also embed SVG graphics. If you use SVG, you need to use the HTML syntax so that you can define a width/container for the graphic. Here’s a sample embed:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{%</span><span class="w"> </span><span class="nt">include</span><span class="w"> </span>image.html<span class="w"> </span><span class="na">file</span><span class="o">=</span><span class="s2">"helpapi.svg"</span><span class="w"> </span><span class="na">url</span><span class="o">=</span><span class="s2">"http://idratherbewriting.com/documentation-theme-jekyll/mydoc_help_api/"</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="s2">"Building a Help API"</span><span class="w"> </span><span class="na">caption</span><span class="o">=</span><span class="s2">"A help API provides a JSON file at a web URL with content that can be pulled into different targets"</span><span class="w"> </span><span class="na">max-width</span><span class="o">=</span><span class="s2">"600"</span><span class="w"> </span><span class="p">%}</span>
+</code></pre></div></div>
+
+<p>Here’s the result:</p>
+
+<figure><a class="no_icon" target="_blank" rel="noopener" href="http://idratherbewriting.com/documentation-theme-jekyll/mydoc_help_api/"><img class="docimage" src="images/helpapi.svg" alt="Building a Help API" style="max-width: 600px" /></a><figcaption>A help API provides a JSON file at a web URL with content that can be pulled into different targets</figcaption></figure>
+
+<p>The stylesheet even handles SVG display in IE 9 and earlier through the following style (based on this <a href="https://gist.github.com/larrybotha/7881691">gist</a>):</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/*
+ * Let's target IE to respect aspect ratios and sizes for img tags containing SVG files
+ *
+ * [1] IE9
+ * [2] IE10+
+ */</span>
+<span class="c">/* 1 */</span>
+<span class="nc">.ie9</span> <span class="nt">img</span><span class="o">[</span><span class="nt">src</span><span class="err">$</span><span class="o">=</span><span class="s1">".svg"</span><span class="o">]</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c">/* 2 */</span>
+<span class="k">@media</span> <span class="n">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">-ms-high-contrast</span><span class="p">:</span> <span class="n">active</span><span class="p">),</span> <span class="p">(</span><span class="n">-ms-high-contrast</span><span class="p">:</span> <span class="nb">none</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nt">img</span><span class="o">[</span><span class="nt">src</span><span class="err">$</span><span class="o">=</span><span class="s1">".svg"</span><span class="o">]</span> <span class="p">{</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Also, if you’re working with SVG graphics, note that Firefox does not support SVG fonts. In Illustrator, when you do a Save As with your AI file and choose SVG, to preserve your fonts, in the Font section, select “Convert to outline” as the Type (don’t choose SVG in the Font section).</p>
+
+<p>Also, remove the check box for “Use textpath element for text on a path”. And select “Embed” rather than “Link.” The following screenshot shows the settings I use. Your graphics will look great in Firefox.</p>
+
+<figure><img class="docimage" src="images/illustratoroptions.png" alt="" /><figcaption>Essential options for SVG with Illustrator</figcaption></figure>
+
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        <a href="tag_formatting.html" class="btn btn-default navbar-btn cursorNorm" role="button">formatting</a>
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+<span>Page last updated:</span> July 3, 2016<br/> Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>

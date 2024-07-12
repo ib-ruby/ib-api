@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="spreads,  spreads, strangle, straddle. vertical, butterfly">
+<title>Spread Prototypes | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Spread Prototypes">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">ib-ruby </li>
+  
+  
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="The IB-Ruby Project" href="index.html">The IB-Ruby Project</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Introduction" href="ibruby_introduction.html">Introduction</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Support" href="ibruby_support.html">Support</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Installation" href="#">Installation</a>
+      <ul>
+          
+          
+          
+          <li><a title="Setup Ruby and Install the Software." href="Setup_Ruby_and_Install_the_Software.html">Setup Ruby and Install the Software.</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Create a new Project" href="Create_a_new_project.html">Create a new Project</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Connection / Plugins" href="#">Connection / Plugins</a>
+      <ul>
+          
+          
+          
+          <li><a title="Connect to the TWS" href="connect_to_tws.html">Connect to the TWS</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Connection" href="connection.html">IB-Connection</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Ruby Console" href="console.html">IB-Ruby Console</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Jupyter Notebooks" href="notebook.html">Jupyter Notebooks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Messages" href="#">Messages</a>
+      <ul>
+          
+          
+          
+          <li><a title="List of Messages" href="message_correct_arguments.html">List of Messages</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request-ID" href="message_request_id.html">Request-ID</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request Market-Data" href="message_marketdata.html">Request Market-Data</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Contracts" href="#">Contracts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Specify and Query" href="Specify_and_query_contracts.html">Specify and Query</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Verify" href="Verify_contracts.html">Verify</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Market Price" href="market_price.html">Market Price</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Historical Data" href="Historical_data.html">Historical Data</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Expiry vs. Last-Trading-Day" href="expiry_and_last_trading_day.html">Expiry vs. Last-Trading-Day</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Watchlists" href="watchlists.html">Watchlists</a></li>
+          
+          
+          
+          
+          
+          
+          <li class="active"><a title="Spread Prototypes" href="spreads.html">Spread Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Rolling of Options and Futures" href="roll-options.html">Rolling of Options and Futures</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Chains" href="atm_options.html">Option-Chains</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Greeks" href="option_greeks.html">Option-Greeks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Orders" href="#">Orders</a>
+      <ul>
+          
+          
+          
+          <li><a title="Prototypes" href="order_prototypes.html">Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (plain vanilla)" href="order_placement.html">Placing Orders (plain vanilla)</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (advanced)" href="order_workflow.html">Placing Orders (advanced)</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Accounts" href="#">Accounts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="account_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Database  & Rails Integration" href="#">Database  & Rails Integration</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="database_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Spread Prototypes</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <div class="bs-callout bs-callout-info">
+To use <em>Spread Prototypes</em>, activate the <em>spread-prototypes</em> plugin   
+<pre> 
+require 'ib-api' 
+ib =  IB::Connection.new
+ib.activate_plugin 'spread-prototypes' 
+</pre>
+</div>
+
+<p>As for <a href="order-prototypes">Order-Prototypes</a> <code class="language-plaintext highlighter-rouge">Spread-Prototypes</code> are provided to ease the definition of <em>complex-positions</em>. <code class="language-plaintext highlighter-rouge">Spread-Prototypes</code> are designed to automate the creation of <code class="language-plaintext highlighter-rouge">IB::Spread</code>-Contracts.</p>
+
+<h2 id="spreads">Spreads</h2>
+
+<p><code class="language-plaintext highlighter-rouge">IB-Spread</code> provides <code class="language-plaintext highlighter-rouge">:add_leg</code>and <code class="language-plaintext highlighter-rouge">:remove_leg</code> methods, to be used, for example, to roll an option:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ib</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">ib</span><span class="p">.</span><span class="nf">activate_plugin</span> <span class="ss">:spread_protoypes</span><span class="p">,</span> <span class="ss">:advanced_account</span><span class="p">,</span> <span class="ss">:process_orders</span><span class="p">,</span> <span class="ss">:order_prototypes</span>
+
+<span class="n">account</span> <span class="o">=</span>  <span class="n">ib</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>         <span class="c1"># use the first account</span>
+<span class="n">o1</span> <span class="o">=</span> <span class="no">Option</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: </span><span class="s1">'ENR'</span><span class="p">,</span> <span class="ss">exchange: </span><span class="s1">'EUREX'</span><span class="p">,</span>
+                 <span class="ss">strike: </span><span class="mi">27</span><span class="p">,</span> <span class="ss">expiry: </span><span class="no">IB</span><span class="o">::</span><span class="no">Option</span><span class="p">.</span><span class="nf">next_expiry</span><span class="p">,</span> <span class="ss">right: :put</span> <span class="p">)</span>
+<span class="n">o2</span> <span class="o">=</span> <span class="n">o1</span><span class="p">.</span><span class="nf">merge</span> <span class="ss">expiry: </span><span class="mi">202409</span>   <span class="c1">## use o1 as template </span>
+
+<span class="n">s</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Spread</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">s</span><span class="p">.</span><span class="nf">add_leg</span> <span class="n">o1</span><span class="p">.</span><span class="nf">verify</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="ss">action: :buy</span>    <span class="c1"># orderlegs must include a valid con_id</span>
+<span class="n">s</span><span class="p">.</span><span class="nf">add_leg</span> <span class="n">o2</span><span class="p">.</span><span class="nf">verify</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="ss">action: :sell</span>
+<span class="n">s</span><span class="p">.</span><span class="nf">legs</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"&lt;Option: ENR 20240719 put 27.0 EUREX &gt;"</span><span class="p">,</span> <span class="s2">"&lt;Option: ENR 202409 put 27.0 EUREX &gt;"</span><span class="p">]</span>
+<span class="n">s</span><span class="p">.</span><span class="nf">combo_legs</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">==&gt;</span> <span class="p">[</span><span class="s2">"&lt;ComboLeg: buy 1 con_id 700720068 at EUREX&gt;"</span><span class="p">,</span> 
+       <span class="s2">"&lt;ComboLeg: sell 1 con_id 702590621 at EUREX&gt;"</span><span class="p">]</span>
+<span class="n">s</span><span class="p">.</span><span class="nf">currency</span> <span class="o">=</span> <span class="s1">'EUR'</span><span class="p">;</span> <span class="n">s</span><span class="p">.</span><span class="nf">symbol</span> <span class="o">=</span> <span class="s1">'ENR'</span><span class="p">;</span> <span class="n">s</span><span class="p">.</span><span class="nf">exchange</span> <span class="o">=</span> <span class="s1">'EUREX'</span> 
+
+<span class="n">account</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span><span class="p">(</span> <span class="ss">action: :buy</span><span class="p">,</span> <span class="ss">size: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">price: </span><span class="mf">3.5</span>  <span class="p">),</span> <span class="ss">contract: </span><span class="n">s</span>
+ <span class="o">=&gt;</span> <span class="p">{</span>   <span class="ss">:init_margin</span> <span class="o">=&gt;</span> <span class="mf">0.1807873e5</span><span class="p">,</span>
+       <span class="ss">:maint_margin</span> <span class="o">=&gt;</span> <span class="mf">0.1511598e5</span><span class="p">,</span>
+   <span class="ss">:equity_with_loan</span> <span class="o">=&gt;</span> <span class="mf">0.102879439e7</span><span class="p">,</span>
+         <span class="ss">:commission</span> <span class="o">=&gt;</span> <span class="mf">0.22e2</span><span class="p">,</span>
+<span class="ss">:commission_currency</span> <span class="o">=&gt;</span> <span class="s2">"EUR"</span><span class="p">,</span>
+            <span class="ss">:warning</span> <span class="o">=&gt;</span> <span class="s2">""</span>  <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="straddle">Straddle</h2>
+<p><code class="language-plaintext highlighter-rouge">IB::Straddle</code> simplifies the construction of this Combo</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ib</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">ib</span><span class="p">.</span><span class="nf">activate_plugin</span> <span class="ss">:spread_protoypes</span><span class="p">,</span> <span class="ss">:symbols</span>
+<span class="n">spxw</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Straddle</span><span class="p">.</span><span class="nf">fabricate</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Options</span><span class="p">.</span><span class="nf">spxw</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span> <span class="ss">right: :put</span><span class="p">,</span> <span class="ss">strike: </span><span class="mi">5500</span> <span class="p">)</span>
+<span class="n">spxw</span><span class="p">.</span><span class="nf">to_human</span>
+   <span class="o">=&gt;</span> <span class="s2">"&lt;Straddle SPX(5500.0)[Jul 2024]&gt;"</span>
+<span class="n">spxw</span><span class="p">.</span><span class="nf">legs</span><span class="p">.</span><span class="nf">to_human</span>
+   <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"&lt;Option: SPX 20240719 put 5500.0 SMART USD&gt;"</span><span class="p">,</span> 
+       <span class="s2">"&lt;Option: SPX 20240719 call 5500.0 SMART USD&gt;"</span><span class="p">]</span>
+<span class="c1"># or</span>
+<span class="o">&gt;</span> <span class="n">spy</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Straddle</span><span class="p">.</span><span class="nf">build</span> <span class="ss">from: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">spx</span><span class="p">,</span> 
+                           <span class="ss">strike: </span><span class="mi">5500</span><span class="p">,</span> 
+                           <span class="ss">expiry: </span><span class="n">spxw</span><span class="p">.</span><span class="nf">legs</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">expiry</span><span class="p">,</span> 
+                           <span class="ss">trading_class: </span><span class="s1">'SPXW'</span>
+<span class="o">&gt;</span> <span class="n">spxw</span> <span class="o">==</span> <span class="n">spy</span>			 <span class="o">=&gt;</span> <span class="kp">true</span> 
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">IB::Straddle.fabricate</code> and <code class="language-plaintext highlighter-rouge">IB::Straddle.build</code> create  <code class="language-plaintext highlighter-rouge">IB::Spread</code>-Contract Objects which can be used in <a href="watchlists">Watchlists</a> or<code class="language-plaintext highlighter-rouge">place_order</code></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">the_order</span> <span class="o">=</span>  <span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">3</span><span class="p">,</span> <span class="ss">action: :sell</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">245</span>
+<span class="o">&gt;</span> <span class="n">ib</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">place</span> <span class="ss">order: </span><span class="n">the_order</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">spy</span>
+</code></pre></div></div>
+
+<h2 id="strangle">Strangle</h2>
+
+<p><code class="language-plaintext highlighter-rouge">IB::Strangle</code> simplifies the definition of Strangles. An Underlying is required (Index, Future, Stock).
+Compared to <code class="language-plaintext highlighter-rouge">IB::Straddles</code> the strike is split to <code class="language-plaintext highlighter-rouge">:p</code> and <code class="language-plaintext highlighter-rouge">:c</code></p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">the_strangle</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Strangle</span><span class="p">.</span><span class="nf">build</span> <span class="ss">from: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">,</span> 
+                                  <span class="ss">c: </span><span class="mi">5000</span><span class="p">,</span> <span class="ss">p: </span><span class="mi">4800</span><span class="p">,</span> 
+                                  <span class="ss">expiry: </span><span class="no">IB</span><span class="o">::</span><span class="no">Options</span><span class="p">.</span><span class="nf">next_expiry</span>
+<span class="n">the_strangle</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="no">Strangle</span> <span class="no">Estx50</span><span class="p">(</span><span class="mf">4800.0</span><span class="p">,</span><span class="mf">5000.0</span><span class="p">)[</span><span class="no">Jul</span> <span class="mi">2024</span><span class="p">]</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<h2 id="calendar">Calendar</h2>
+
+<p>As for straddles, Calendar-Spreads are build either form a sample or »in situ« using underlying, strike, front- + back-month. To buy a Calendar-Spread means: <strong>The front month is sold!</strong></p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">calendar</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Calendar</span><span class="p">.</span><span class="nf">build</span> <span class="ss">from: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">,</span> <span class="ss">strike: </span><span class="mi">3000</span><span class="p">,</span> 
+                                <span class="ss">front: </span><span class="mi">201812</span><span class="p">,</span> <span class="ss">back: </span><span class="mi">201903</span><span class="p">,</span>
+                                <span class="ss">trading_class: </span><span class="s1">'OESX'</span>
+<span class="o">&gt;</span> <span class="n">calendar</span><span class="p">.</span><span class="nf">to_human</span>           
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Calendar Estx50 put(3000.0)[-1 :Dec 2018 |+|1 :Mar 2019  &gt;"</span> 
+ 
+</code></pre></div></div>
+<p>builds a put Calendar-Spread, selling the front-month and buying the back-month.</p>
+
+<p>Alternatively the Spread may be defined relative to a master-option:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">master</span> <span class="o">=</span> <span class="n">calendar</span><span class="p">.</span><span class="nf">legs</span><span class="p">.</span><span class="nf">first</span>   <span class="c1"># front-option</span>
+<span class="o">&gt;</span> <span class="n">m_calendar</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Calendar</span><span class="p">.</span><span class="nf">fabricate</span> <span class="n">master</span><span class="p">,</span> <span class="ss">back: </span><span class="mi">201903</span>
+<span class="o">&gt;</span> <span class="n">m_calendar</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Calendar ESTX50 put(3000.0)[-1 :Dec 2018 |+|1 :Mar 2019  &gt;"</span> 
+<span class="o">&gt;</span> <span class="n">m_calendar</span><span class="p">.</span><span class="nf">combo_legs</span> <span class="o">==</span> <span class="n">calendar</span><span class="p">.</span><span class="nf">combo_legs</span>        <span class="o">=&gt;</span> <span class="kp">true</span>
+
+</code></pre></div></div>
+
+<h3 id="rolling-of-futures">Rolling of Futures</h3>
+
+<p>In <strong>Fabricate-Mode</strong> the Calendar-Spread can be used to roll Futures:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">calendar</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Calendar</span><span class="p">.</span><span class="nf">fabricate</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">es</span><span class="p">,</span> <span class="s1">'3m'</span>
+<span class="o">&gt;</span> <span class="n">calendar</span><span class="p">.</span><span class="nf">to_human</span> 
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Calendar ES none(0.0)[1 :Dec 2020 |+|-1 :Mar 2021  &gt;"</span> 
+<span class="o">&gt;</span> <span class="n">calendar</span><span class="p">.</span><span class="nf">market_price</span>                    <span class="o">==&gt;</span>  <span class="mf">9.75</span>
+
+<span class="c1"># or to roll a short future</span>
+<span class="o">&gt;</span> <span class="n">es</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Calendar</span><span class="p">.</span><span class="nf">fabricate</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">es</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="ss">expiry: </span><span class="mi">202106</span><span class="p">),</span> <span class="s1">'-3m'</span>
+<span class="o">&gt;</span> <span class="n">es</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Calendar ES none(0.0)[1 :Jun 2021 |+|-1 :Mar 2021  &gt;"</span> 
+<span class="o">&gt;</span> <span class="n">es</span><span class="p">.</span><span class="nf">market_price</span>                         <span class="o">==&gt;</span> <span class="o">-</span><span class="mf">10.0</span>
+			 
+</code></pre></div></div>
+
+<h2 id="vertical">Vertical</h2>
+
+<p>Verticals are defined straightforward</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># using build</span>
+<span class="o">&gt;</span> <span class="n">the_v</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Vertical</span><span class="p">.</span><span class="nf">build</span> <span class="ss">from: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Index</span><span class="p">.</span><span class="nf">stoxx</span><span class="p">,</span> <span class="ss">buy: </span><span class="mi">3200</span><span class="p">,</span> <span class="ss">sell: </span><span class="mi">3000</span> 
+<span class="o">&gt;</span> <span class="n">the_v</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Vertical Estx50 put(1 :3200.0 |+|-1 :3000.0  )[Dec 2018]&gt;"</span> 
+<span class="c1"># or in fabricate-mode</span>
+<span class="o">&gt;</span> <span class="n">new_v</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Vertical</span><span class="p">.</span><span class="nf">fabricate</span> <span class="ss">sell: </span><span class="n">the_v</span><span class="p">.</span><span class="nf">legs</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="ss">buy: </span><span class="mi">2400</span> 
+<span class="o">&gt;</span> <span class="n">new_v</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="s2">"&lt;Vertical ESTX50 put(-1 :3200.0 |+|1 :2400.0  )[Dec 2018]&gt;"</span>
+</code></pre></div></div>
+
+<h2 id="stock-spreads">Stock Spreads</h2>
+
+<p>Stock Spreads are combined <em>buy</em> and <em>sell</em> orders with us-stocks as unterlyings.</p>
+
+<p>They can only be fabricated:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">the_bag</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">StockSpread</span><span class="p">.</span><span class="nf">fabricate</span> <span class="s1">'MSFT'</span><span class="p">,</span> <span class="s1">'WFC'</span><span class="p">,</span> <span class="ss">ratio: </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">8</span><span class="p">]</span>  
+<span class="c1">#or</span>
+<span class="o">&gt;</span> <span class="n">msft</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: :msft</span> <span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">wfc</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: :wfc</span> <span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">the_bag</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">StockSpread</span><span class="p">.</span><span class="nf">fabricate</span> <span class="err">'</span><span class="p">,</span> <span class="n">msft</span><span class="p">,</span> <span class="n">wfc</span> <span class="ss">ratio: </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">8</span><span class="p">]</span>  
+
+
+<span class="o">&gt;</span> <span class="n">the_bag</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="s2">"&lt;StockSpread MSFT:1 , WFC:-8 (USD )&gt;"</span> 
+
+<span class="o">&gt;</span> <span class="n">the_bag</span><span class="p">.</span><span class="nf">market_price</span>    <span class="o">=&gt;</span> <span class="mf">21.56</span>
+<span class="o">&gt;</span> <span class="n">the_bag</span><span class="p">.</span><span class="nf">symbol</span>          <span class="o">=&gt;</span> <span class="s2">"MSFT,WFC"</span> 
+
+</code></pre></div></div>
+
+<p>Additional attributes can be added through the fabrication process. Thus, <code class="language-plaintext highlighter-rouge">IB::StockSpread.fabricate 'MSFT', 'WFC', ratio: [1, -8], exchange: 'NYSE' </code> sets the exchange for the combo.</p>
+
+<p>Stock-Spreads must be ordered with the <code class="language-plaintext highlighter-rouge">NonGuaranteed</code> flag set. Use the <code class="language-plaintext highlighter-rouge">IB::Combo</code> prototype for this
+purpose.</p>
+
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+<span>Page last updated:</span> Jul 11, 2024<br/> Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>

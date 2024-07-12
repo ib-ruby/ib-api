@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="gateway,  ">
+<title>IB-Gateway | IB-Ruby documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="documentation-theme-jekyll" href="https://github.com/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> IB-Ruby Doc</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/ib-ruby" target="_blank" rel="noopener">GitHub</a></li>
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="IB-Gateway">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">ib-ruby </li>
+  
+  
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="The IB-Ruby Project" href="index.html">The IB-Ruby Project</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Introduction" href="ibruby_introduction.html">Introduction</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Support" href="ibruby_support.html">Support</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Installation" href="#">Installation</a>
+      <ul>
+          
+          
+          
+          <li><a title="Setup Ruby and Install the Software." href="Setup_Ruby_and_Install_the_Software.html">Setup Ruby and Install the Software.</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Create a new Project" href="Create_a_new_project.html">Create a new Project</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Connection / Plugins" href="#">Connection / Plugins</a>
+      <ul>
+          
+          
+          
+          <li><a title="Connect to the TWS" href="connect_to_tws.html">Connect to the TWS</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Connection" href="connection.html">IB-Connection</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="IB-Ruby Console" href="console.html">IB-Ruby Console</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Jupyter Notebooks" href="notebook.html">Jupyter Notebooks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Messages" href="#">Messages</a>
+      <ul>
+          
+          
+          
+          <li><a title="List of Messages" href="message_correct_arguments.html">List of Messages</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request-ID" href="message_request_id.html">Request-ID</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Request Market-Data" href="message_marketdata.html">Request Market-Data</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Contracts" href="#">Contracts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Specify and Query" href="Specify_and_query_contracts.html">Specify and Query</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Verify" href="Verify_contracts.html">Verify</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Market Price" href="market_price.html">Market Price</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Historical Data" href="Historical_data.html">Historical Data</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Expiry vs. Last-Trading-Day" href="expiry_and_last_trading_day.html">Expiry vs. Last-Trading-Day</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Watchlists" href="watchlists.html">Watchlists</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Spread Prototypes" href="spreads.html">Spread Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Rolling of Options and Futures" href="roll-options.html">Rolling of Options and Futures</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Chains" href="atm_options.html">Option-Chains</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Option-Greeks" href="option_greeks.html">Option-Greeks</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Orders" href="#">Orders</a>
+      <ul>
+          
+          
+          
+          <li><a title="Prototypes" href="order_prototypes.html">Prototypes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (plain vanilla)" href="order_placement.html">Placing Orders (plain vanilla)</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Placing Orders (advanced)" href="order_workflow.html">Placing Orders (advanced)</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Accounts" href="#">Accounts</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="account_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Database  & Rails Integration" href="#">Database  & Rails Integration</a>
+      <ul>
+          
+          
+          
+          <li><a title="Overview" href="database_overview.html">Overview</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">IB-Gateway</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+   <div class="bs-callout bs-callout-info">
+<em>IB::Gateway</em> is part of <em>ib-extensions</em>.    
+
+Include  
+<pre> 
+require 'ib-api' 
+require 'ib/gateway' 
+</pre>
+
+in your scripts.
+</div>
+<h3 id="public-interface">public interface</h3>
+
+<table>
+  <tbody>
+    <tr>
+      <td>connect</td>
+      <td>disconnect</td>
+      <td>reconnect</td>
+      <td> </td>
+      <td>check_connection</td>
+    </tr>
+    <tr>
+      <td>tws</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>get_account_data</td>
+      <td>update_orders</td>
+      <td>all_contracts</td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>advisor</td>
+      <td>clients</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="typical-setup">Typical setup</h2>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bundler/setup'</span>
+<span class="nb">require</span> <span class="s1">'ib-api'</span>
+<span class="nb">require</span> <span class="s1">'ib-gateway'</span>
+
+<span class="no">TWS</span><span class="o">=</span> <span class="s1">'localhost:7496'</span>  
+<span class="no">GATEWAY</span><span class="o">=</span> <span class="s1">'127.0.0.1:4002'</span>  
+
+<span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">new</span> <span class="ss">host: </span><span class="no">TWS</span> 
+
+<span class="k">if</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span><span class="p">.</span><span class="nf">present?</span>
+    <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+  <span class="k">else</span>
+   <span class="nb">puts</span> <span class="s1">'No TWS'</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<div class="alert alert-info" role="alert"><i class="fa fa-bars"></i> <code class="language-plaintext highlighter-rouge">IB::Gateway</code> keeps Account- and Portfolio-Data, Contracts, Orders  in an inline database
+and provides account-based trading tools.</div>
+
+<p>If called with <code class="language-plaintext highlighter-rouge">get_account_data: true</code> it detects accounts and reads available data from the <em>TWS</em>.</p>
+
+<p>Later, <code class="language-plaintext highlighter-rouge">get_account_data</code>  and <code class="language-plaintext highlighter-rouge">update_orders</code> synchonize the internal database with TWS-Data.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">## use /bin/gateway to reproduce</span>
+ <span class="n">gw</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">new</span> <span class="ss">host: </span><span class="no">TWS</span><span class="p">,</span> <span class="ss">get_account_data: </span><span class="kp">true</span>
+ <span class="nb">puts</span> <span class="n">gw</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">portfolio_values</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">Pos</span><span class="o">=-</span><span class="mi">8</span> <span class="err">@</span> <span class="mf">0.0</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">;</span><span class="no">PNL</span><span class="o">=&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">BOSS</span> <span class="mi">20210416</span> <span class="n">put</span> <span class="mf">33.0</span> <span class="no">DTB</span> <span class="no">EUR</span><span class="o">&gt;</span>
+ <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">Pos</span><span class="o">=-</span><span class="mi">4</span> <span class="err">@</span> <span class="mf">0.0</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">;</span><span class="no">PNL</span><span class="o">=&lt;</span><span class="no">Option</span><span class="p">:</span> <span class="no">STM</span> <span class="mi">20210416</span> <span class="n">put</span> <span class="mf">30.0</span> <span class="no">DTB</span> <span class="no">EUR</span><span class="o">&gt;</span>
+
+</code></pre></div></div>
+
+<p><strong><em>IB::Gateway</em></strong>  provides an intuitive interface for order-placement and -management.</p>
+
+<h3 id="accounts">Accounts</h3>
+
+<p>In a financial advisor environment, after initialization <code class="language-plaintext highlighter-rouge">IB::Gateway</code> attached  accounts are present  through</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">gw</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">gw</span><span class="p">.</span><span class="nf">advisor</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;demo_advisor DF167347&gt;"</span> 
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="n">gw</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">to_human</span>
+<span class="o">&lt;</span><span class="n">demo_user</span> <span class="no">DU167348</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">demo_user</span> <span class="no">DU167349</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<p>In single user mode Advisor and Client are identical:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">gw</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">gw</span><span class="p">.</span><span class="nf">advisor</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;user U1274612&gt;"</span> 
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="n">gw</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">to_human</span>
+<span class="o">&lt;</span><span class="n">user</span> <span class="no">U1274612</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">IB::Gateway.tws</code> points to the  active and instantiated  <code class="language-plaintext highlighter-rouge">IB::Connection</code> and its methods.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">IB::Gateway.current</code> links to the instantiated <code class="language-plaintext highlighter-rouge">IB::Gateway</code> and its account-database.</p>
+  </li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">IB::Gateway.current.clients</code>  contain  <code class="language-plaintext highlighter-rouge">Account-Positions</code> and <code class="language-plaintext highlighter-rouge">Portfolio-Values</code>. They are synchronized with the <em>TWS</em> by
+<code class="language-plaintext highlighter-rouge">IB::Gateway.current.get_account_data {the account}</code> and beeing accessed via</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">g</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
+<span class="c1"># thread safe access</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">account_data</span> <span class="o">&amp;</span><span class="ss">:portfolio_values</span>
+
+<span class="n">g</span><span class="p">.</span><span class="nf">account_data</span> <span class="o">&amp;</span><span class="ss">:account_values</span>
+
+<span class="c1"># primitive access</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">map</span> <span class="o">&amp;</span><span class="ss">:portfolio_values</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">map</span> <span class="o">&amp;</span><span class="ss">:account_values</span>
+</code></pre></div></div>
+<p>Visit <a href="account_overview">Account Overview</a> for further details.</p>
+
+<h3 id="order-management">Order Management</h3>
+
+<p>A simplified order management process is included.</p>
+
+<p>The centerpiece is an <code class="language-plaintext highlighter-rouge">IB::Order</code>-Object. It is reused and updated through the process and keeps the history and current status.</p>
+
+<p>The process is initiated by calling <code class="language-plaintext highlighter-rouge">IB::Account.preview</code> or <code class="language-plaintext highlighter-rouge">IB::Account.place</code> with  <code class="language-plaintext highlighter-rouge">IB::Contract</code> and <code class="language-plaintext highlighter-rouge">IB::Order_Prototype</code> as arguments.<br />
+Other steps ( <code class="language-plaintext highlighter-rouge">modify</code>, <code class="language-plaintext highlighter-rouge">reverse</code>, <code class="language-plaintext highlighter-rouge">close</code> or <code class="language-plaintext highlighter-rouge">cancel</code> )  just require the <code class="language-plaintext highlighter-rouge">IB-Order</code> object as argument.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">g</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">the_contract</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Stocks</span><span class="p">.</span><span class="nf">msft</span>  <span class="c1"># Microsoft</span>
+<span class="o">&gt;</span> <span class="n">the_order</span> <span class="o">=</span> <span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">100</span><span class="p">,</span> 
+                          <span class="ss">price: </span><span class="n">the_contract</span><span class="p">.</span><span class="nf">market_price</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">,</span>
+                          <span class="ss">action: :buy</span>
+<span class="o">&gt;</span> <span class="n">the_order</span><span class="p">.</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Order: LMT GTC buy 100  @ 201.33 New #/ from &gt;"</span> 
+
+<span class="o">&gt;</span> <span class="n">the_account</span>  <span class="o">=</span>  <span class="n">g</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>
+
+<span class="o">&gt;</span> <span class="n">the_account</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="n">the_order</span><span class="p">,</span> 
+                      <span class="ss">contract: </span><span class="n">the_contract</span>
+  <span class="c1"># returns an array with projected what-if values											</span>
+  <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:init_margin</span><span class="o">=&gt;</span><span class="mf">0.1344327e5</span><span class="p">,</span> <span class="ss">:maint_margin</span><span class="o">=&gt;</span><span class="mf">0.1168288e5</span><span class="p">,</span> 
+      <span class="ss">:equity_with_loan</span><span class="o">=&gt;</span><span class="mf">0.118936284e7</span><span class="p">,</span> <span class="ss">:commission</span><span class="o">=&gt;</span><span class="kp">nil</span><span class="p">,</span> 
+      <span class="ss">:commission_currency</span><span class="o">=&gt;</span><span class="s2">"USD"</span><span class="p">,</span> <span class="ss">:warning</span><span class="o">=&gt;</span><span class="s2">""</span><span class="p">}</span> 
+
+<span class="o">&gt;</span> <span class="n">the_account</span><span class="p">.</span><span class="nf">place</span> <span class="ss">order: </span><span class="n">the_order</span>
+
+<span class="o">&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nf">cancel_order</span> <span class="n">the_order</span>              <span class="c1"># general order cancelling facility</span>
+<span class="o">&gt;</span> <span class="n">the_account</span><span class="p">.</span><span class="nf">cancel</span> <span class="ss">order: </span><span class="n">the_order</span>   <span class="c1"># identical</span>
+
+</code></pre></div></div>
+<p>The general procedure for order-tasks:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">the_account</span><span class="o">.</span><span class="p">{</span> <span class="n">preview</span> <span class="o">|</span> <span class="n">place</span> <span class="o">|</span> <span class="n">modify</span> <span class="o">|</span> <span class="n">reverse</span> <span class="o">|</span> <span class="n">close</span>  <span class="p">}</span> <span class="ss">order: </span><span class="n">the_order</span><span class="p">,</span> 
+                                                              <span class="ss">contract: </span><span class="n">the_contract</span>
+</code></pre></div></div>
+<div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> <b>::</b> The order-object is updated in the process. It’s OK to use the same order-object for each step. Then the history is kept in <code class="language-plaintext highlighter-rouge">OrderState</code>-Objects. <strong>But <em>never</em> use the same order object for different users.</strong>
+</div>
+
+<h4 id="locate-order">Locate Order</h4>
+
+<p>After initialisation, open orders are retrieved from the TWS. They are associated to the <code class="language-plaintext highlighter-rouge">Clients.</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">locate_order</code> offers a versatile option to monitor the status an order.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">g</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">orders</span>                        <span class="o">=&gt;</span> <span class="p">[]</span>  <span class="c1">#  No open orders</span>
+
+<span class="o">&gt;</span> <span class="n">dbk</span> <span class="o">=</span>  <span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: :dbk</span><span class="p">,</span> <span class="ss">currency: :eur</span><span class="p">).</span><span class="nf">verify</span><span class="p">.</span><span class="nf">first</span>
+<span class="o">&gt;</span> <span class="n">dbk</span><span class="p">.</span><span class="nf">market_price</span>                  <span class="o">=&gt;</span> <span class="mf">10.428</span>  
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">place</span> <span class="ss">contract: </span><span class="n">dbk</span><span class="p">,</span> <span class="ss">order: </span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span><span class="p">(</span> <span class="ss">action: :buy</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">size: </span><span class="mi">100</span>  <span class="p">)</span>
+<span class="o">=&gt;</span> <span class="mi">4</span> 
+ <span class="c1"># Now lets fetch the order</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">locate_order</span><span class="p">(</span> <span class="ss">contract: </span><span class="n">dbk</span>  <span class="p">).</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Order: LMT GTC buy 100.0  @ 10.0 Submitted #4/743282540 from 2000/DU167348&gt;"</span> 
+ <span class="c1">#  cancel it and retrieve the acknowledge from the TWS</span>
+<span class="o">&gt;</span> <span class="n">open_order</span> <span class="o">=</span> <span class="n">one</span><span class="p">.</span><span class="nf">locate_order</span><span class="p">(</span> <span class="ss">contract: </span><span class="n">dbk</span>  <span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">cancel</span> <span class="ss">order: </span><span class="n">open_order</span>
+	<span class="mi">11</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">40</span> <span class="no">Cancelling</span> <span class="o">&lt;</span><span class="no">Order</span><span class="p">:</span> <span class="no">LMT</span> <span class="no">GTC</span> <span class="n">buy</span> <span class="mf">100.0</span>  <span class="err">@</span> <span class="mf">10.0</span> <span class="no">Submitted</span> <span class="c1">#4/743282540 from 2000/DU167348&gt;  # log-output</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">locate_order</span><span class="p">(</span> <span class="ss">contract: </span><span class="n">dbk</span> <span class="p">,</span> <span class="ss">status: </span><span class="kp">nil</span>  <span class="p">).</span><span class="nf">to_human</span>
+ <span class="o">=&gt;</span> <span class="s2">"&lt;Order: LMT GTC buy 100.0  @ 10.0 Cancelled #4/743282540 from 2000/DU167348&gt;"</span> 
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">locate_order</span> <span class="ss">contract: </span><span class="n">dbk</span>  <span class="o">=&gt;</span> <span class="kp">nil</span>
+
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">locate_order</code> returns only <strong>one</strong> order-object (or nil). If the steps described above (preview, place, modify) are performed,  each time another IB::Order  is added to the <code class="language-plaintext highlighter-rouge">Client.order</code> array. But only the last one is active.
+<code class="language-plaintext highlighter-rouge">locate_order</code>returns this order-object.`</p>
+
+<p>To obtain <em>any</em> submitted order, just search manually</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">&gt;</span> <span class="n">one</span><span class="o">=</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>
+<span class="o">&gt;</span> <span class="n">one</span><span class="p">.</span><span class="nf">orders</span><span class="p">.</span><span class="nf">find_all</span><span class="p">{</span><span class="o">|</span><span class="n">o</span><span class="o">|</span>  <span class="n">o</span><span class="p">.</span><span class="nf">order_state</span><span class="p">.</span><span class="nf">status</span> <span class="o">~=</span> <span class="sr">/ubmitted/</span> <span class="p">}</span>     <span class="c1"># finds Presubmited and Submitted</span>
+
+</code></pre></div></div>
+
+<h2 id="interactive-shell">Interactive Shell</h2>
+
+<p>Analogous to the <a href="/console">console</a> script that enables experiments with <code class="language-plaintext highlighter-rouge">IB::Connection</code>,  running <code class="language-plaintext highlighter-rouge">./gateway.rb</code>« in the »bin« directory of <code class="language-plaintext highlighter-rouge">ib-extensions</code> opens an interactive console with <code class="language-plaintext highlighter-rouge">IB::Gateway</code> preloaded.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">--------------------</span> <span class="n">initialize</span> <span class="o">--------------------</span>
+<span class="no">Connected</span> <span class="n">to</span> <span class="n">server</span><span class="p">,</span> <span class="ss">version: </span><span class="mi">137</span><span class="p">,</span>
+<span class="n">connection</span> <span class="ss">time: </span><span class="mi">2018</span><span class="o">-</span><span class="mo">04</span><span class="o">-</span><span class="mo">07</span> <span class="mi">17</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mi">44</span> <span class="o">+</span><span class="mo">0000</span> <span class="n">local</span><span class="p">,</span> <span class="mi">2018</span><span class="o">-</span><span class="mo">04</span><span class="o">-</span><span class="mo">07</span><span class="no">T17</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mi">44</span><span class="o">+</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">remote</span><span class="p">.</span>
+<span class="nf">new</span> <span class="n">demo_advisor</span> <span class="n">detected</span> <span class="o">=&gt;</span> <span class="no">DF167347</span>
+<span class="n">new</span> <span class="n">demo_user</span> <span class="n">detected</span> <span class="o">=&gt;</span> <span class="no">DU167348</span>
+<span class="n">new</span> <span class="n">demo_user</span> <span class="n">detected</span> <span class="o">=&gt;</span> <span class="no">DU167349</span>
+<span class="no">Got</span> <span class="k">next</span> <span class="n">valid</span> <span class="n">order</span> <span class="ss">id: </span><span class="mi">1</span><span class="o">.</span>
+<span class="no">DU167348</span> <span class="o">=&gt;</span> <span class="no">Count</span> <span class="n">of</span> <span class="no">AccountValues</span><span class="p">:</span> <span class="mi">218</span> 
+<span class="no">DU167349</span> <span class="o">=&gt;</span> <span class="no">Count</span> <span class="n">of</span> <span class="no">AccountValues</span><span class="p">:</span> <span class="mi">218</span> 
+<span class="no">Connection</span> <span class="n">established</span> <span class="n">on</span> <span class="no">Port</span>  <span class="mi">4002</span><span class="p">,</span> <span class="n">client_id</span> <span class="mi">3000</span> <span class="n">used</span>
+		 
+<span class="o">----&gt;</span> <span class="no">G</span>    <span class="n">points</span> <span class="n">to</span> <span class="n">the</span> <span class="no">Gateway</span><span class="o">-</span><span class="no">Instance</span>
+<span class="o">----&gt;</span> <span class="no">C</span>    <span class="n">points</span> <span class="n">to</span> <span class="n">the</span> <span class="no">Connection</span><span class="o">-</span><span class="no">Instance</span>
+		 
+ <span class="o">---------------------------------------------</span>
+
+<span class="o">&gt;</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"&lt;demo_user DU167348&gt;"</span><span class="p">,</span> <span class="s2">"&lt;demo_user DU167349&gt;"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Contracts</code>, <code class="language-plaintext highlighter-rouge">Account-</code> and <code class="language-plaintext highlighter-rouge">PortfolioValues</code> are always present</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">&gt;</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">contracts</span><span class="p">.</span><span class="nf">to_human</span>
+    <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"&lt;Stock: BLUE EUR&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: CBA AUD&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: CIEN USD&gt;"</span><span class="p">,</span> 
+        <span class="s2">"&lt;Stock: CSCO USD&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: DBA USD&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: DBB USD&gt;"</span><span class="p">,</span> 
+        <span class="s2">"&lt;Stock: GE USD&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Option: GOOG 20190118 call 1130.0 SMART USD&gt;"</span><span class="p">,</span> 
+        <span class="s2">"&lt;Option: GOOG 20190118 call 1150.0 SMART USD&gt;"</span><span class="p">,</span> 
+        <span class="s2">"&lt;Option: GOOG 20190118 call 1170.0 SMART USD&gt;"</span><span class="p">,</span> 
+        <span class="s2">"&lt;Stock: LHA EUR&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: WFC USD&gt;"</span><span class="p">,</span> <span class="s2">"&lt;Stock: WMT USD&gt;"</span><span class="p">]</span> 
+				
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">account_data_scan</span> <span class="sr">/PnL/</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">AUD</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">AUD</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=</span><span class="mf">4391.77</span> <span class="no">BASE</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">BASE</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=</span><span class="mf">6284.20</span> <span class="no">EUR</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">EUR</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">HKD</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">HKD</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">JPY</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">JPY</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">UnrealizedPnL</span><span class="o">=-</span><span class="mf">2205.57</span> <span class="no">USD</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">RealizedPnL</span><span class="o">=</span><span class="mf">0.00</span> <span class="no">USD</span><span class="o">&gt;</span>
+ 
+<span class="o">&gt;</span> <span class="nb">puts</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">portfolio_values</span><span class="p">.</span><span class="nf">to_human</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">720</span> <span class="err">@</span> <span class="mf">16.365</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">11782.87</span><span class="p">;</span><span class="no">PNL</span><span class="o">=-</span><span class="mf">4520.41</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">BLUE</span> <span class="no">EUR</span> <span class="no">SBF</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">812</span> <span class="err">@</span> <span class="mf">31.31</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">25423.64</span><span class="p">;</span><span class="no">PNL</span><span class="o">=</span><span class="mf">6199.54</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">CIEN</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">44</span> <span class="err">@</span> <span class="mf">47.03</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">2069.32</span><span class="p">;</span><span class="no">PNL</span><span class="o">=</span><span class="mf">1125.52</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">CSCO</span> <span class="no">USD</span> <span class="no">NASDAQ</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">1366</span> <span class="err">@</span> <span class="mf">17.059</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">23302.32</span><span class="p">;</span><span class="no">PNL</span><span class="o">=-</span><span class="mf">11281.23</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">DBA</span> <span class="no">USD</span> <span class="no">ARCA</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=-</span><span class="mi">1</span> <span class="err">@</span> <span class="mf">15.662</span><span class="p">;</span><span class="no">Value</span><span class="o">=-</span><span class="mf">15.66</span><span class="p">;</span><span class="no">PNL</span><span class="o">=</span><span class="mf">1.97</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">DBB</span> <span class="no">USD</span> <span class="no">ARCA</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">100</span> <span class="err">@</span> <span class="mf">60.174</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">6017.4</span><span class="p">;</span><span class="no">PNL</span><span class="o">=-</span><span class="mf">437.76</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">J36</span> <span class="no">USD</span> <span class="no">SGX</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167348</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">100</span> <span class="err">@</span> <span class="mf">57.35</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">5735.0</span><span class="p">;</span><span class="no">PNL</span><span class="o">=</span><span class="mf">439.0</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">WFC</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167349</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">48</span> <span class="err">@</span> <span class="mf">98.83</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">4743.84</span><span class="p">;</span><span class="no">PNL</span><span class="o">=</span><span class="mf">1816.32</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">ALB</span> <span class="no">USD</span> <span class="no">NYSE</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="no">PortfolioValue</span><span class="p">:</span> <span class="no">DU167349</span> <span class="no">Pos</span><span class="o">=</span><span class="mi">740</span> <span class="err">@</span> <span class="mf">16.365</span><span class="p">;</span><span class="no">Value</span><span class="o">=</span><span class="mf">12110.17</span><span class="p">;</span><span class="no">PNL</span><span class="o">=-</span><span class="mf">4637.96</span> <span class="n">unrealized</span><span class="p">;</span><span class="o">&lt;</span><span class="no">Stock</span><span class="p">:</span> <span class="no">BLUE</span> <span class="no">EUR</span> <span class="no">SBF</span><span class="o">&gt;</span>
+	<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></div>
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        
+        
+    </div>
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2024 IB-Ruby. All rights reserved. <br />
+ Site last generated: Jul 12, 2024 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>
