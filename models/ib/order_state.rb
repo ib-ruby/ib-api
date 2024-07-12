@@ -145,7 +145,7 @@ via the order_state-Object.
 =end
 		def forcast
 			{ :init_margin => init_margin_after,
-				:maint_margin => maint_margin_after_after,
+				:maint_margin => maint_margin_after,
 				:equity_with_loan => equity_with_loan_after ,
 			  :commission => commission, 
 				:commission_currency=> commission_currency,

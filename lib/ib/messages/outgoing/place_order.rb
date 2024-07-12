@@ -17,7 +17,7 @@ module IB
                     contract.serialize_short(:primary_exchange, :sec_id_type),
                     order.serialize_main_order_fields,
                     order.serialize_extended_order_fields,
-                    order.serialize_combo_legs,
+                    order.serialize_combo_legs(contract),
                     order.serialize_auxilery_order_fields # incluing advisory order fields
                     ]
 

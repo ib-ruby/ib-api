@@ -338,9 +338,6 @@ module IB
      :min_commission, # The possible min range of the actual order commission.
      :max_commission, # The possible max range of the actual order commission.
      :warning_text, # String: Displays a warning message if warranted.
-     :init_margin, # Float: The impact the order would have on your initial margin.
-     :maint_margin, # Float: The impact the order would have on your maintenance margin.
-     :equity_with_loan, # Float: The impact the order would have on your equity
      :status, # String: Displays the order status. See OrderState for values
      # Properties arriving via OrderStatus message:
      :filled, #    int
@@ -358,6 +355,11 @@ module IB
      :inactive?,
      :complete_fill?
      ].each { |property| define_method(property) { order_state.send(property) } }
+
+    [:init_margin, # Float: The impact the order would have on your initial margin.
+     :equity_with_loan, # Float: The impact the order would have on your equity
+     :maint_margin # Float: The impact the order would have on your maintenance margin.
+    ].each { |property| define_method(property) { order_state.send(property.to_s+"_change") } }
 
     # Order is not valid without correct :local_id
     validates_numericality_of :local_id, :perm_id, :client_id, :parent_id,
@@ -439,7 +441,7 @@ module IB
       )  # closing of merge
         end
 
-    def serialize_combo_legs
+    def serialize_combo_legs(contract)
       if contract.bag?
         [ contract.serialize_legs,
           leg_prices.size,

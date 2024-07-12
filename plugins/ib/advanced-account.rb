@@ -222,7 +222,7 @@ This has to be done manually in the provided block
 =end
 
 
-		def modify_order  local_id: nil, order_ref: nil, order:nil
+		def modify_order  local_id: nil, order_ref: nil, order:nil, contract: nil
 
 			result = ->(l){ orders.detect{|x| x.local_id == l  && x.submitted? } }
 			order ||= locate_order( local_id: local_id,
@@ -253,7 +253,9 @@ This has to be done manually in the provided block
     ib =  IB::Connection.current
     the_local_id = nil
     # put the order into the queue (and exit) if the event is fired
-    req =  ib.subscribe( :OpenOrder ){|m| q << m.order if m.order.local_id.to_i == the_local_id.to_i }
+    req =  ib.subscribe( :OpenOrder ) do |m|
+      q << m.order if m.order.local_id.to_i == the_local_id.to_i && !m.order.init_margin.nil?
+    end
 
     order.what_if = true
     order.account = account
@@ -313,7 +315,7 @@ This has to be done manually in the provided block
 
 # just a wrapper to the Gateway-cancel-order method
 	def cancel order:
-		Connection.current.cancel_order order
+    Connection.current.cancel_order order.local_id
 	end
 
   ## ToDo ... needs adaption !

@@ -220,6 +220,9 @@ Extends IB::Contract
                      Date.today
                    end
           end
+          if duration.nil?
+            duration = BuisinesDays.business_days_between(start, to)
+          end
 
           barsize = case normalize_duration.call(duration)[-1].upcase
                     when "W"
