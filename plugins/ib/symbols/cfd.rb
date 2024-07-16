@@ -6,7 +6,7 @@ module IB
       extend Symbols
 
       def self.contracts
-	@contracts.presence || super.merge(
+  @contracts.presence || super.merge(
           :dax => IB::Contract.new(:symbol => "IBDE30", sec_type: :cfd,
                                     :currency => "EUR",
                                     :description => "DAX  CFD."),

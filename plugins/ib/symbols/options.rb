@@ -6,7 +6,7 @@ module IB
     module Options
       extend Symbols
 
-			## usage:  IB::Symbols::Options.stoxx.merge( strike: 5000, expiry: 202404 )
+      ## usage:  IB::Symbols::Options.stoxx.merge( strike: 5000, expiry: 202404 )
       ##         IB::Symbols::Options.stoxx.merge( strike: 5000 ).next_expiry =>  fetch the next regulary
       ##                                                                          monthly option (3.rd friday)
       def self.contracts
@@ -38,59 +38,59 @@ module IB
                                  currency: 'USD',
                                  exchange: 'SMART',
                                  description: "Daily settled Mini-SPX options"),
-			  :spy => IB::Option.new( :symbol   => :SPY,
+        :spy => IB::Option.new( :symbol   => :SPY,
                                 :expiry   => IB::Option.next_expiry,
                                 :right    => :put,
                                 :currency => "USD",
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                 :description => "SPY Put next expiration"),
-			  :rut => IB::Option.new( :symbol   => :RUT,
+        :rut => IB::Option.new( :symbol   => :RUT,
                                 :expiry   => IB::Option.next_expiry,
                                 :right    => :put,
                                 :currency => "USD",
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                  description: "Monthly settled RUT options"),
-			  :rutw => IB::Option.new( :symbol   => :RUT,
+        :rutw => IB::Option.new( :symbol   => :RUT,
                                 :expiry   => IB::Option.next_expiry,
                                 :right    => :put,
                                 :currency => "USD",
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                  description: "Weekly settled RUT options"),
-			  :russell => IB::Option.new( :symbol   => :RUT,                             # :russell  == :rut !
+        :russell => IB::Option.new( :symbol   => :RUT,                             # :russell  == :rut !
                                 :expiry   => IB::Option.next_expiry,
                                 :right    => :put,
                                 :currency => "USD",
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                  description: "Monthly settled RUT options"),
-			  :mini_russell => IB::Option.new( :symbol   => :MRUT,
+        :mini_russell => IB::Option.new( :symbol   => :MRUT,
                                 :expiry   => IB::Option.next_expiry,
                                 :right    => :put,
                                 :currency => "USD",
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                 :description => "Weekly settled Mini-Russell2000 options"),
        :aapl => IB::Option.new( :symbol => "AAPL",
                                 :expiry => IB::Option.next_expiry,
                                 :right => "C",
                                 :strike => 150,
-																:exchange => 'SMART',
+                                :exchange => 'SMART',
                                 :currency => 'USD',
                                 :description => "Apple Call 130"),
 
-			:ibm => IB::Option.new( symbol: 'IBM',
+      :ibm => IB::Option.new( symbol: 'IBM',
                             exchange: 'SMART',
                                right: :put,
                               expiry: IB::Option.next_expiry ,
-												 description: 'IBM-Option'),
-			:ibm_lazy_expiry => IB::Option.new( symbol: 'IBM',
+                         description: 'IBM-Option'),
+      :ibm_lazy_expiry => IB::Option.new( symbol: 'IBM',
                                            right: :put,
                                           strike: 180,
                                         exchange: 'SMART',
-																		 description: 'IBM-Option Chain with strike 180'),
-			:ibm_lazy_strike => IB::Option.new( symbol: 'IBM',
+                                     description: 'IBM-Option Chain with strike 180'),
+      :ibm_lazy_strike => IB::Option.new( symbol: 'IBM',
                                            right: :put,
-																        exchange: 'SMART',
+                                        exchange: 'SMART',
                                           expiry: IB::Option.next_expiry,
-																		 description: 'IBM-Option Chain ( monthly expiry)')
+                                     description: 'IBM-Option Chain ( monthly expiry)')
         }
       end
     end

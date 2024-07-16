@@ -4,7 +4,7 @@ describe 'Request Fundamental Data',
          :connected => true, :integration => true, :reuters => true do
 
   before(:all) do
-		establish_connection
+    establish_connection
     ib = IB::Connection.current
 
     contract = IB::Contract.new :symbol => 'IBM',

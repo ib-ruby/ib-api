@@ -17,31 +17,31 @@ RSpec.describe "IB::Calendar" do
 
   let ( :the_option ){ IB::Symbols::Options.stoxx.merge strike: 4800, right: :call, trading_class: 'OESX' }
 
-	context "initialize with master-option and second expiry" do
+  context "initialize with master-option and second expiry" do
     subject { IB::Calendar.fabricate the_option,  IB::Option.next_expiry( Date.today + 30 ) }
     it{ puts subject.as_table }
-		it{ is_expected.to be_a IB::Bag }
-		it_behaves_like 'a valid Estx Combo'
-	end
+    it{ is_expected.to be_a IB::Bag }
+    it_behaves_like 'a valid Estx Combo'
+  end
 
-	context "initialize with underlying, strike and distance of the two legs"  do
-		subject{ IB::Calendar.build( from: IB::Symbols::Index.stoxx,
-																 strike: 4900,
-																 right: :put,
-																 trading_class: 'OESX',
-																 front:  IB::Option.next_expiry ,
-																 back:  '-1m'
-															 ) }
+  context "initialize with underlying, strike and distance of the two legs"  do
+    subject{ IB::Calendar.build( from: IB::Symbols::Index.stoxx,
+                                 strike: 4900,
+                                 right: :put,
+                                 trading_class: 'OESX',
+                                 front:  IB::Option.next_expiry ,
+                                 back:  '-1m'
+                               ) }
 
     it{ puts subject.as_table }
-		it{ is_expected.to be_a IB::Spread }
-		it_behaves_like 'a valid Estx Combo'
-	end
-	context "initialize with Future-contract and distance" do
+    it{ is_expected.to be_a IB::Spread }
+    it_behaves_like 'a valid Estx Combo'
+  end
+  context "initialize with Future-contract and distance" do
     subject{ IB::Calendar.fabricate  IB::Symbols::Futures.zn.next_expiry, '3m' }
 
     it{ puts subject.as_table }
-		it{ is_expected.to be_a IB::Spread }
-		it_behaves_like 'a valid ZN-FUT Combo'
-	end
+    it{ is_expected.to be_a IB::Spread }
+    it_behaves_like 'a valid ZN-FUT Combo'
+  end
 end

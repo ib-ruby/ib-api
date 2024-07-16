@@ -50,11 +50,11 @@ module IB
                               [:price, :decimal],
                               [:size, :int],
                               [:can_auto_execute, :int]
-			class TickPrice
-				def valid?
-				super &&	!price.zero?
-				end
-			end
+      class TickPrice
+        def valid?
+        super &&  !price.zero?
+        end
+      end
     end
   end
 end

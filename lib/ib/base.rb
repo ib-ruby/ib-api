@@ -66,7 +66,7 @@ module IB
     alias save! save
 
     ### Noop methods mocking ActiveRecord::Base macros
-    
+
     def self.attr_protected *args
     end
 

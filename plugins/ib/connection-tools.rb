@@ -17,45 +17,45 @@ Provides
 =end
 
   module ConnectionTools
-		# Handy method to ensure that a connection is established and active.
-		#
-		# The connection is reset on the IB-side at least once a day. Then the
-		# IB-Ruby-Connection has to be reestablished, too.
-		#
-		# check_connection reconnects if necessary and returns false if the connection is lost.
-		#
+    # Handy method to ensure that a connection is established and active.
+    #
+    # The connection is reset on the IB-side at least once a day. Then the
+    # IB-Ruby-Connection has to be reestablished, too.
+    #
+    # check_connection reconnects if necessary and returns false if the connection is lost.
+    #
     # It delays the process by 6 ms (150 MBit Cable connection, loc. Europe)
-		#
-		#  a =  Time.now; G.check_connection; b= Time.now ;b-a
-		#   => 0.00066005
-		#
-		def check_connection
+    #
+    #  a =  Time.now; G.check_connection; b= Time.now ;b-a
+    #   => 0.00066005
+    #
+    def check_connection
       q =  Queue.new
       count = 0
       result = nil
       z= subscribe( :CurrentTime ) { q.push true }
-			loop do
-				begin
-					send_message(:RequestCurrentTime)												# 10 ms  ##
+      loop do
+        begin
+          send_message(:RequestCurrentTime)                       # 10 ms  ##
           th = Thread.new{ sleep 1 ; q.push nil }
           result =  q.pop
           count+=1
           break if result || count > 10
-				rescue IOError, Errno::ECONNREFUSED   # connection lost
-					count +=1
+        rescue IOError, Errno::ECONNREFUSED   # connection lost
+          count +=1
           retry
-				rescue IB::Error # not connected
-					disconnect!
+        rescue IB::Error # not connected
+          disconnect!
           logger.info{"not connected ... trying to reconnect "}
           sleep 0.1
           try_connection!
-					count = 0
-					retry
-				end
-			end
-			unsubscribe z
-			result #  return value
-		end
+          count = 0
+          retry
+        end
+      end
+      unsubscribe z
+      result #  return value
+    end
 
     #
     # Tries to connect to the api. If the connection could not be established, waits

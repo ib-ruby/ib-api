@@ -25,9 +25,9 @@ module IB
       "<Bag: #{[symbol, exchange, currency].join(' ')} legs: #{legs_description} >"
     end
 
-		def con_id= arg
-			# dont' update con_id
-		end
+    def con_id= arg
+      # dont' update con_id
+    end
 
     ### Leg-related methods
 

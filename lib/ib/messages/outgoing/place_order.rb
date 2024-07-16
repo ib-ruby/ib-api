@@ -3,7 +3,7 @@ module IB
     module Outgoing
       extend Messages # def_message macros
 
-      PlaceOrder = def_message [ 3,0	]
+      PlaceOrder = def_message [ 3,0  ]
 
       class PlaceOrder
         def encode

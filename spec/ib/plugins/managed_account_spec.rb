@@ -1,7 +1,7 @@
 require "main_helper"
 
 describe "Connect to Gateway or TWS"  do
-	before(:all){ establish_connection 'managed-accounts'}
+  before(:all){ establish_connection 'managed-accounts'}
 
   after(:all) { close_connection }
 

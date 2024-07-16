@@ -2,7 +2,7 @@ require 'integration_helper'
 
 # Define butterfly
 def butterfly symbol, expiry, right, *strikes
-	ib = IB::Connection.current
+  ib = IB::Connection.current
   raise 'Unable to create butterfly, no connection' unless ib && ib.connected?
 
   legs = strikes.zip([1, -2, 1]).map do |strike, weight|
@@ -32,41 +32,41 @@ end
 def atm_option stock
   # returns the ATM-Put-Option of the given stock
   atm =  stock.atm_options
-	atm[atm.keys.at(1)].first
+  atm[atm.keys.at(1)].first
 
 end
 
 RSpec.shared_examples 'a valid Estx Combo' do
 
-		its( :exchange ) { should eq 'EUREX' }
-		its( :symbol )   { should eq "ESTX50" }
-#		its( :market_price ) { should be_a Numeric }
+    its( :exchange ) { should eq 'EUREX' }
+    its( :symbol )   { should eq "ESTX50" }
+#   its( :market_price ) { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid ES-FUT Combo' do
 
-		its( :exchange ) { should eq 'GLOBEX' }
-		its( :symbol )   { should eq "ES" }
-#		its( :market_price )   { should be_a Numeric }
+    its( :exchange ) { should eq 'GLOBEX' }
+    its( :symbol )   { should eq "ES" }
+#   its( :market_price )   { should be_a Numeric }
 end
 RSpec.shared_examples 'a valid ZN-FUT Combo' do
 
-		its( :exchange ) { should eq 'CBOT' }
-		its( :symbol )   { should eq "ZN" }
-#		its( :market_price )   { should be_a Numeric }
+    its( :exchange ) { should eq 'CBOT' }
+    its( :symbol )   { should eq "ZN" }
+#   its( :market_price )   { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid wfc-stock Combo' do
 
-		its( :exchange ) { should eq 'EDGX' }
-		its( :symbol )   { should eq "WFC" }
-#		its( :market_price )   { should be_a Numeric }
+    its( :exchange ) { should eq 'EDGX' }
+    its( :symbol )   { should eq "WFC" }
+#   its( :market_price )   { should be_a Numeric }
 end
 
 RSpec.shared_examples 'a valid Spread' do
-		its( :sec_type ) { should eq :bag }
-		its( :legs ){ should be_a Array }
+    its( :sec_type ) { should eq :bag }
+    its( :legs ){ should be_a Array }
 
-	 
+   
 end
 

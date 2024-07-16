@@ -1,4 +1,3 @@
-
 module IB
   module Messages
     module Outgoing
@@ -11,40 +10,40 @@ module IB
                       [:contract, :serialize_under_comp, []],
                       [:tick_list, ->(tick_list){ tick_list.is_a?(Array) ? tick_list.join(',') : (tick_list || '')}, []],
                       [:snapshot, false],
-		      [:regulatory_snapshot, false],
+          [:regulatory_snapshot, false],
           [:mkt_data_options, ""]  # changed to enable requests in V 10.19 ff
     end
 
-			#  ==> details:  https://interactivebrokers.github.io/tws-api/tick_types.html
-			#
+      #  ==> details:  https://interactivebrokers.github.io/tws-api/tick_types.html
+      #
       # @data={:id => int: ticker_id - Must be a unique value. When the market data
       #                                returns, it will be identified by this tag,
-			#                                if omitted, id-autogeneration process is performed
+      #                                if omitted, id-autogeneration process is performed
       #      :contract => IB::Contract, requested contract.
       #      :tick_list => String: comma delimited list of requested tick groups:
       #        Group ID - Description - Requested Tick Types
       #        100 - Option Volume (currently for stocks) - 29, 30
       #        101 - Option Open Interest (currently for stocks) - 27, 28
       #        104 - Historical Volatility (currently for stocks) - 23
-      #	       105 - Average Opt Volume,  # new 971
+      #        105 - Average Opt Volume,  # new 971
       #        106 - Option Implied Volatility (impvolat) - 24
-      #	       107   (climpvlt)  # new 971
-      #	       125   (Bond analytic data) # new 971
+      #        107   (climpvlt)  # new 971
+      #        125   (Bond analytic data) # new 971
       #        162 - Index Future Premium - 31
       #        165 - Miscellaneous Stats - 15, 16, 17, 18, 19, 20, 21
-      #	       166  (CScreen)   # new 971,
+      #        166  (CScreen)   # new 971,
       #        221/220 - Creditman, Mark Price (used in TWS P&L computations) - 37
       #        225 - Auction values (volume, price and imbalance) - 34, 35, 36
-      #	       232/221(Pl-price )  # new 971
+      #        232/221(Pl-price )  # new 971
       #        233 - RTVolume - 48
       #        236 - Shortable (inventory) - 46
       #        256 - Inventory - ?
       #        258 - Fundamental Ratios - 47
-      #        291 - (ivclose)                          
-      #        292 - (Wide News)                          
-      #        293 - (TradeCount)                          
-      #        295 - (VolumeRate)                          
-      #        318 - (LastRTHT-Trade)                          
+      #        291 - (ivclose)
+      #        292 - (Wide News)
+      #        293 - (TradeCount)
+      #        295 - (VolumeRate)
+      #        318 - (LastRTHT-Trade)
       #        370 - (Participation Monitor)
       #        375 - RTTrdVolumne
       #        377 - CttTickTag
@@ -58,11 +57,11 @@ module IB
       #        411 - Realtime Historical Volatility - 58
       #        428 - Monetary Close
       #        439 - MonitorTicTag
-      #        456/59 - IB Dividends, 4 comma separated values: 12 Month dividend, 
-			#                                                         projected 12 Month dividend,
-			#                                                         next dividend date,
-			#                                                         next dividend value
-			#                                                         (use primary exchange instead of smart)
+      #        456/59 - IB Dividends, 4 comma separated values: 12 Month dividend,
+      #                                                         projected 12 Month dividend,
+      #                                                         next dividend date,
+      #                                                         next dividend value
+      #                                                         (use primary exchange instead of smart)
       #        459 - RTCLOSE
       #        460 - Bond Factor Multiplier
       #        499 - Fee and Rebate Ratge
@@ -88,16 +87,16 @@ module IB
       #        608(EMA N),
       #        614(EtfNavMisc(hight/low)),
       #        619(Creditman Slow Mark Price),
-      #        623(EtfFrozenNavLast(fznavlast)	      ## updated 2018/1/21
+      #        623(EtfFrozenNavLast(fznavlast)        ## updated 2018/1/21
       #
       #      :snapshot => bool: Check to return a single snapshot of market data and
       #                   have the market data subscription canceled. Do not enter any
-      #                   :tick_list values if you use snapshot. 
+      #                   :tick_list values if you use snapshot.
       #
       #      :regulatory_snapshot => bool - With the US Value Snapshot Bundle for stocks,
       #                   regulatory snapshots are available for 0.01 USD each. (applies on demo accounts as well)
       #      :mktDataOptions => (TagValueList)  For internal use only.
-      #                    Use default value XYZ. 
+      #                    Use default value XYZ.
       #
   end
 end

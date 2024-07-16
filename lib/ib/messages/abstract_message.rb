@@ -38,9 +38,9 @@ module IB
         self.class.message_id
       end
 
-			def request_id
-				@data[:request_id].presence || nil
-			end
+      def request_id
+        @data[:request_id].presence || nil
+      end
 
       def message_type
         self.class.message_type
@@ -48,9 +48,9 @@ module IB
 
       attr_accessor :created_at, :data
 
-			def self.properties?
-				@given_arguments
-			end
+      def self.properties?
+        @given_arguments
+      end
 
 
       def to_human

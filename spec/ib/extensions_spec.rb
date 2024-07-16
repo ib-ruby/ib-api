@@ -7,10 +7,10 @@ RSpec.describe ClassExtensions do
   context "Array-Extensions" do
 
   end
-	context "Time-Extensions" do
+  context "Time-Extensions" do
     Given( :the_time ){ Time.now }
     Then{ the_time.to_ib == the_time.strftime("%Y%m%d %H:%M:%S") }
-	end
+  end
 
   # Numeric positive Values are true, zero and below is false
   context "numeric boolean Test" do

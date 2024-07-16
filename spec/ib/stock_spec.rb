@@ -1,7 +1,7 @@
 require "main_helper"
 
 describe  IB::Stock do
-	before(:all) do
+  before(:all) do
     establish_connection
     ib = IB::Connection.current
     ib.activate_plugin 'verify'

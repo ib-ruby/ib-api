@@ -10,7 +10,7 @@ module IB
 
       class HistoricalDataUpdate
         attr_accessor :results
-				using IB::Support  # extended Array-Class  from abstract_message
+        using IB::Support  # extended Array-Class  from abstract_message
 
         def bar
             @bar = IB::Bar.new @data[:bar]

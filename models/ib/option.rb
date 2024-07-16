@@ -10,9 +10,9 @@ module IB
       :message => "should be put or call"
 
 
-		# introduce Option.greek with reference to IB::OptionDetail-dataset
-		#
-		has_one :greek , as: :option_detail
+    # introduce Option.greek with reference to IB::OptionDetail-dataset
+    #
+    has_one :greek , as: :option_detail
     # For Options, this is contract's OSI (Option Symbology Initiative) name/code
     alias osi local_symbol
 
@@ -53,19 +53,19 @@ module IB
       super.merge :sec_type => :option
       #self[:description] ||= osi ? osi : "#{symbol} #{strike} #{right} #{expiry}"
     end
-		def == other
+    def == other
       super(other) || (  # finish positive, if contract#== is true
-												  # otherwise, we most probably compare the response from IB with our selfmade input
-			exchange == other.exchange &&
-			include_expired == other.include_expired &&
-			sec_type == other.sec_type  &&
-			multiplier == other.multiplier &&
-			strike == other.strike &&
-			right == other.right &&
-			multiplier == other.multiplier &&
-			expiry == other.expiry )
+                          # otherwise, we most probably compare the response from IB with our selfmade input
+      exchange == other.exchange &&
+      include_expired == other.include_expired &&
+      sec_type == other.sec_type  &&
+      multiplier == other.multiplier &&
+      strike == other.strike &&
+      right == other.right &&
+      multiplier == other.multiplier &&
+      expiry == other.expiry )
 
-		end
+    end
 
 
     # returns the verified option for the next (regular) expiry of the contract.
@@ -139,9 +139,9 @@ module IB
 
   end # class Option
 
-	class FutureOption   < Option
+  class FutureOption   < Option
     def default_attributes
       super.merge :sec_type => :futures_option
-		end
-	end
+    end
+  end
 end # module IB

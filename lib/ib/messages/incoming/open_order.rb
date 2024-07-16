@@ -4,12 +4,12 @@ module IB
       using IB::Support
       # OpenOrder is the longest message with complex processing logics
       OpenOrder =
-          def_message [5, 0],		# updated to v. 34 according to python (decoder.py processOpenOrder)
+          def_message [5, 0],   # updated to v. 34 according to python (decoder.py processOpenOrder)
                       [ :order, :local_id,             :int],
 
                       [ :contract,                     :contract], # read standard-contract
-											# [ con_id, symbol,. sec_type, expiry, strike, right, multiplier,
-											#	exchange, currency, local_symbol, trading_class ]
+                      # [ con_id, symbol,. sec_type, expiry, strike, right, multiplier,
+                      # exchange, currency, local_symbol, trading_class ]
 
                       [ :order, :action,               :string ],
                       [ :order, :total_quantity,       :decimal ],
@@ -92,9 +92,9 @@ module IB
           order.status
         end
 
-				def conditions
-					order.conditions
-				end
+        def conditions
+          order.conditions
+        end
 
         # Object accessors
 
@@ -160,7 +160,7 @@ module IB
              [ :order, :leg_prices, :array, proc { |_| buffer.read_decimal } ],   #  needs testing
              [ :order, :combo_params, :hash ],
  #, proc do |_|
-#		      { tag: buffer.read_string, value: buffer.read_string }  # needs testing
+#         { tag: buffer.read_string, value: buffer.read_string }  # needs testing
 #  end],
 
              [ :order, :scale_init_level_size, :int ],
@@ -235,7 +235,7 @@ module IB
              #AdjustedOrderParams
              [ :order, :adjusted_order_type,        :string ],
              [ :order, :trigger_price,              :decimal ],
-             [ :order, :trail_stop_price,           :decimal ],	    #  Traillimit orders
+             [ :order, :trail_stop_price,           :decimal ],     #  Traillimit orders
              [ :order, :limit_price_offset,         :decimal ],
              [ :order, :adjusted_stop_price,        :decimal ],
              [ :order, :adjusted_stop_limit_price,  :decimal ],
@@ -269,7 +269,7 @@ module IB
 
         # Check if given value was set by TWS to something vaguely "positive"
         def filled? value
-#	  puts "filled: #{value.class} --> #{value.to_s}"
+#   puts "filled: #{value.class} --> #{value.to_s}"
           case value
             when String
               (!value.empty?)# && (value != :none) && (value !='None')

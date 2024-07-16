@@ -2,8 +2,8 @@ require 'server_versions'
 module IB
 
   module Messages
-  	# This gem supports incoming/outgoing IB messages compatible with the following
-  	# IB client/server versions:
+    # This gem supports incoming/outgoing IB messages compatible with the following
+    # IB client/server versions:
     CLIENT_VERSION = 66 #  => API V  9.71
     SERVER_VERSION =  "v"+ MIN_CLIENT_VER.to_s + ".." + MAX_CLIENT_VER.to_s  # extracted from the python-client
 

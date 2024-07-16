@@ -20,7 +20,7 @@ module IB
 
       :commission_currency, # String: Shows the currency of the commission.
       :warning_text, # String: Displays a warning message if warranted.
-      
+
       :market_cap_price  # messages#incomming#orderstae#vers. 11
 
       # Properties arriving via OrderStatus message:
@@ -37,7 +37,7 @@ module IB
       :parent_id, # int: The order ID of the parent (original) order, used
       :status => :s # String: one of
       #   ApiCancelled, PreSubmitted, PendingCancel, Cancelled, Submitted, Filled,
-      #	  Inactive, PendingSubmit, Unknown, ApiPending,
+      #   Inactive, PendingSubmit, Unknown, ApiPending,
       #
       #  Displays the order status. Possible values include:
       # - PendingSubmit - indicates that you have transmitted the order, but
@@ -74,8 +74,8 @@ module IB
 
     def self.valid_status? the_message
       valid_stati =  %w( ApiCancelled PreSubmitted PendingCancel Cancelled Submitted Filled
-			 Inactive PendingSubmit Unknown ApiPending)
-	   valid_stati.include?( the_message )
+       Inactive PendingSubmit Unknown ApiPending)
+     valid_stati.include?( the_message )
     end
   
     ## Testing Order state:
@@ -143,13 +143,13 @@ module IB
 If an Order is submitted with the :what_if-Flag set, commission and margin are returned
 via the order_state-Object.
 =end
-		def forcast
-			{ :init_margin => init_margin_after,
-				:maint_margin => maint_margin_after,
-				:equity_with_loan => equity_with_loan_after ,
-			  :commission => commission, 
-				:commission_currency=> commission_currency,
-				:warning => warning_text }
-		end
+    def forcast
+      { :init_margin => init_margin_after,
+        :maint_margin => maint_margin_after,
+        :equity_with_loan => equity_with_loan_after ,
+        :commission => commission,
+        :commission_currency=> commission_currency,
+        :warning => warning_text }
+    end
   end # class Order
 end # module IB

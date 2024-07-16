@@ -29,7 +29,7 @@ RSpec.describe IB::Messages::Incoming::OptionChainDefinition do
 
       ib.send_message :RequestOptionChainDefinition, con_id: SAMPLE.con_id,
                                                       symbol: SAMPLE.symbol,
-                                                      #	 exchange: 'BOX,CBOE',
+                                                      #  exchange: 'BOX,CBOE',
                                                       sec_type: "STK" #contract.sec_type
 
 

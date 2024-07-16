@@ -1,12 +1,12 @@
 require "main_helper"
 
 describe "Connect to Gateway or TWS"  do
-	before(:all){ establish_connection }
+  before(:all){ establish_connection }
 
   after(:all) { close_connection }
 
-	context "A new connection" do
-		it{ expect( IB::Connection.current ).to be_a IB::Connection }
+  context "A new connection" do
+    it{ expect( IB::Connection.current ).to be_a IB::Connection }
 
     it "has the proper state" do
       expect( IB::Connection.current.ready?  ).to be_truthy
@@ -58,7 +58,7 @@ describe "Connect to Gateway or TWS"  do
       expect( ib.clients ).to be_an Array
 
     end
-	end
+  end
 
 
 end

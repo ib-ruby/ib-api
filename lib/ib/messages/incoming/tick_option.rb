@@ -24,37 +24,37 @@ module IB
                       [:tick_type, :int],
                       [:tick_attribute, :int],
                       [:implied_volatility, :decimal_limit_1], # -1 and below
-                      [:delta, :decimal_limit_2],					#      -2 and below
-                      [:option_price, :decimal_limit_1],	#      -1   -"-
-                      [:pv_dividend, :decimal_limit_1],		#      -1   -"-
-                      [:gamma, :decimal_limit_2],					#      -2   -"-
-                      [:vega, :decimal_limit_2],					#      -2   -"-
-                      [:theta, :decimal_limit_2],					#      -2   -"-
+                      [:delta, :decimal_limit_2],         #      -2 and below
+                      [:option_price, :decimal_limit_1],  #      -1   -"-
+                      [:pv_dividend, :decimal_limit_1],   #      -1   -"-
+                      [:gamma, :decimal_limit_2],         #      -2   -"-
+                      [:vega, :decimal_limit_2],          #      -2   -"-
+                      [:theta, :decimal_limit_2],         #      -2   -"-
                       [:under_price, :decimal_limit_1]) do
 
             "<TickOption #{type}   " + 
                 "option @ #{"%8.3f" % (option_price || -1)}, IV: #{"%4.3f" % (implied_volatility || -1)}, " +
-						    "delta: #{"%5.3f" % (delta || -1)}, " +
+                "delta: #{"%5.3f" % (delta || -1)}, " +
                 "gamma: #{"%6.4f" % (gamma || -1)}, vega: #{ "%6.5f" % (vega || -1)}, " + 
-								"theta: #{"%7.6f" % (theta || -1)}, pv_dividend: #{"%5.3f" % (pv_dividend || -1)}, " +
-							  "underlying @ #{"% 8.3f" % (under_price || -1)} >"
+                "theta: #{"%7.6f" % (theta || -1)}, pv_dividend: #{"%5.3f" % (pv_dividend || -1)}, " +
+                "underlying @ #{"% 8.3f" % (under_price || -1)} >"
           end
 
-			 class TickOption		
-				 def greeks
-					 { delta: delta, gamma: gamma, vega: vega, theta: theta }
-				 end
+       class TickOption   
+         def greeks
+           { delta: delta, gamma: gamma, vega: vega, theta: theta }
+         end
 
-				 def iv
-					 implied_volatility
-				 end
-			
-				 
-				 def greeks? 
-					 greeks.values.any? &:present?
-				 end
+         def iv
+           implied_volatility
+         end
+      
+         
+         def greeks? 
+           greeks.values.any? &:present?
+         end
 
-			 end
+       end
     end
   end
 end

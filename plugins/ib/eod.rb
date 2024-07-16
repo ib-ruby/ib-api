@@ -31,18 +31,18 @@ Extends IB::Contract
 =end
 
  module Eod
-	module BuisinesDays
-	#	https://stackoverflow.com/questions/4027768/calculate-number-of-business-days-between-two-days
+  module BuisinesDays
+  # https://stackoverflow.com/questions/4027768/calculate-number-of-business-days-between-two-days
 
-		# Calculates the number of business days in range (start_date, end_date]
-		#
-		# @param start_date [Date]
-		# @param end_date [Date]
-		#
-		# @return [Fixnum]
-		def self.business_days_between(start_date, end_date)
-			days_between = (end_date - start_date).to_i
-			return 0 unless days_between > 0
+    # Calculates the number of business days in range (start_date, end_date]
+    #
+    # @param start_date [Date]
+    # @param end_date [Date]
+    #
+    # @return [Fixnum]
+    def self.business_days_between(start_date, end_date)
+      days_between = (end_date - start_date).to_i
+      return 0 unless days_between > 0
 
                 # Assuming we need to calculate days from 9th to 25th, 10-23 are covered
                 # by whole weeks, and 24-25 are extra days.
@@ -79,8 +79,8 @@ Extends IB::Contract
                     end
 
                     (whole_weeks * 5) + extra_days
-		end
-	end
+    end
+  end
     # Receive EOD-Data and store the data in the `:bars`-property of IB::Contract
     #
     # contract.eod duration: {String or Integer}, start: {Date}, to: {Date}, what: {see below},  polars: {true|false}
@@ -308,6 +308,6 @@ Extends IB::Contract
 
   class Contract
     include Eod
-	end  # class
+  end  # class
 end # module IB
 

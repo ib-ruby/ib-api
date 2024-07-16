@@ -11,8 +11,8 @@ shared_examples_for 'this Alert message' do
   its( :error_id     ){ is_expected.to eq -1 }
   its( :code         ){ is_expected.to be_between( 2104, 2107 ) }
   its( :message      ){ is_expected.to match /data farm/ }
-	## either  "Market data farm connection is OK:cashfarm "
-	## or	"HMDS data farm connection is inactive but should be available upon demand.euhmds"
+  ## either  "Market data farm connection is OK:cashfarm "
+  ## or "HMDS data farm connection is inactive but should be available upon demand.euhmds"
   its(:to_human) { is_expected.to match  /TWS Warning/ }
 
   it 'has class accessors as well' do
@@ -39,7 +39,7 @@ describe IB::Messages::Incoming::Alert do
   context 'Message received from IB', :connected => true  do
 
     before(:all) do
-			establish_connection
+      establish_connection
       sleep 0.1  #  wait for alerts to appear
       # puts IB::Connection.current.received.inspect  # in case of failing tests   look for alert messasges
     end

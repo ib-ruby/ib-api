@@ -20,10 +20,10 @@ module IB
       #              specific combination order, refer to the Interactive
       #              Analytics section of the User's Guide.
       :exchange, # String: exchange to which the complete combo order will be routed.
-			#
+      #
       # For institutional customers only! For stock legs when doing short sale
-      :short_sale_slot, # int:	0 - retail(default), 
-												#				1 = clearing broker, 2 = third party
+      :short_sale_slot, # int:  0 - retail(default), 
+                        #       1 = clearing broker, 2 = third party
       :designated_location, # String: Only for shortSaleSlot == 2.
       #                    Otherwise leave blank or orders will be rejected.
       :exempt_code, # int: (-1) 

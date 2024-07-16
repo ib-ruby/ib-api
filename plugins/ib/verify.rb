@@ -44,7 +44,7 @@ Extends IB::Contract
     #
     # Returns nil if the contract could not be verified.
     #
-    #	 > s =  Stock.new symbol: 'AA'
+    #  > s =  Stock.new symbol: 'AA'
     #     => #<IB::Stock:0x0000000002626cc0
     #        @attributes={:symbol=>"AA", :con_id=>0, :right=>"", :include_expired=>false,
     #                     :sec_type=>"STK", :currency=>"USD", :exchange=>"SMART"}
@@ -87,8 +87,8 @@ Extends IB::Contract
            future: { currency: 'USD', exchange: nil, expiry: nil,  symbol: nil },
            forex:  { currency: 'USD', exchange: 'IDEALPRO', symbol: nil }
       }
-      sec_type.present? ?	v[sec_type] : { con_id: nil, exchange: 'SMART' } # enables to use only con_id for verifying
-																																				# if the contract allows SMART routing
+      sec_type.present? ? v[sec_type] : { con_id: nil, exchange: 'SMART' } # enables to use only con_id for verifying
+                                                                        # if the contract allows SMART routing
     end
 
     #
@@ -102,7 +102,7 @@ Extends IB::Contract
       self
     end
 
-		private
+    private
 
     # Base method to verify a contract
     #
@@ -156,9 +156,9 @@ Extends IB::Contract
         end # subscribe
 
         ### send the request !
-        #	contract_to_be_queried =  con_id.present? ? self : query_contract
+        # contract_to_be_queried =  con_id.present? ? self : query_contract
         # if no con_id is present,  the given attributes are checked by query_contract
-        #	if contract_to_be_queried.present?   # is nil if query_contract fails
+        # if contract_to_be_queried.present?   # is nil if query_contract fails
         message_id = ib.send_message :RequestContractData, :contract => query_contract
 
         while r = queue.pop
@@ -166,7 +166,7 @@ Extends IB::Contract
         end
         ib.unsubscribe a
       end
-      received_contracts	 # return contracts
+      received_contracts   # return contracts
     end
 
     # Generates an IB::Contract with the required attributes to retrieve a unique contract from the TWS
@@ -186,7 +186,7 @@ Extends IB::Contract
 
     def  query_contract( invalid_record: true )  # :nodoc:
       # don't raise a verify error at this time. Contract.new con_id= xxxx, currency = 'xyz' is also valid
-      ##	raise VerifyError, "Querying Contract failed: Invalid Security Type" unless SECURITY_TYPES.values.include? sec_type
+      ##  raise VerifyError, "Querying Contract failed: Invalid Security Type" unless SECURITY_TYPES.values.include? sec_type
 
       ## the yml contains symbol-entries
       ## these are converted to capitalized strings
@@ -198,14 +198,14 @@ Extends IB::Contract
       item_attributehash = ->(i){ i.keys.zip(item_values[i]).to_h }
       ## now lets proceed, but only if no con_id is present
       if con_id.blank? || con_id.zero?
-        #				if item_values[necessary_attributes].any?( &:nil? )
-        #					raise VerifyError, "#{items_as_string[necessary_attributes]} are needed to retrieve Contract,
-        #																	got: #{item_values[necessary_attributes].join(',')}"
-        #				end
-        #			Contract.build  item_attributehash[necessary_items].merge(:sec_type=> sec_type)  # return this
+        #       if item_values[necessary_attributes].any?( &:nil? )
+        #         raise VerifyError, "#{items_as_string[necessary_attributes]} are needed to retrieve Contract,
+        #                                 got: #{item_values[necessary_attributes].join(',')}"
+        #       end
+        #     Contract.build  item_attributehash[necessary_items].merge(:sec_type=> sec_type)  # return this
         Contract.build  self.invariant_attributes # return this
       else   # its always possible, to retrieve a Contract if con_id and exchange  or are present
-        Contract.new  con_id: con_id , :exchange => exchange.presence || item_attributehash[necessary_attributes][:exchange].presence || 'SMART'				# return this
+        Contract.new  con_id: con_id , :exchange => exchange.presence || item_attributehash[necessary_attributes][:exchange].presence || 'SMART'        # return this
       end  # if
     end # def
   end  # module verify

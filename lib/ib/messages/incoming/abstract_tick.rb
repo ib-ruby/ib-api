@@ -16,10 +16,10 @@ module IB
               end.compact.join('",') + " >"
         end
 
-				def the_data
-					@data.reject{|k,_| [:version, :ticker_id].include? k }
-				end
-			end
+        def the_data
+          @data.reject{|k,_| [:version, :ticker_id].include? k }
+        end
+      end
     end
   end
 end

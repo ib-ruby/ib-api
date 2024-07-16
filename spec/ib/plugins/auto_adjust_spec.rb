@@ -1,7 +1,7 @@
 require "main_helper"
 
 describe "Connect to TWS and activate Plugin"  do
-	before(:all) do
+  before(:all) do
     establish_connection
     c =  IB::Connection.current
     c.activate_plugin "verify"
@@ -11,9 +11,9 @@ describe "Connect to TWS and activate Plugin"  do
 
   after(:all) { close_connection }
 
-	context "A new connection is established" do
-		it{ expect( IB::Connection.current ).to be_a IB::Connection }
-	end
+  context "A new connection is established" do
+    it{ expect( IB::Connection.current ).to be_a IB::Connection }
+  end
 
   context "Read min_tick" do
     Given( :m_stock ) { IB::Stock.new( symbol: 'M' ).verify.first }

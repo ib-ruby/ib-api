@@ -18,11 +18,11 @@ module IB
       :long_name, #         Descriptive name of the asset.
       :contract_month, #    The contract month of the underlying futures contract.
 
-			:agg_group,
-			:under_symbol,
-			:under_sec_type,
-			:market_rule_ids,
-			:real_expiration_date,
+      :agg_group,
+      :under_symbol,
+      :under_sec_type,
+      :market_rule_ids,
+      :real_expiration_date,
 
 
       # For Bonds only
@@ -98,21 +98,21 @@ module IB
         :next_option_partial => false
     end
 
-		def to_human
-			ret = "<ContractDetails  #{long_name}, "
-			ret << "--> #{market_name}, " if market_name.present?
-			ret << "/C/ #{category}, /I/ #{industry} /SC/ #{subcategory}, " if category.present?
-			ret << "Underlying:#{under_symbol}[#{under_sec_type}](#{under_con_id}), " unless under_con_id.zero?
+    def to_human
+      ret = "<ContractDetails  #{long_name}, "
+      ret << "--> #{market_name}, " if market_name.present?
+      ret << "/C/ #{category}, /I/ #{industry} /SC/ #{subcategory}, " if category.present?
+      ret << "Underlying:#{under_symbol}[#{under_sec_type}](#{under_con_id}), " unless under_con_id.zero?
       ret << "ev_multiplier:#{ev_multiplier}, " if ev_multiplier.present?
-			ret << "convertible:#{convertible}, " if convertible
-			ret << "coupon:#{coupon}, " if coupon.present?  && coupon > 0 
-			ret << "md_size_multiplier:#{md_size_multiplier}, min_tick:#{min_tick}, "
-			ret << "next_option_partial:#{next_option_partial}, " if next_option_partial.present?
-			ret << "price_magnifier:#{price_magnifier}, " 
-			ret << "puttable:#{puttable}, " if puttable.present? 
-			ret << "sec_id-list:#{sec_id_list}, " unless sec_id_list.empty?
-			ret <<"valid exchanges: #{ valid_exchanges}; order types: #{order_types} >"
-		end
+      ret << "convertible:#{convertible}, " if convertible
+      ret << "coupon:#{coupon}, " if coupon.present?  && coupon > 0 
+      ret << "md_size_multiplier:#{md_size_multiplier}, min_tick:#{min_tick}, "
+      ret << "next_option_partial:#{next_option_partial}, " if next_option_partial.present?
+      ret << "price_magnifier:#{price_magnifier}, " 
+      ret << "puttable:#{puttable}, " if puttable.present? 
+      ret << "sec_id-list:#{sec_id_list}, " unless sec_id_list.empty?
+      ret <<"valid exchanges: #{ valid_exchanges}; order types: #{order_types} >"
+    end
 
   end # class ContractDetail
 end # module IB

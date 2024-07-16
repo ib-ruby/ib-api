@@ -44,7 +44,7 @@ module IB
                                 [:order_state, :last_fill_price, :decimal],
                                 [:order_state, :client_id, :int],
                                 [:order_state, :why_held, :string],
-				[:order_state, :market_cap_price, :decimal] 
+        [:order_state, :market_cap_price, :decimal] 
       class OrderStatus
 
 

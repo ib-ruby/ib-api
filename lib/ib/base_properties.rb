@@ -31,14 +31,14 @@ module IB
 #│ U7274612  │ Option: ESTX50 20211217 put 4200.0 DTB EUR  │  -4 │ 179.85 │ 169.831 │ -6793.22 │     400.78 │          │
 #│ U7274612  │ Option: ESTX50 20211217 call 4200.0 DTB EUR │  -4 │  97.85 │ 131.438 │ -5257.51 │   -1343.51 │          │
 #└───────────┴─────────────────────────────────────────────┴─────┴────────┴─────────┴──────────┴────────────┴──────────┘
-## 
+#
     def as_table &b
       Terminal::Table.new headings: table_header(&b), rows: [table_row ], style: { border: :unicode }
     end
 
     # Comparison support
     def content_attributes
-			#NoMethodError if a Hash is assigned to an attribute
+      #NoMethodError if a Hash is assigned to an attribute
       Hash[attributes.reject do |(attr, _)|
                                   attr.to_s =~ /(_count)\z/ ||
                                     [:created_at, :type,  :updated_at,
@@ -49,9 +49,9 @@ module IB
 =begin
 Remove all Time-Stamps from the list of Attributes
 =end
-		def invariant_attributes
-				attributes.reject{|x| x =~ /_at/}
-		end
+    def invariant_attributes
+        attributes.reject{|x| x =~ /_at/}
+    end
 
     # Update nil attributes from given Hash or model
     def update_missing attrs

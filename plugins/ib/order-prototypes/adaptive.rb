@@ -20,7 +20,7 @@ module IB
 
 
       def summary
-	<<-HERE
+  <<-HERE
   The Adaptive Algo combines IB’s Smart routing capabilities with user-defined
   priority settings in an effort to achieve further cost efficiency at the
   point of execution. Using the Adaptive algo leads to better execution prices
@@ -33,7 +33,7 @@ module IB
     while the ‘Patient’ scan works more slowly and has a higher chance of
       achieving a better overall fill for your order.  Valid Value/Format:
         Urgent > Normal > Patient
-	HERE
+  HERE
       end
       end
     end

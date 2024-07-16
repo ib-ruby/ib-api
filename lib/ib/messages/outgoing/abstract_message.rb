@@ -1,5 +1,3 @@
-#require 'ib/messages/abstract_message'
-
 module IB
   module Messages
     module Outgoing
@@ -13,8 +11,6 @@ module IB
           @data = data
           @created_at = Time.now
         end
-
-
 
         # This causes the message to send itself over the server socket in server[:socket].
         # "server" is the @server instance variable from the IB object.
@@ -46,23 +42,23 @@ module IB
         # Most messages also contain (ticker, request or order) :id.
         # Then, content of @data Hash is encoded per instructions in data_map.
         # This method may be modified by message subclasses!
- 	#
-	# If the version is zero, omit its apperance (for redesigned message-types as place-order, historical-data, etc)
+  #
+  # If the version is zero, omit its apperance (for redesigned message-types as place-order, historical-data, etc)
         def encode
-					## create a proper request_id  and erase :id and :ticker_id if nessesary
-					if self.class.properties?.include?(:request_id)
-						@data[:request_id] = if  @data[:request_id].blank? && @data[:ticker_id].blank? && @data[:id].blank?
-																	 rand(9999)
-																 else
-																	 @data[:id] || @data[:ticker_id] || @data[:request_id]
-																 end
-						@data[:id] = @data[:ticker_id] = nil
-					end
+          ## create a proper request_id  and erase :id and :ticker_id if nessesary
+          if self.class.properties?.include?(:request_id)
+            @data[:request_id] = if  @data[:request_id].blank? && @data[:ticker_id].blank? && @data[:id].blank?
+                                   rand(9999)
+                                 else
+                                   @data[:id] || @data[:ticker_id] || @data[:request_id]
+                                 end
+            @data[:id] = @data[:ticker_id] = nil
+          end
          [
            self.class.version.zero? ? self.class.message_id : [ self.class.message_id, self.class.version ],
            #  include :id, :ticker_id, :local_id or :order_id  as first field of the message (if present)
            @data[:id] || @data[:ticker_id] ||# @data[:request_id] ||  # id, ticker_id, local_id, order_id
-           @data[:local_id] || @data[:order_id] || [],								# do not appear in data_map
+           @data[:local_id] || @data[:order_id] || [],                # do not appear in data_map
            self.class.data_map.map do |(field, default_method, args)| # but request_id does
              case
              when default_method.nil?

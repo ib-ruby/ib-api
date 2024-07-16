@@ -19,7 +19,7 @@ module IB
     def prepare_message data
       data =  data.tws unless data.is_a?(String) && data[-1]== EOL
       matrize = [data.size,data]
-      if block_given?	    # A user defined decoding-sequence is accepted via block
+      if block_given?     # A user defined decoding-sequence is accepted via block
         matrize.pack yield
       else
         matrize.pack  "Na*"

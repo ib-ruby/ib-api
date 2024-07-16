@@ -153,14 +153,14 @@ module IB
       :delta_neutral_settling_firm,
       :delta_neutral_clearing_account,
       :delta_neutral_clearing_intent,
-			# Used when the hedge involves a stock and indicates whether or not it is sold short.
-			:delta_neutral_short_sale,
-			#  Has a value of 1 (the clearing broker holds shares) or 2 (delivered from a third party).
-			#  If you use 2, then you must specify a deltaNeutralDesignatedLocation.
-			:delta_neutral_short_sale_slot,
-			# Specifies whether the order is an Open or a Close order and is used
-			# when the hedge involves a CFD and and the order is clearing away.
-			:delta_neutral_open_close,
+      # Used when the hedge involves a stock and indicates whether or not it is sold short.
+      :delta_neutral_short_sale,
+      #  Has a value of 1 (the clearing broker holds shares) or 2 (delivered from a third party).
+      #  If you use 2, then you must specify a deltaNeutralDesignatedLocation.
+      :delta_neutral_short_sale_slot,
+      # Specifies whether the order is an Open or a Close order and is used
+      # when the hedge involves a CFD and and the order is clearing away.
+      :delta_neutral_open_close,
 
       # HEDGE ORDERS ONLY:
       # As of client v.49/50, we can now add hedge orders using the API.
@@ -183,7 +183,7 @@ module IB
       # ALGO ORDERS ONLY:
       :algo_strategy, # String
       :algo_params, # public Vector<TagValue> m_algoParams; ?!
-      :algo_id,	    # since Vers. 71
+      :algo_id,     # since Vers. 71
       # SCALE ORDERS ONLY:
       :scale_init_level_size, # int: Size of the first (initial) order component.
       :scale_subs_level_size, # int: Order size of the subsequent scale order
@@ -197,16 +197,16 @@ module IB
       :scale_profit_offset,
       :scale_init_position,
       :scale_init_fill_qty,
-      :scale_table,			# Vers 69
-      :active_start_time,		# Vers 69
-      :active_stop_time,		# Vers 69
+      :scale_table,     # Vers 69
+      :active_start_time,   # Vers 69
+      :active_stop_time,    # Vers 69
       # pegged to benchmark
       :reference_contract_id,
       :pegged_change_amount,
       :reference_change_amount,
       :reference_exchange_id ,
 
-      :conditions,		# Conditions determining when the order will be activated or canceled.
+      :conditions,    # Conditions determining when the order will be activated or canceled.
       ### http://xavierib.github.io/twsapidocs/order_conditions.html
       :conditions_ignore_rth,  # bool: Indicates whether or not conditions will also be valid outside Regular Trading Hours
       :conditions_cancel_order,# bool: Conditions can determine if an order should become active or canceled.
@@ -220,29 +220,29 @@ module IB
       :adjusted_trailing_amount,
       :adjustable_trailing_unit,
       :ext_operator ,               # 105: MIN_SERVER_VER_EXT_OPERATOR
-		      # This is a regulartory attribute that applies
-		      # to all US Commodity (Futures) Exchanges, provided
-		      # to allow client to comply with CFTC Tag 50 Rules.
-			:soft_dollar_tier_name,        # 106: MIN_SERVER_VER_SOFT_DOLLAR_TIER
-			:soft_dollar_tier_value,
-			:soft_dollar_tier_display_name,
-		      # Define the Soft Dollar Tier used for the order.
-		      #	Only provided for registered professional advisors and hedge and mutual funds.
-		      #	format: "#{name}=#{value},#{display_name}", name and value are used in the
-		      #	      order-specification. Its included as ["#{name}","#{value}"] pair
+          # This is a regulartory attribute that applies
+          # to all US Commodity (Futures) Exchanges, provided
+          # to allow client to comply with CFTC Tag 50 Rules.
+      :soft_dollar_tier_name,        # 106: MIN_SERVER_VER_SOFT_DOLLAR_TIER
+      :soft_dollar_tier_value,
+      :soft_dollar_tier_display_name,
+          # Define the Soft Dollar Tier used for the order.
+          # Only provided for registered professional advisors and hedge and mutual funds.
+          # format: "#{name}=#{value},#{display_name}", name and value are used in the
+          #       order-specification. Its included as ["#{name}","#{value}"] pair
 
       :cash_qty,   # decimal : The native cash quantity
-			:mifid_2_decision_maker,
-		  :mifid_2_decision_algo,
-		  :mifid_2_execution_maker,
-			:mifid_2_execution_algo,
-			:dont_use_auto_price_for_hedge,#    => :bool,
-			:discretionary_up_to_limit_price,#  => :bool,
+      :mifid_2_decision_maker,
+      :mifid_2_decision_algo,
+      :mifid_2_execution_maker,
+      :mifid_2_execution_algo,
+      :dont_use_auto_price_for_hedge,#    => :bool,
+      :discretionary_up_to_limit_price,#  => :bool,
       :use_price_management_algo,#        => :bool,
       :duration                 ,#        => :int,
       :post_to_ats              ,#        => :int,
       :auto_cancel_parent,       #        => :bool
-			:is_O_ms_container,
+      :is_O_ms_container,
       :advanced_order_reject,
       :manual_order_time,
       :min_trade_qty,
@@ -285,12 +285,12 @@ module IB
       :leg_prices,
       :algo_params,
       :combo_params   # Valid tags are LeginPrio, MaxSegSize, DontLeginNext, ChangeToMktTime1,
-		                  # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed,
-            		      # CondPriceMin, CondPriceMax, and PriceCondConid.
-    		# to set an execuction-range of a security:
-				#			 PriceCondConid, 10375;  -- conid of the combo-leg
-				#			 CondPriceMax, 62.0;		 -- max and min-price
-				#			 CondPriceMin.;60.0
+                      # ChangeToMktTime2, ChangeToMktOffset, DiscretionaryPct, NonGuaranteed,
+                      # CondPriceMin, CondPriceMax, and PriceCondConid.
+        # to set an execuction-range of a security:
+        #      PriceCondConid, 10375;  -- conid of the combo-leg
+        #      CondPriceMax, 62.0;     -- max and min-price
+        #      CondPriceMin.;60.0
 
       prop :etrade_only, :firm_quote_only, :nbbo_price_cap  #  depreciated, needed for open-order message
 #    prop :misc1, :misc2, :misc3, :misc4, :misc5, :misc6, :misc7, :misc8 # just 4 debugging
@@ -298,7 +298,7 @@ module IB
     alias order_combo_legs leg_prices
     alias smart_combo_routing_params combo_params
 
-		# serialize is included for active_record compatibility
+    # serialize is included for active_record compatibility
   #  serialize :leg_prices
   #  serialize :conditions
   #  serialize :algo_params, Hash
@@ -314,7 +314,7 @@ module IB
 
     # Order has a collection of OrderStates, last one is always current
     has_many :order_states
-		# Order can have multible conditions
+    # Order can have multible conditions
     has_many  :conditions
 
     def order_state
@@ -369,28 +369,28 @@ module IB
     validates_numericality_of :limit_price, :aux_price, :allow_nil => true
 
 
-    def default_attributes				# default valus are taken from order.java
-																	# public Order() { }
+    def default_attributes        # default valus are taken from order.java
+                                  # public Order() { }
       super.merge(
-      :active_start_time => "",		# order.java # 470		# Vers 69
-      :active_stop_time => "",		# order.java # 471	# Vers 69
+      :active_start_time => "",   # order.java # 470    # Vers 69
+      :active_stop_time => "",    # order.java # 471  # Vers 69
       :adjusted_order_type => "",
       :algo_params => Hash.new, #{},
       :algo_strategy => '',
-			:algo_id => '' ,						# order.java # 495
+      :algo_id => '' ,            # order.java # 495
       :all_or_none => false,
-			:auction_strategy => :none,
+      :auction_strategy => :none,
       :aux_price => server_version < KNOWN_SERVERS[ :min_server_ver_trailing_percent ] ?  0 : '',
       :block_order => false,
       :combo_params => Hash.new,
-			:conditions => [],
+      :conditions => [],
       :continuous_update => 0,
       :delta => "",
       :designated_location => '', # order.java # 487
       :display_size => nil,
       :discretionary_amount => 0,
       :exempt_code => -1,
-			:ext_operator  => '' ,  # order.java # 499
+      :ext_operator  => '' ,  # order.java # 499
       :hedge_param => [],
       :hidden => false,
       :is_pegged_change_amount_decrease => false,
@@ -398,31 +398,31 @@ module IB
       :limit_price => server_version < KNOWN_SERVERS[ :min_server_ver_order_combo_legs_price ] ?  0 : '',
       :min_quantity => "",
       :model_code => "",
-			:not_held => false,  # order.java # 494
+      :not_held => false,  # order.java # 494
       :oca_type => :none,
-			:order_type => :limit,
-      :open_close => :open,	  # order.java #
-			:opt_out_smart_routing => false,
+      :order_type => :limit,
+      :open_close => :open,   # order.java #
+      :opt_out_smart_routing => false,
      :order_state => IB::OrderState.new( :status => 'New',
                                          :filled => 0,
                                       :remaining => 0,
                                           :price => 0,
                                   :average_price => 0 ),
       :origin => :customer,
-			:outside_rth => false, # order.java # 472
+      :outside_rth => false, # order.java # 472
       :override_percentage_constraints => false,
       :percent_offset =>"",
       :parent_id => 0,
       :pegged_change_amount => 0.0,
-			:random_size => false,	  #oder.java 497			# Vers 76
-			:random_price => false,	  # order.java # 498		# Vers 76
+      :random_size => false,    #oder.java 497      # Vers 76
+      :random_price => false,   # order.java # 498    # Vers 76
       :reference_price_type => "",
       :reference_contract_id => 0,
       :reference_change_amount => 0.0,
       :reference_exchange_id => "",
-			:scale_auto_reset => false,  # order.java # 490
-			:scale_random_percent => false, # order.java # 491
-			:scale_table => "", # order.java # 492
+      :scale_auto_reset => false,  # order.java # 490
+      :scale_random_percent => false, # order.java # 491
+      :scale_table => "", # order.java # 492
       :stock_range_lower => "",
       :stock_range_upper => "",
       :stock_ref_price =>"",
@@ -433,7 +433,7 @@ module IB
       :trail_stop_price => "",
       :trailing_percent => "",
       :transmit => true,
-			:trigger_method => :default,
+      :trigger_method => :default,
       :use_price_management_algo => "",
       :volatility_type => :annual,
       :what_if => false,  # order.java # 493
@@ -494,16 +494,16 @@ module IB
 =begin rdoc
 Format of serialisation
 
-	count of records
-	for each condition: conditiontype, condition-fields
+  count of records
+  for each condition: conditiontype, condition-fields
 =end
-		def serialize_conditions
-			if conditions.empty?
-			  [ 0 ]
-			else
-			  [ conditions.size ]	+ conditions.map( &:serialize ) + [ conditions_ignore_rth, conditions_cancel_order ]
-			end
-		end
+    def serialize_conditions
+      if conditions.empty?
+        [ 0 ]
+      else
+        [ conditions.size ] + conditions.map( &:serialize ) + [ conditions_ignore_rth, conditions_cancel_order ]
+      end
+    end
 
     def serialize_algo
       return [''] if algo_strategy.blank?
@@ -520,12 +520,12 @@ Format of serialisation
     end
 
     def serialize_volatility_order_fields
-					 if volatility.present?
+           if volatility.present?
            [ volatility ,       #              Volatility orders
            self[:volatility_type] ] #     default: annual volatility
-						else
-						["",""]
-					 end
+            else
+            ["",""]
+           end
     end
 
     def serialize_delta_neutral_order_fields
@@ -536,10 +536,10 @@ Format of serialisation
               delta_neutral_settling_firm,
               delta_neutral_clearing_account,
               self[ :delta_neutral_clearing_intent ],
-							delta_neutral_open_close,
-							delta_neutral_short_sale,
-							delta_neutral_short_sale_slot,
-							delta_neutral_designated_location
+              delta_neutral_open_close,
+              delta_neutral_short_sale,
+              delta_neutral_short_sale_slot,
+              delta_neutral_designated_location
              ]
            else
              ['', '']
@@ -570,12 +570,12 @@ Format of serialisation
       a
     end
     def serialize_pegged_order_fields
-	    if order_type == :pegged_to_benchmark && server_version >= KNOWN_SERVERS[ :min_server_ver_pegged_to_benchmark ]
-	    [ reference_contract_id,
-	      is_pegged_change_amount_decrease,
-	      pegged_change_amount,
-	      reference_change_amount,
-	      reference_exchange_id ]
+      if order_type == :pegged_to_benchmark && server_version >= KNOWN_SERVERS[ :min_server_ver_pegged_to_benchmark ]
+      [ reference_contract_id,
+        is_pegged_change_amount_decrease,
+        pegged_change_amount,
+        reference_change_amount,
+        reference_exchange_id ]
       else
         []
       end
@@ -630,17 +630,17 @@ Format of serialisation
    end
 
     def serialize_misc_options
-      ""		  # Vers. 70
+      ""      # Vers. 70
     end
     # Placement
-		#
-		# The Order is only placed, if local_id is not set
-		#
-		# Modifies the Order-Object and returns the assigned local_id
+    #
+    # The Order is only placed, if local_id is not set
+    #
+    # Modifies the Order-Object and returns the assigned local_id
     def place the_contract=nil, connection=nil
-			connection ||= IB::Connection.current
+      connection ||= IB::Connection.current
       error "Unable to place order, next_local_id not known" unless connection.next_local_id
-			error "local_id present. Order is already placed.  Do you  want to modify?"  unless  local_id.nil?
+      error "local_id present. Order is already placed.  Do you  want to modify?"  unless  local_id.nil?
       self.client_id = connection.client_id
       self.local_id = connection.next_local_id
       connection.next_local_id += 1
@@ -650,9 +650,9 @@ Format of serialisation
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns local_id.
     def modify the_contract=nil, connection=nil, time=Time.now
-			error "Unable to modify order; local_id not specified" if local_id.nil?
-			self.contract =  the_contract unless the_contract.nil?
-			connection ||= IB::Connection.current
+      error "Unable to modify order; local_id not specified" if local_id.nil?
+      self.contract =  the_contract unless the_contract.nil?
+      connection ||= IB::Connection.current
       self.modified_at = time
       connection.send_message :PlaceOrder,
         :order => self,
@@ -731,11 +731,11 @@ Format of serialisation
         misc.join( " " ) ]
     end
 
-		def serialize_rabbit
-			{ 'Contract' => contract.present? ? contract.serialize( :option, :trading_class ): '' ,
-		 'Order' =>  self,
-		 'OrderState' => order_state}
-		end
+    def serialize_rabbit
+      { 'Contract' => contract.present? ? contract.serialize( :option, :trading_class ): '' ,
+     'Order' =>  self,
+     'OrderState' => order_state}
+    end
 
   end # class Order
 end # module IB

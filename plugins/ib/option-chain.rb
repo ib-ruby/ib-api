@@ -10,7 +10,7 @@ module IB
   ### right:: :call, :put, :straddle                ( default: :put )
   ### ref_price::  :request or a numeric value      ( default:  :request )
   ### sort:: :strike, :expiry
-  ### exchange:: List of Exchanges to be queried (Blank for all available Exchanges)
+  ### exchange:: List of Exchanges to be queried    ( default: SMART)
   ### trading_class                                 ( optional )
   def option_chain ref_price: :request, right: :put, sort: :strike, exchange: '', trading_class: nil
 
@@ -38,10 +38,10 @@ module IB
           # override @option_chain_definition if a decent combination of attributes is met
           # us- options:  use the smart dataset
           # other options: prefer options of the default trading class
-          if message[:exchange] == 'SMART'
-            @option_chain_definition = msg.data
-            finalize.push(true)
-          end
+#          if message[:exchange] == 'SMART'
+#            @option_chain_definition = msg.data
+#            finalize.push(true)
+#          end
           if message[:trading_class] == symbol
             @option_chain_definition = msg.data
             finalize.push(true)
@@ -78,7 +78,7 @@ module IB
                              the_grouped_strikes = @option_chain_definition[:strikes].group_by{|e| e <=> atm_strike}
                              begin
                                the_strikes = yield the_grouped_strikes
-                               the_strikes.unshift atm_strike unless the_strikes.first == atm_strike	  # the first item is the atm-strike
+                               the_strikes.unshift atm_strike unless the_strikes.first == atm_strike    # the first item is the atm-strike
                                the_strikes
                              rescue
                                Connection.logger.error "#{to_human} :: not enough strikes :#{@option_chain_definition[:strikes].map(&:to_f).join(',')} "
@@ -90,7 +90,7 @@ module IB
 
       # third Friday of a month
       monthly_expirations = @option_chain_definition[:expirations].find_all {|y| (15..21).include? y.day }
-      #				puts @option_chain_definition.inspect
+      #       puts @option_chain_definition.inspect
       option_prototype = -> ( ltd, strike ) do
         IB::Option.new( symbol: symbol,
           exchange: @option_chain_definition[:exchange],
@@ -142,13 +142,13 @@ module IB
         below_market_price_strikes = chain[-1][-count..-1].reverse
       end # branch
     end
-  end		# def
+  end   # def
 
   # return OutOfTheMoneyOptions
   def otm_options count:  5,  right: :put, ref_price: :request, sort: :strike, exchange: ''
     option_chain( right: right, ref_price: ref_price, sort: sort, exchange: exchange ) do | chain |
       if right == :put
-        #			puts "Chain: #{chain}"
+        #     puts "Chain: #{chain}"
         below_market_price_strikes = chain[-1][-count..-1].reverse
       else
         above_market_price_strikes = chain[1][0..count-1]

@@ -6,8 +6,8 @@ module IB
     belongs_to :account 
 
     prop  :key,
-	  :value,
-	  :currency
+    :value,
+    :currency
 
 
     #  comparison
@@ -20,8 +20,8 @@ module IB
     end
     def default_attributes
       super.merge key: 'AccountValue',
-	value: 0,
-	currency: 'USD'
+  value: 0,
+  currency: 'USD'
     end
 
     def to_human

@@ -1,4 +1,3 @@
-
 module IB
   module Messages
     module Incoming

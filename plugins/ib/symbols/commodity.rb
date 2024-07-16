@@ -6,10 +6,10 @@ module IB
       extend Symbols
 
       def self.contracts
-	  @contracts.presence || super.merge(
+    @contracts.presence || super.merge(
           :xau => IB::Contract.new( symbol: 'XAUUSD', sec_type: :commodity, currency: 'USD',
                                     :description => "London Gold ")
-	   )
+     )
       end
 
     end

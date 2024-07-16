@@ -31,7 +31,7 @@ module IB
       :strike => :f, # double: The strike price.
       :expiry => :s, # The expiration date. Use the format YYYYMM or YYYYMMDD
       :last_trading_day =>  :s, # the tws returns the last trading day in Format YYYYMMMDD hh:mm
-				# which may differ from the expiry 
+        # which may differ from the expiry 
       :exchange => :sup, # The order destination, such as Smart.
       :primary_exchange => :sup, # Non-SMART exchange where the contract trades.
       :include_expired => :bool, # When true, contract details requests and historical
@@ -64,9 +64,9 @@ module IB
     attr_accessor :description # NB: local to ib, not part of TWS.
 
     ### Associations
-		has_many :misc   # multi purpose association
+    has_many :misc   # multi purpose association
     has_many :orders # Placed for this Contract
-		has_many :portfolio_values
+    has_many :portfolio_values
 
     has_many :bars # Possibly representing trading history for this Contract
 
@@ -132,10 +132,10 @@ module IB
        print_default[self[:sec_type]],
        ( fields.include?(:option) ?
        [ print_default[expiry],
-			##  a Zero-Strike-Option  has to be defined with  «strike: -1 »
-				 strike.present? && ( strike.is_a?(Numeric) && !strike.zero? && strike > 0 )  ?  strike : strike<0 ?  0 : "",
-				 print_default[self[:right]],
-				 print_default[multiplier]] : nil ),
+      ##  a Zero-Strike-Option  has to be defined with  «strike: -1 »
+         strike.present? && ( strike.is_a?(Numeric) && !strike.zero? && strike > 0 )  ?  strike : strike<0 ?  0 : "",
+         print_default[self[:right]],
+         print_default[multiplier]] : nil ),
        print_default[exchange],
        ( fields.include?(:primary_exchange) ? print_default[primary_exchange]   : nil ) ,
        print_default[currency],
@@ -161,8 +161,8 @@ module IB
       serialize :option, :trading_class, :primary_exchange, *fields
     end
 
-		# same as :serialize_short, omitting primary_exchange
-			# used by      RequestMarketDepth
+    # same as :serialize_short, omitting primary_exchange
+      # used by      RequestMarketDepth
     def serialize_supershort *fields  # :nodoc:
       serialize :option, :trading_class,  *fields
     end
@@ -202,15 +202,15 @@ module IB
       serialize_long.join(":")
     end
 
-		# extracts essential attributes of the contract,
-		# and returns a new contract. Used for comparism of equality of contracts
-		#
-		# the link to contract-details is __not__ maintained.
-		def  essential
+    # extracts essential attributes of the contract,
+    # and returns a new contract. Used for comparism of equality of contracts
+    #
+    # the link to contract-details is __not__ maintained.
+    def  essential
 
-			the_attributes = [ :sec_type, :symbol , :con_id,   :exchange, :right,
-									  :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
-								:multiplier,  :primary_exchange, :trading_class, :description ]
+      the_attributes = [ :sec_type, :symbol , :con_id,   :exchange, :right,
+                    :currency, :expiry,  :strike,   :local_symbol, :last_trading_day,
+                :multiplier,  :primary_exchange, :trading_class, :description ]
       new_contract= self.class.new( invariant_attributes.select{|k,_| the_attributes.include? k }
                                                         .transform_values{|v| v.is_a?(Numeric)? v : v.to_s.upcase } )
       new_contract[:description] = if @description.present?
@@ -221,13 +221,13 @@ module IB
                                      ""
                                    end
       new_contract # return contract
-		end
+    end
 
 
-		# creates a new Contract substituting attributes by the provided key-value pairs.
-		#
+    # creates a new Contract substituting attributes by the provided key-value pairs.
+    #
     # for convenience
-		# con_id, local_symbol and last_trading_day are resetted,
+    # con_id, local_symbol and last_trading_day are resetted,
     # the link to contract-details is savaged
     #
     # Example
@@ -266,7 +266,7 @@ module IB
       ## last_trading_day / expiry needs special treatment
       resetted_attributes << :last_trading_day if  new_attributes.keys.include? :expiry
       self.class.new attributes.reject{|k,_| resetted_attributes.include? k}.merge(new_attributes)
-		end
+    end
 
     # Contract comparison
 
@@ -305,8 +305,8 @@ module IB
     alias to_s to_human
 
     # Testing for type of contract:
-		# depreciated :  use is_a?(IB::Stock, IB::Bond, IB::Bag etc) instead
-		def bag?  #  :nodoc:
+    # depreciated :  use is_a?(IB::Stock, IB::Bond, IB::Bag etc) instead
+    def bag?  #  :nodoc:
       self[:sec_type] == 'BAG'
     end
 
@@ -355,19 +355,19 @@ In places where these terms are used to indicate a concept, we have left them as
 # However, after querying a contract, 'expiry' ist overwritten by 'last_trading_day'. The original 'expiry'
 # is still available through 'attributes[:expiry]'
 
-		def expiry
-			if self.last_trading_day.present?
-				last_trading_day.gsub(/-/,'')
-			else
-				@attributes[:expiry]
-			end
-		end
+    def expiry
+      if self.last_trading_day.present?
+        last_trading_day.gsub(/-/,'')
+      else
+        @attributes[:expiry]
+      end
+    end
 
 
 # is read by Account#PlaceOrder to set requirements for contract-types, as NonGuaranteed for stock-spreads
-		def order_requirements
-			Hash.new
-		end
+    def order_requirements
+      Hash.new
+    end
 
 
     def table_header( &b )

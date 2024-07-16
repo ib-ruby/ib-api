@@ -13,8 +13,8 @@ module IB
 #
 # The result can be customized by a provided block.
 #
-#	IB::Symbols::Stocks.sie.market_price{ |x| x }
-#	-> {"bid"=>0.10142e3, "ask"=>0.10144e3, "last"=>0.10142e3, "close"=>0.10172e3}
+# IB::Symbols::Stocks.sie.market_price{ |x| x }
+# -> {"bid"=>0.10142e3, "ask"=>0.10144e3, "last"=>0.10142e3, "close"=>0.10172e3}
    #
    #
    #  Raw-data are stored in the _bars_-attribute of IB::Contract
@@ -30,12 +30,12 @@ module IB
 
    def market_price delayed:  true, thread: false, no_error: false
 
-     tws=  Connection.current		 # get the initialized ib-ruby instance
+     tws=  Connection.current    # get the initialized ib-ruby instance
      the_id , the_price =  nil, nil
      tickdata =  Hash.new
      q =  Queue.new
      # define requested tick-attributes
-     last, close, bid, ask	 =	[ [ :delayed_last , :last_price ] , [:delayed_close , :close_price ],
+     last, close, bid, ask   =  [ [ :delayed_last , :last_price ] , [:delayed_close , :close_price ],
                                  [  :delayed_bid , :bid_price ], [  :delayed_ask , :ask_price ]]
      request_data_type = delayed ? :frozen_delayed :  :frozen
 
@@ -93,7 +93,7 @@ module IB
            tz = -> (z){ z.map{|y| y.to_s.split('_')}.flatten.count_duplicates.max_by{|k,v| v}.first.to_sym}
            data =  tickdata.map{|x,y| [tz[x],y]}.to_h
            valid_data = ->(d){ !(d.to_i.zero? || d.to_i == -1) }
-           self.bars << data											#  store raw data in bars
+           self.bars << data                      #  store raw data in bars
            the_price = if block_given?
                          yield data
                          # yields {:bid=>0.10142e3, :ask=>0.10144e3, :last=>0.10142e3, :close=>0.10172e3}
@@ -119,10 +119,10 @@ module IB
        tws.unsubscribe sub_id, s_id, a_id
      end
      if thread
-       th	# return thread
+       th # return thread
      else
        th.join
-       the_price	# return
+       the_price  # return
      end
    end #
  end

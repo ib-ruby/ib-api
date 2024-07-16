@@ -6,20 +6,20 @@ module IB
 
 
       def defaults
-	  super.merge order_type: :limit , tif: :day
+    super.merge order_type: :limit , tif: :day
       end
 
 
       def requirements
-	super.merge cash_qty: '(true/false) to indicate to let IB calculate the cash-quantity of the alternate currency'
+  super.merge cash_qty: '(true/false) to indicate to let IB calculate the cash-quantity of the alternate currency'
      end
 
 
       def summary
-	<<-HERE
-	Forex orders can be placed in denomination of second currency in pair using cashQty field.
-	Don't specify a limit-price to force immidiate execution.
-	HERE
+  <<-HERE
+  Forex orders can be placed in denomination of second currency in pair using cashQty field.
+  Don't specify a limit-price to force immidiate execution.
+  HERE
       end
       end
 =begin
