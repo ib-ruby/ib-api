@@ -15,9 +15,8 @@ describe 'Order placement via Account'  do # :connected => true, :integration =>
 
 
   let( :jardine ){ IB::Stock.new symbol: 'J36', exchange: 'SGX' }  # trading hours: 2 - 10 am GMT, min-lot-size: 100
-  let( :ge ){ IB::Stock.new symbol: 'GE', exchange: 'SMART' }  # trading hours: 2 - 10 am GMT, min-lot-size: 100
-  let( :tui ){IB::Stock.new symbol: :tui1, exchange: :smart, currency: :eur }  # trading hours: 2 - 10 am GMT, min-lot-size: 100
-
+  let( :ge ){ IB::Stock.new symbol: 'GE', exchange: 'SMART' }
+  let( :tui ){IB::Stock.new symbol: :tui1, exchange: :smart, currency: :eur }
   let( :the_client ){  IB::Connection.current.clients.detect{|y| y.account ==  ACCOUNT} }
 
   context 'Placing orders' do
@@ -42,11 +41,11 @@ describe 'Order placement via Account'  do # :connected => true, :integration =>
     end
 
     it "placing 10% below market price" do
+      puts "fetching market price – that might be slow"
       mp = tui.market_price
       mp = 6.to_d if mp.to_i.zero?    # default-price
       the_price = mp -(mp*0.1)
-      puts "the_price: #{the_price}"
-      puts "the_price: #{the_price.class}"
+      puts "the_price: #{the_price.to_s} ( #{the_price.class} )"
       the_order=  IB::Limit.order action: :buy, size: 100, :limit_price =>  the_price
       local_id =  the_client.place contract: tui,
                                       order: the_order,

@@ -651,13 +651,15 @@ Format of serialisation
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns local_id.
     def modify the_contract=nil, connection=nil, time=Time.now
       error "Unable to modify order; local_id not specified" if local_id.nil?
-      self.contract =  the_contract unless the_contract.nil?
+      the_contract =  contract if the_contract.nil?
+      error "Unable to place order, contract has to be specified" unless the_contract.is_a?( IB::Contract )
+
       connection ||= IB::Connection.current
       self.modified_at = time
       connection.send_message :PlaceOrder,
-        :order => self,
-        :contract => contract,
-        :local_id => local_id
+                              :order => self,
+                              :contract => the_contract.con_id.to_i > 0 ? Contract.new( con_id: the_contract.con_id, exchange: the_contract.exchange ) : the_contract,
+                              :local_id => local_id
       local_id
     end
 

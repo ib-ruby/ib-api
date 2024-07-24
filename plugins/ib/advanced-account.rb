@@ -85,7 +85,7 @@ Example
 
    j36 =  IB::Stock.new symbol: 'J36', exchange: 'SGX'
    order =  IB::Limit.order size: 100, price: 65.5
-   g =  IB::Gateway.current.clients.last
+   g =  IB::Connection.current.clients.last
 
    g.preview contract: j36, order: order
       => {:init_margin=>0.10864874e6,
@@ -95,10 +95,9 @@ Example
           :commission_currency=>"USD",
           :warning=>""
 
-   the_local_id = g.place order: order
+   g.place order: order
       => 67           # returns local_id
-   order.contract     # updated contract-record
-
+   order.contract     # updated (and verifired) contract-record
       => #<IB::Contract:0x00000000013c94b0 @attributes={:con_id=>9534669,
                                                         :exchange=>"SGX",
                                                         :right=>"",
@@ -108,11 +107,11 @@ Example
    g.modify order: order    # and transmit
      => 67 # returns local_id
 
-   g.locate_order( local_id: the_local_id  )
+   g.locate_order( local_id: {a number} )
      => returns the assigned order-record for inspection
 
-    g.cancel order: order
-    # logger output: 05:17:11 Cancelling 65 New #250/ from 3000/DU167349>
+   g.cancel order: order
+   # logger output: 05:17:11 Cancelling 65 New #250/ from 3000/DU167349>
 =end
 
   def place_order  order:, contract: nil, auto_adjust: true, convert_size: true
@@ -131,6 +130,8 @@ Example
                        else
                          contract.verify.first
                        end
+    # disable auto-adjust if min_tick is not available
+    auto_adjust =  false if order.contract.contract_detail.nil?
 
     error "No valid contract given" unless order.contract.is_a?(IB::Contract)
 
@@ -147,7 +148,13 @@ Example
     ### Default action:  raise IB::Transmission Error
     sa = ib.subscribe( :Alert ) do | msg |
       if msg.error_id == the_local_id
-        if [ 110, #  The price does not confirm to the minimum price variation for this contract
+
+        if msg.code == 110  && auto_adjust
+          wrong_order = nil
+          the_local_id =  -1
+          ib.logger.warn "adjusting order-price"
+          q.close
+        elsif [ 110, #  The price does not confirm to the minimum price variation for this contract
             201, # Order rejected, No Trading permissions
             203, # Security is not allowed for trading
             325, # Discretionary Orders are not supported for this combination of order-type and exchange
@@ -176,25 +183,46 @@ Example
     order.attributes.merge! order.contract.order_requirements unless order.contract.order_requirements.blank?
     #  con_id and exchange fully qualify a contract, no need to transmit other data
     #  if no contract is passed to order.place, order.contract is used for placement
-    the_contract = order.contract.con_id.to_i > 0 ? Contract.new( con_id: order.contract.con_id, exchange: order.contract.exchange) : nil
-    the_local_id = order.place the_contract # return the local_id
-    # if transmit is false, just include the local_id in the order-record
-    Thread.new{  if order.transmit  || order.what_if  then sleep 1 else sleep 0.001 end ;  q.close }
-    tws_answer = q.pop
+    #   ... delegated to order#modify...
+#    the_contract = order.contract.con_id.to_i > 0 ? Contract.new( con_id: order.contract.con_id, exchange: order.contract.exchange) : nil
+    loop do
+      the_local_id = order.place  # return the local_id
+      # if transmit is false, just include the local_id in the order-record
+      Thread.new{  if order.transmit  || order.what_if  then sleep 1 else sleep 0.001 end ;  q.close }
+      tws_answer = q.pop
 
+      adjust_price = ->(p) do
+        if order.action == :sell
+          p + order.contract.contract_detail.min_tick
+        else
+          p - order.contract.contract_detail.min_tick
+        end
+      end
+
+      puts "the_loclal_id:  #{the_local_id}"
+      puts "order_id: #{order.local_id}"
+      if q.closed?
+        if wrong_order.present?
+          raise IB::SymbolError,  wrong_order
+        elsif the_local_id.present?
+          if the_local_id < 0  # auto-adjust condition
+            order.local_id = nil # reset order record
+            order.aux_price = adjust_price.call( order.aux_price ) unless order.aux_price.to_i.zero?
+            order.limit_price = adjust_price.call( order.limit_price ) unless order.limit_price.to_i.zero?
+          else
+            order.local_id = the_local_id
+          end
+        else
+          error " #{order.to_human} is not transmitted properly", :symbol
+        end
+      else
+        order=tws_answer #  return order-record received from tws
+      end
+      break unless order.local_id.nil?
+      q = Queue.new   # reset queue
+    end
     ib.unsubscribe sa
     ib.unsubscribe sb
-    if q.closed?
-      if wrong_order.present?
-        raise IB::SymbolError,  wrong_order
-      elsif the_local_id.present?
-        order.local_id = the_local_id
-      else
-      error " #{order.to_human} is not transmitted properly", :symbol
-      end
-    else
-      order=tws_answer #  return order-record received from tws
-    end
     the_local_id  # return_value
   end # place
 

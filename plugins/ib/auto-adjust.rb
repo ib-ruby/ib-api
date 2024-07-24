@@ -18,11 +18,11 @@ Public API
 Standard usage
 
 ```ruby
-c =  IB::Stock.new symbol = 'GE'
+c =  IB::Stock.new symbol 'GE'
 o =  IB::Limit.order contract: c, price: 150.0998, size: 100
 o.auto_adjust
 
-o.limit_price  => 151
+o.limit_price  => 151.1
 
 ```
 =end
@@ -32,15 +32,10 @@ o.limit_price  => 151
     # Auto Adjust implements a simple algorithm  to ensure that an order is accepted
 
     # It reads `contract_detail.min_tick`.
-    # #
-    # If min_tick < 0.01, the real tick-increments differ fron the min_tick_value
     #
-    # For J36 (jardines) min tick is 0.001, but the minimal increment is 0.005
-    # For Tui1 its the samme, min_tick is 0.00001 , minimal increment ist 0.00005
+    # For min-tick smaller then 0.01, the value is rounded to the next higer digit.
     #
-    # Thus, for min-tick smaller then 0.01, the value is rounded to the next higer digit.
-    #
-    # ATTENTION: The method mutates the Order-Object.
+    # The method mutates the Order-Object.
     #
     # | min-tick     |  round     |
     # |--------------|------------|
@@ -65,13 +60,12 @@ o.limit_price  => 151
       error "No Contract provided to Auto adjust" unless contract.is_a? IB::Contract
 
       unless contract.is_a? IB::Bag
-        # ensure that contract_details are present
 
         min_tick = contract.then{ |y| y.contract_detail.is_a?( IB::ContractDetail ) ? y.contract_detail.min_tick : y.verify.first.contract_detail.min_tick }
         # there are two attributes to consider: limit_price and aux_price
         # limit_price +  aux_price may be nil or an empty string. Then ".to_f.zero?" becomes true
-        self.limit_price= adjust_price.call(limit_price.to_d, min_tick) unless limit_price.to_d.zero?
-        self.aux_price= adjust_price.call(aux_price.to_d, min_tick) unless aux_price.to_d.zero?
+        self.limit_price= adjust_price.call(limit_price.to_d, min_tick) unless limit_price.to_f.zero?
+        self.aux_price= adjust_price.call(aux_price.to_d, min_tick) unless aux_price.to_f.zero?
       end
     end
   end
