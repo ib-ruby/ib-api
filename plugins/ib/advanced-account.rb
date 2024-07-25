@@ -199,8 +199,6 @@ Example
         end
       end
 
-      puts "the_loclal_id:  #{the_local_id}"
-      puts "order_id: #{order.local_id}"
       if q.closed?
         if wrong_order.present?
           raise IB::SymbolError,  wrong_order
