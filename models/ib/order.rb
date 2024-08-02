@@ -306,13 +306,13 @@ module IB
  #   serialize :soft_dollar_tier_params, HashWithIndifferentAccess
     serialize :mics_options, Hash
 
-    # Order is always placed for a contract. Here, we explicitly set this link.
+    # Order is always placed for a contract. We explicitly set this link.
     belongs_to :contract
 
     # Order has a collection of Executions if it was filled
     has_many :executions
 
-    # Order has a collection of OrderStates, last one is always current
+    # Order has a collection of OrderStates. The last one is always current
     has_many :order_states
     # Order can have multible conditions
     has_many  :conditions
@@ -632,37 +632,6 @@ Format of serialisation
     def serialize_misc_options
       ""      # Vers. 70
     end
-    # Placement
-    #
-    # The Order is only placed, if local_id is not set
-    #
-    # Modifies the Order-Object and returns the assigned local_id
-    def place the_contract=nil, connection=nil
-      connection ||= IB::Connection.current
-      error "Unable to place order, next_local_id not known" unless connection.next_local_id
-      error "local_id present. Order is already placed.  Do you  want to modify?"  unless  local_id.nil?
-      self.client_id = connection.client_id
-      self.local_id = connection.next_local_id
-      connection.next_local_id += 1
-      self.placed_at = Time.now
-      modify the_contract, connection, self.placed_at
-    end
-
-    # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns local_id.
-    def modify the_contract=nil, connection=nil, time=Time.now
-      error "Unable to modify order; local_id not specified" if local_id.nil?
-      the_contract =  contract if the_contract.nil?
-      error "Unable to place order, contract has to be specified" unless the_contract.is_a?( IB::Contract )
-
-      connection ||= IB::Connection.current
-      self.modified_at = time
-      connection.send_message :PlaceOrder,
-                              :order => self,
-                              :contract => the_contract.con_id.to_i > 0 ? Contract.new( con_id: the_contract.con_id, exchange: the_contract.exchange ) : the_contract,
-                              :local_id => local_id
-      local_id
-    end
-
     # Order comparison
     def == other
       super(other) ||
@@ -711,8 +680,8 @@ Format of serialisation
     end
 
 
-    def table_header 
-      [ 'account','status' ,'', 'Type', 'tif', 'action', 'amount','price' , 'misc' ]
+    def table_header
+      [ 'account','status', '', 'Type', 'tif', 'action', 'amount','price' , 'misc' ]
     end
 
     def table_row
@@ -729,7 +698,7 @@ Format of serialisation
         self[:tif],
         action,
         total_quantity,
-        (limit_price ? "#{limit_price} " : '') + ((aux_price && aux_price != 0) ? "/#{aux_price}" : '') ,
+        ((limit_price && !limit_price.zero?) ? "#{limit_price} " : '') + ((aux_price && !aux_price.zero?) ? "/#{aux_price}" : '') ,
         misc.join( " " ) ]
     end
 

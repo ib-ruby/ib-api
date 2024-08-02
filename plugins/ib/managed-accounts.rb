@@ -236,5 +236,10 @@ Raises an IB::Error if less then 100 items are received.
   class Connection
     include ManagedAccounts
     current.activate_managed_accounts!
+  rescue  Workflow::NoTransitionAllowed => e
+    if current.workflow_state == :ready
+      current.disconnect!
+      resume
+    end
   end
 end

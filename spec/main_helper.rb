@@ -34,7 +34,12 @@ def should_not_log *patterns
 end
 
 
-## Connection helpers
+## Connection helper
+# In gateway-mode ( establish_connection :gateway ) Connection#Clients is initialized,
+#    open orders apperar Connection#Client#Orders
+#
+# otherwise anything works through the Connection#Received Hash
+
 def establish_connection *plugins
   ib =  nil
   accounts = nil
@@ -42,14 +47,14 @@ def establish_connection *plugins
       OPTS[:connection].merge connect: false
        ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
        ib.activate_plugin 'verify', 'process-orders', 'advanced-account'
-       ib.received = true
        ib.get_account_data
        ib.request_open_orders
        accounts = ib.clients.map(&:account)
+       puts "Accounts: #{accounts}"
 
   else
       ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
-      ib.received = true
+      ib.received =  true
       ib.try_connection!
       ib.wait_for :ManagedAccounts, 5
 

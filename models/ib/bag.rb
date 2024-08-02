@@ -44,22 +44,26 @@ module IB
         legs_description.split(',').sort == other.legs_description.split(',').sort
     end
 
-    def serialize_legs
-           [ combo_legs.size,
-              combo_legs.map do |the_leg|
-             [
-                the_leg.con_id,
-                the_leg.ratio,
-                the_leg.side.to_sup,
-                the_leg.exchange,
-                the_leg[:open_close],
-                the_leg[:short_sale_slot],
-                the_leg.designated_location,
-                the_leg.exempt_code
-             ]
-              end
-           ]
-    end
+#    def serialize_legs dest = :order
+#      unless dest == :order
+#        super
+#      else
+#           [ combo_legs.size,
+#              combo_legs.map do |the_leg|
+#             [
+#                the_leg.con_id,
+#                the_leg.ratio,
+#                the_leg.side.to_sup,
+#                the_leg.exchange,
+#                the_leg[:open_close],
+#                the_leg[:short_sale_slot],
+#                the_leg.designated_location,
+#                the_leg.exempt_code
+#             ]
+#              end
+#           ]
+#      end
+#    end
 
     # Contract comparison
     def == other

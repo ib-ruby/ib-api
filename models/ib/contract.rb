@@ -173,14 +173,14 @@ module IB
     end
 
     # Defined in Contract, not BAG subclass to keep code DRY
-    def serialize_legs *fields     # :nodoc:
+    def serialize_legs *fields    # :nodoc:
       case
       when !bag?
        []
       when combo_legs.empty?
         [0]
       else
-        [combo_legs.size, combo_legs.map { |the_leg| the_leg.serialize *fields }].flatten
+        [combo_legs.size, combo_legs.map( &:serialize  ) ]
       end
     end
 

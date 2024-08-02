@@ -9,18 +9,21 @@ end
 
 if the order-object provides a local_id, the order is modified.
 =end
-def place_the_order( contract: IB::Symbols::Stocks.wfc )  
-    ib =  IB::Connection.current
-    raise 'Unable to place order, no connection' unless ib && ib.connected?
+def place_the_order( contract: IB::Symbols::Stocks.wfc )
     order =  yield( get_contract_price( contract: contract) )
+    connection =  IB::Connection.current
+    local_id =  order.local_id || connection.next_local_id
 
-    the_order_id =  if order.local_id.present? 
-      ib.modify_order order, contract      
-    else
-      ib.place_order order, contract      
-    end
-    ib.wait_for :OpenOrder, 3
-    the_order_id  # return value
+    connection.send_message :PlaceOrder,                                                                        :order => order,
+        :contract => if contract.con_id.to_i > 0
+                        Contract.new con_id: contract.con_id,
+                                   exchange: the_contract.exchange
+                     else
+                        contract
+                     end
+        :local_id => local_id
+    IB::Connection.current.wait_for :OpenOrder, 3
+    local_id  # return value
 end
 
 def get_contract_price contract: IB::Symbols::Stocks.wfc

@@ -33,6 +33,7 @@ loader.inflector.inflect(
                         )
 #loader.push_dir("#{__dir__}")
 loader.push_dir("#{__dir__}/../models/")
+loader.push_dir("#{__dir__}/../conditions/")
 loader.setup
 loader.eager_load
 #require 'requires'

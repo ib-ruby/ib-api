@@ -1,31 +1,49 @@
 module IB
 
  module MarketPrice
-# Ask for the Market-Price
-#
-# For valid contracts, either bid/ask or last_price and close_price are transmitted.
-#
-# If last_price is received, its returned.
-# If not, midpoint (bid+ask/2) is used. Else the closing price will be returned.
-#
-# Any  value (even 0.0) which is stored in IB::Contract.misc indicates that the contract is
-# accepted by `place_order`.
-#
-# The result can be customized by a provided block.
-#
-# IB::Symbols::Stocks.sie.market_price{ |x| x }
-# -> {"bid"=>0.10142e3, "ask"=>0.10144e3, "last"=>0.10142e3, "close"=>0.10172e3}
+   # Ask for the Market-Price
+   #
+   # For valid contracts, either bid/ask or last_price and close_price are transmitted.
+   #
+   # If last_price is received, its returned.
+   # If not, midpoint (bid+ask/2) is used. Else the closing price will be returned.
+   #
+   # Any  value (even 0.0) which is stored in IB::Contract.misc indicates that the contract is
+   # accepted by `request_market_data` and will be accepted by `place_order`, too.
+   #
+   # The result can be customized by a provided block.
+   #
+   # ```ruby
+   # IB::Symbols::Stocks.sie.market_price{ |x| x }
+   # -> {"bid"=>0.10142e3, "ask"=>0.10144e3, "last"=>0.10142e3, "close"=>0.10172e3}
+   # ```
    #
    #
-   #  Raw-data are stored in the _bars_-attribute of IB::Contract
-   #  (volatile, ie. data are not preserved when the Object is copied)
+   # Raw-data are stored in the _bars_-property of IB::Contract
+   # (volatile, ie. data are not preserved when the Object is reused via Contract#merge)
    #
-   #Example:  IB::Stock.new(symbol: :ge).market_price
-   # returns the current market-price
+   # ```ruby
+   #  u= (z1=IB::Stock.new(symbol: :ge)).market_price
+   #  A: Requested market data is not subscribed. Displaying delayed market data.
+   #  > u  => 0.16975e3
+   #  > z1 => #<IB::Stock:0x00007f91037f0e18
+   #         @attributes= { :symbol =>"ge", (...)
+   #                      :currency => "USD",
+   #                      :exchange => "SMART" },
+   #         @bars = [ { last: -0.1e1, close: 0.16975e3, bid: -0.1e1, ask: -0.1e1 } ],
+   #         @misc = { delayed: 0.16975e3 }
    #
-   #Example:  IB::Stock.new(symbol: :ge).market_price(thread: true).join
-   # assigns IB::Symbols.sie.misc with the value of the :last (or delayed_last) TickPrice-Message
-   # and returns this value, too
+   # ```
+   #
+   # Fetching of market-data is a time consuming process. A threaded approach is suitable
+   # to get a bunch of market-data in time
+   #
+   # ```ruby
+   #  th  = (z2 = IB::Stock.new(symbol: :ge)).market_price(thread: true)
+   #  th.join
+   # ```
+   # assigns z2.misc with the value of the :last (or delayed_last) TickPrice-Message
+   # and returns the thread.
    #
 
    def market_price delayed:  true, thread: false, no_error: false

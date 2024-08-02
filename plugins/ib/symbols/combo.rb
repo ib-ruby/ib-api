@@ -24,9 +24,9 @@ module IB
                           ComboLeg.new( con_id: 270580382,  action: :buy, exchange: 'DTB', ratio: 1 ) ], #DBK Dez 20 2018 P
                            description: 'Option Straddle: Deutsche Bank(20)[Dez 2018]'
                                   ),
-        ib_mcd: Bag.new( symbol: 'IBKR,MCD', currency: 'USD', combo_legs:
-                      [  ComboLeg.new( con_id: 43645865, action: :buy, ratio: 1), # IKBR STK
-                        ComboLeg.new( con_id: 9408,   action: :sell,ratio: 1 ) ], # MCD STK
+        ib_mcd: Bag.new( symbol: 'IBKR,MCD', currency: 'USD', exchange: 'SMART',
+                        combo_legs: [  ComboLeg.new( con_id: 43645865, action: :buy, ratio: 1), # IKBR STK
+                                       ComboLeg.new( con_id: 9408,     action: :sell,ratio: 1 ) ], # MCD STK
                         description: 'Stock Spread: Buy Interactive Brokers, sell Mc Donalds'
                                    ),
 

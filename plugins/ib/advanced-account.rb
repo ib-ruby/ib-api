@@ -148,24 +148,25 @@ Example
     ### Default action:  raise IB::Transmission Error
     sa = ib.subscribe( :Alert ) do | msg |
       if msg.error_id == the_local_id
-
-        if msg.code == 110  && auto_adjust
-          wrong_order = nil
-          the_local_id =  -1
-          ib.logger.warn "adjusting order-price"
-          q.close
-        elsif [ 110, #  The price does not confirm to the minimum price variation for this contract
-            201, # Order rejected, No Trading permissions
+        wrong_order =  msg.message
+        if msg.code == 110 #  The price does not confirm to the minimum price variation for this contract
+          if auto_adjust
+            wrong_order = nil
+            the_local_id =  -1
+            ib.logger.warn "adjusting order-price"
+          else
+            ib.logger.error "The price #{order.limit_price}/ #{order.aux_price} not confirm to the minimum price variation for #{order.contract.to_human}"
+          end
+        elsif [ 201, # Order rejected, No Trading permissions
             203, # Security is not allowed for trading
             325, # Discretionary Orders are not supported for this combination of order-type and exchange
             355, # Order size does not conform to market rule
             361, 362, 363, 364, # invalid trigger or stop-price
             388,  # Order size x is smaller than the minimum required size of yy.
         ].include? msg.code
-          wrong_order =  msg.message
           ib.logger.error msg.message
-          q.close   # closing the queue indicates that no order was transmitted
         end
+          q.close   # closing the queue indicates that no order was transmitted
       end
     end
     # transfer the received openOrder to the queue
@@ -221,7 +222,7 @@ Example
     end
     ib.unsubscribe sa
     ib.unsubscribe sb
-    the_local_id  # return_value
+    self  # return_value
   end # place
 
 
@@ -267,9 +268,27 @@ This has to be done manually in the provided block
     #
     # Submits a "WhatIf" Order
     #
-    # Returns the order_state.forecast
+    # Returns the presubmiited order record, where the local_id is erased and the what_if-flag is false
     #
-    # The order received from the TWS is kept in account.orders
+    # output of the results:
+    #   u =  Connection.current.clients.last
+    #   o =  Limit.order ...
+    #   c =  Contract.new ...
+    #   preview =  u.preview contract: c, order: o
+    #   puts preview.order_state.forcast
+    #
+    # The returned order can be used as argument for a subsequent order-placement
+    # i.e
+    #   fits_margin_minium = ->(x) do
+    #                       buffer = x[equity_with_loan] - x[:init_margin]
+    #                       net_liquidation =  account_data_scan( /NetLiq/ ).first.value.to_i
+    #                       buffer > net_liquidation * 0.1  #  90 Percent margin usage is aceptable
+    #                              end
+    #   u.preview( contract: c, order: o )
+    #    .check_margin(u){|y| fits_margin_minumum[ y.order_state.forcast ] } &.place
+    #
+    #
+    # The order received from the TWS is also kept in account.orders
     #
     # Raises IB::SymbolError if the Order could not be placed properly
     #
@@ -280,7 +299,7 @@ This has to be done manually in the provided block
     the_local_id = nil
     # put the order into the queue (and exit) if the event is fired
     req =  ib.subscribe( :OpenOrder ) do |m|
-      q << m.order if m.order.local_id.to_i == the_local_id.to_i && !m.order.init_margin.nil?
+      q << m.order if m.order.local_id.to_i == the_local_id.to_i #&& !m.order.init_margin.nil?
     end
 
     order.what_if = true
@@ -289,11 +308,15 @@ This has to be done manually in the provided block
     Thread.new{  sleep 2  ;  q.close }   #  wait max 2 sec.
     returned_order = q.pop
     ib.unsubscribe req
-    order.what_if = false # reset what_if flag
-    order.local_id = nil  # reset local_id to enable re-using the order-object for placing
+#   order.what_if = false # reset what_if flag
+#   order.local_id = nil  # reset local_id to enable re-using the order-object for placing
     raise IB::SymbolError,"(Preview-) #{order.to_human} is not transmitted properly" if q.closed?
-    returned_order.order_state.forcast  #  return_value
+    #order.order_state.forcast  #  return_value
+    returned_order.local_id =  nil
+    returned_order.what_if = false
+    returned_order
   end
+
 
 # closes the contract by submitting an appropriate order
   # the action- and total_amount attributes of the assigned order are overwritten.
@@ -305,8 +328,7 @@ This has to be done manually in the provided block
   # Any value in total_quantity is overwritten
   #
   # returns the order transmitted
-  #
-  # raises an IB::Error if no PortfolioValues have been loaded to the IB::Account
+  #v  # raises an IB::Error if no PortfolioValues have been loaded to the IB::Account
   def close order:, contract: nil, reverse: false,  **args_which_are_ignored
     error "must only be called after initializing portfolio_values "  if portfolio_values.blank?
     contract_size = ->(c) do      # note: portfolio_value.position is either positiv or negativ
@@ -318,7 +340,7 @@ This has to be done manually in the provided block
       end
     end
 
-    order.contract =  contract.verify.first unless contract.nil?
+    order.contract =  contract.verify.first unless contract.nil? || contract.con_id.to_i <=0
     error "Cannot transmit the order – No Contract given " unless order.contract.is_a?( IB::Contract )
 
     the_quantity = if reverse
@@ -409,6 +431,7 @@ This has to be done manually in the provided block
   #
   # load  managed-accounts first and switch to gateway-mode
 Connection.current.activate_plugin 'managed-accounts'
+Connection.current.activate_plugin 'order-flow'
 class Account 
    include Advanced
 end
