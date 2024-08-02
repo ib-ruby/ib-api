@@ -30,8 +30,8 @@ RSpec.shared_examples 'Standard Limit Order' do
   its( :order_ref ) { is_expected.to be_empty }  #  customer defined reference
   its( :client_id   ) { is_expected.to eq 2000 }
 #  its( :perm_id  ) { is_expected.to match /\d{7,9}/ }
-  its( :outside_rth ) { is_expected.to  be false }
-  its( :hidden ) { is_expected.to  be false }
+  its( :outside_rth ) { is_expected.to  be_falsey }
+  its( :hidden ) { is_expected.to  be_falsey }
   its( :discretionary_amount ) { is_expected.to  be_zero  }
 
   its( :fa_group ) { is_expected.to be_empty }
@@ -40,31 +40,31 @@ RSpec.shared_examples 'Standard Limit Order' do
   its( :fa_profile ) { is_expected.to be_empty }
 
   its( :model_code ) { is_expected.to be_empty }
-  its( :rule_80a ) { is_expected.to be_nil }       ### todo :  empty?? 
-  its( :percent_offset ) { is_expected.to be_nil } ### todo :   zero?? 
+  its( :rule_80a ) { is_expected.to be_nil }
+  its( :percent_offset ) { is_expected.to be_empty }
   its( :settling_firm  ) { is_expected.to be_empty }
   its( :short_sale_slot ) { is_expected.to eq :default }
   its( :designated_location ) { is_expected.to be_empty }
   its( :exempt_code ) { is_expected.to eq -1 }
   its( :auction_strategy ) { is_expected.to eq :none }
   its( :starting_price ) { is_expected.to be_nil }
-  its( :stock_ref_price ) { is_expected.to be_nil }
-  its( :delta ) { is_expected.to be_nil }
-  its( :stock_range_lower ) { is_expected.to be_nil }
-  its( :stock_range_upper ) { is_expected.to be_nil }
+  its( :stock_ref_price ) { is_expected.to be_empty }
+  its( :delta ) { is_expected.to be_empty }
+  its( :stock_range_lower ) { is_expected.to be_empty }
+  its( :stock_range_upper ) { is_expected.to be_empty }
   its( :display_size ) { is_expected.to  be_nil }  ### unset if  MAX_INT is transmitted
-  its( :block_order ) { is_expected.to be false }
-  its( :sweep_to_fill ) { is_expected.to be false }
-  its( :all_or_none ) { is_expected.to be false }
-  its( :min_quantity  ) { is_expected.to  be_nil }
+  its( :block_order ) { is_expected.to be_falsey }
+  its( :sweep_to_fill ) { is_expected.to be_falsey }
+  its( :all_or_none ) { is_expected.to be_falsey}
+  its( :min_quantity  ) { is_expected.to  be_empty }
   its( :oca_type) { is_expected.to  eq :reduce_no_block }  # 3
   #  etrade 
-  its( :firm_quote_only  ) { is_expected.to  be false }
+  its( :firm_quote_only  ) { is_expected.to  be_falsey }
   its( :nbbo_price_cap ) { is_expected.to  be_empty }
   its( :parent_id  ) { is_expected.to  be_zero }
   its( :trigger_method ) { is_expected.to eq :default }
   its( :volatility  ) { is_expected.to  be_nil }
-  its( :volatility_type  ) { is_expected.to  be_nil }
+  its( :volatility_type  ) { is_expected.to  eq :annual }
   its( :delta_neutral_order_type ){ is_expected.to  eq :none  }  #  see constants#210
   its( :delta_neutral_aux_price ) { is_expected.to  be_nil  }
 end
@@ -76,8 +76,8 @@ RSpec.shared_examples 'Extended Limit Order' do
 
   its( :continuous_update ) { is_expected.to be_zero }
   its( :reference_price_type ) { is_expected.to be_nil }
-  its( :trail_stop_price ) { is_expected.to be_nil }
-  its( :trailing_percent ) { is_expected.to be_nil }
+  its( :trail_stop_price ) { is_expected.to be_empty }
+  its( :trailing_percent ) { is_expected.to be_empty }
   its( :basis_points ) { is_expected.to be_nil }
   its( :basis_points_type ) { is_expected.to be_nil }
 
@@ -105,7 +105,7 @@ RSpec.shared_examples 'Extended Limit Order' do
 
   its( :adjusted_order_type ) { is_expected.to eq "None" }
   its( :trigger_price ) { is_expected.to be_nil }
-  its( :trail_stop_price ) { is_expected.to be_nil }
+  its( :trail_stop_price ) { is_expected.to be_empty }
   its( :limit_price_offset ) { is_expected.to be_nil }
   its( :adjusted_stop_price ) { is_expected.to be_nil }
   its( :adjusted_stop_limit_price ) { is_expected.to be_nil }
