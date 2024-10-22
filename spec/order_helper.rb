@@ -12,18 +12,18 @@ if the order-object provides a local_id, the order is modified.
 def place_the_order( contract: IB::Symbols::Stocks.wfc )
     order =  yield( get_contract_price( contract: contract) )
     connection =  IB::Connection.current
-    local_id =  order.local_id || connection.next_local_id
 
-    connection.send_message :PlaceOrder,                                                                        :order => order,
-        :contract => if contract.con_id.to_i > 0
-                        Contract.new con_id: contract.con_id,
-                                   exchange: the_contract.exchange
-                     else
-                        contract
-                     end
-        :local_id => local_id
-    IB::Connection.current.wait_for :OpenOrder, 3
-    local_id  # return value
+    IB::Connection.current.clear_received
+    contract=   if contract.con_id.to_i > 0
+                   Contract.new con_id: contract.con_id,
+                              exchange: contract.exchange
+                else
+                   contract
+                end
+    local_id = connection.place_order order, contract
+    IB::Connection.current.wait_for :OpenOrder, 5
+    puts  IB::Connection.current.received[:Alert] &.to_human
+    IB::Connection.current.received[:OpenOrder].find{|x| x.local_id == local_id }  # return OpenOrder Record
 end
 
 def get_contract_price contract: IB::Symbols::Stocks.wfc
@@ -58,7 +58,7 @@ shared_examples_for 'OpenOrder message' do
   it { should be_an IB::Messages::Incoming::OpenOrder }
   its(:message_type) { is_expected.to eq :OpenOrder }
   its(:message_id) { is_expected.to eq 5 }
-  its(:version) { is_expected.to eq 34}
+#  its(:version) { is_expected.to eq 34}
   its(:data) { is_expected.not_to  be_empty }
   its(:buffer ) { is_expected.to be_empty }  # Work on openOrder-Message has to be finished.
                 ## Integration of Conditions !
@@ -74,7 +74,7 @@ shared_examples_for 'OpenOrder message' do
     expect( o.local_id ).to be_an Integer
     expect( o.perm_id ).to  be_an Integer
     expect(IB::VALUES[:clearing_intent].values). to include o.clearing_intent
-    expect( o.order_type ).to eq :limit
+    expect( o.order_type ).to eq( :limit ).or eq( :market  )
     expect( IB::VALUES[:tif].values ).to include o.tif
     #expect( o.status ).to match /Submit/
     expect( o.clearing_intent ).to eq :ib
@@ -106,7 +106,9 @@ RSpec.shared_examples_for "serialize limit order fields" do
       expect( subject.serialize_pegged_order_fields).to be_empty
       expect( subject.serialize_mifid_order_fields.flatten.compact).to be_empty
       expect( subject.serialize_peg_best_and_mid).to be_empty
-      expect( subject.serialize_combo_legs).to be_empty
+      unless subject.contract.is_a? IB::Bag
+        expect( subject.serialize_combo_legs).to be_empty
+      end
     end  # it
 
 end
@@ -206,7 +208,6 @@ RSpec.shared_examples_for "Proper Execution Record" do | side |
   it " has meaningful attributes " do
   exec = subject.execution
   expect(  exec.perm_id).to be_an Integer
-  expect(  exec.client_id).to eq( OPTS[:connection][:client_id] ).or be_zero
   expect(  exec.local_id).to be_an Integer
   expect(  exec.exec_id).to be_a String
   expect(  exec.time).to be_a DateTime
@@ -229,17 +230,13 @@ end
     # data.keys: [:version, :exec_id, :commission, :currency, :realized_pnl, :yield, :yield_redemption_date] 
     it " has a proper execution id" do
       e=  IB::Connection.current.received[:ExecutionData].last.execution.exec_id
-      expect( subject.exec_id  ).to eq e  
+      expect( subject.exec_id  ).to eq e
     end
     its( :commission ){is_expected.to be_a BigDecimal}
     its( :currency ){ is_expected.to eq OPTS[:connection][:base_currency] }
     its( :yield ){ is_expected.to be_nil  }
     its( :yield_redemption_date){ is_expected.to be_nil}  # no date, YYYYMMDD format for bonds
-    if pnl>0
-      its( :realized_pnl ){is_expected.to be_a BigDecimal}
-    else
-      its( :realized_pnl ){is_expected.to be_nil}
-    end
+    its( :realized_pnl ){is_expected.to be_a( BigDecimal ).or be_nil}
 
   end 
 

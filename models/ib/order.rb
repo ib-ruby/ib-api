@@ -679,9 +679,11 @@ Format of serialisation
         (misc.empty? ? "" : " ") + misc.join( " " ) + ">"
     end
 
+    alias inspect to_human
+
 
     def table_header
-      [ 'account','status', '', 'Type', 'tif', 'action', 'amount','price' , 'misc' ]
+      [ 'account','status', 'contract', 'type', 'tif', 'action', 'amount','price' ,  '','misc' ]
     end
 
     def table_row
@@ -693,12 +695,12 @@ Format of serialisation
       misc << " id: #{local_id}" if local_id.to_i > 0
       misc << " dc: #{discretionary_amount}," if discretionary_amount.to_i != 0
         [ account,  order_ref.present? ? order_ref.to_s : status,
-        contract.to_human[1..-2],
+          contract.to_human.then{ |y| y.size > 20 ? y[ 1 .. 20 ] + "…" : y[1..-2] },
         self[:order_type] ,
         self[:tif],
         action,
         total_quantity,
-        ((limit_price && !limit_price.zero?) ? "#{limit_price} " : '') + ((aux_price && !aux_price.zero?) ? "/#{aux_price}" : '') ,
+        ((limit_price && !limit_price.to_i.zero?) ? "#{limit_price} " : '') + ((aux_price && !aux_price.to_i.zero?) ? "/#{aux_price}" : '') , !what_if.blank? ?  "Preview" : "",
         misc.join( " " ) ]
     end
 

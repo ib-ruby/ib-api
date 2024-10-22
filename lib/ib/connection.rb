@@ -402,13 +402,12 @@ module IB
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
-      puts "contract: #{contract.to_human}"
- #      order.modify contract, self    ## old
       error "Unable to modify order; local_id not specified" if order.local_id.nil?
       order.modified_at = Time.now
+      # if con_id is present, to place an order  use only con_id and exchange
       send_message :PlaceOrder,
-        :order => order,
-        :contract => contract,
+        :order => order.then{|y| y.contract =  nil; y},
+        :contract => contract.con_id.to_i > 0 ?  Contract.new( con_id: contract.con_id, exchange: contract.exchange || 'SMART' ) : contract,
         :local_id => order.local_id
       order.local_id  # return value
     end

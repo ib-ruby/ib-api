@@ -9,6 +9,7 @@ module IB
         def encode
           order = @data[:order]
           contract = @data[:contract]
+          contract = order.contract unless contract.is_a? IB::Contract
 
           error 'contract has to be specified' unless contract.is_a? IB::Contract
 
@@ -18,7 +19,7 @@ module IB
                     order.serialize_main_order_fields,
                     order.serialize_extended_order_fields,
                     order.serialize_combo_legs(contract),
-                    order.serialize_auxilery_order_fields # incluing advisory order fields
+                    order.serialize_auxilery_order_fields # including advisory order fields
                     ]
 
           if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]  # 103

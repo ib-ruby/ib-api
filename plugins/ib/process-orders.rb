@@ -94,7 +94,7 @@ Extends IB::Connection
   def request_open_orders
 
     q =  Queue.new
-    subscription = subscribe( :OpenOrderEnd ) { q.push(true) }  # signal succsess
+    subscription = subscribe( :OpenOrderEnd ) { q.push(true) }  # signal success
     account_data {| account | account.orders = [] }
     send_message :RequestAllOpenOrders
     ## the OpenOrderEnd-message usually appears after 0.1 sec.

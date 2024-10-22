@@ -115,7 +115,6 @@ Example
 =end
 
   def place_order  order:, contract: nil, auto_adjust: true, convert_size: true
-    # adjust the order price to  min-tick
     result = ->(l){ orders.detect{|x| x.local_id == l  && x.submitted? } }
     qualified_contract = ->(c) do
        c.is_a?(IB::Contract) &&
@@ -136,7 +135,7 @@ Example
     error "No valid contract given" unless order.contract.is_a?(IB::Contract)
 
     ## sending of plain vanilla IB::Bags will fail using account.place, unless a (negative) con-id is provided!
-    error "place order: ContractVerification failed. No con_id assigned"  unless qualified_contract[order.contract]
+    error "place order: ContractVerification failed. No con_id assigned"  unless qualified_contract[order.contract] or contract.nil?
 
     # declare some variables
     ib = IB::Connection.current
@@ -145,7 +144,7 @@ Example
     q =  Queue.new
 
     ### Handle Error messages
-    ### Default action:  raise IB::Transmission Error
+    ### Default action:  log message and raise IB::TransmissionError
     sa = ib.subscribe( :Alert ) do | msg |
       if msg.error_id == the_local_id
         wrong_order =  msg.message
@@ -186,17 +185,19 @@ Example
     #  if no contract is passed to order.place, order.contract is used for placement
     #   ... delegated to order#modify...
 #    the_contract = order.contract.con_id.to_i > 0 ? Contract.new( con_id: order.contract.con_id, exchange: order.contract.exchange) : nil
+    contract = order.contract
+    order =  order.then{|x| x.contract = nil; x }
     loop do
-      the_local_id = order.place  # return the local_id
+      the_local_id = ib.place_order order, contract  # return the local_id
       # if transmit is false, just include the local_id in the order-record
       Thread.new{  if order.transmit  || order.what_if  then sleep 1 else sleep 0.001 end ;  q.close }
       tws_answer = q.pop
 
       adjust_price = ->(p) do
         if order.action == :sell
-          p + order.contract.contract_detail.min_tick
+          p + contract.contract_detail.min_tick
         else
-          p - order.contract.contract_detail.min_tick
+          p - contract.contract_detail.min_tick
         end
       end
 
@@ -220,9 +221,10 @@ Example
       break unless order.local_id.nil?
       q = Queue.new   # reset queue
     end
+    order.contract = contract
     ib.unsubscribe sa
     ib.unsubscribe sb
-    self  # return_value
+    order  # return the order-record
   end # place
 
 
@@ -296,6 +298,8 @@ This has to be done manually in the provided block
     # to_do:  use a copy of order instead of temporary setting order.what_if
     q =  Queue.new
     ib =  IB::Connection.current
+    contract = order.contract if contract.nil?
+    order =  order.then{|x| x.contract =  nil; x }
     the_local_id = nil
     # put the order into the queue (and exit) if the event is fired
     req =  ib.subscribe( :OpenOrder ) do |m|
@@ -304,7 +308,7 @@ This has to be done manually in the provided block
 
     order.what_if = true
     order.account = account
-    the_local_id = order.place  contract
+    the_local_id = ib.place_order order, contract
     Thread.new{  sleep 2  ;  q.close }   #  wait max 2 sec.
     returned_order = q.pop
     ib.unsubscribe req
@@ -314,6 +318,7 @@ This has to be done manually in the provided block
     #order.order_state.forcast  #  return_value
     returned_order.local_id =  nil
     returned_order.what_if = false
+    returned_order.contract = contract
     returned_order
   end
 

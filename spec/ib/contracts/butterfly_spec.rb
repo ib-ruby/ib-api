@@ -42,7 +42,8 @@ context "initialize with underlying" do
   end
 
 context "create a limit-order" do
-  subject { IB::Limit.order contract: IB::Symbols::Combo.stoxx_butterfly, size: 1, price: 25 }
+  subject { IB::Limit.order contract: IB::Symbols::Combo.stoxx_butterfly, size: 1, price: 25,
+                             account: ACCOUNT,  what_if: true }
   it{ puts subject.as_table }
   it{ puts subject.contract.as_table }
   it_behaves_like 'serialize limit order fields'
