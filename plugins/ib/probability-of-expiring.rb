@@ -84,7 +84,7 @@ the next six months using the Black-Scholes model:
       error "ProbabilityOfExpiringCone needs strike as input" if strike.to_i.zero?
 
       if expiry.nil?
-        if last_trading_day == ''
+        if !last_trading_day.present? || last_trading_day.empty?
           error "ProbabilityOfExpiringCone needs expiry as input"
         else
           expiry = last_trading_day

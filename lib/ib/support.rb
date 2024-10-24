@@ -29,7 +29,7 @@ module IB
     end
     def read_decimal
       i= self.shift  rescue nil
-      i = BigDecimal(i) unless i.blank?
+      i = i.to_d unless i.blank?
       i.is_a?(Numeric)  && i < IB::TWS_MAX ?  i : nil  # return nil, if a very large number is transmitted
     end
 

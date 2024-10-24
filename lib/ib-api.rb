@@ -3,6 +3,7 @@ require "zeitwerk"
 require "active_model"
 require 'active_support/concern'
 require 'active_support/core_ext/module/attribute_accessors.rb'
+require 'bigdecimal/util'   # provides .to_d  for numeric and string classes
 require 'class_extensions'
 require 'logger'
 require 'terminal-table'
