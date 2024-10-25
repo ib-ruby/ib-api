@@ -1,7 +1,6 @@
 module IB
-
   # Additional Option properties and Option-Calculations
-  class OptionDetail < IB::Base
+  class OptionDetail < Base
     include BaseProperties
 
     prop :delta,  :gamma, :vega, :theta, # greeks
@@ -31,14 +30,15 @@ module IB
 
     end
 
-    def greeks?
-     fields= [ :delta,  :gamma, :vega, :theta,
-         :implied_volatility]
+    #  true if greeks are present
+    def greeks?   #  theta and implied volatility are not always present
+     fields= [ :delta,  :gamma, :vega ]
 
       !fields.detect{|y| self.send(y).nil?}
 
     end
 
+    # true if prices are received
     def prices?
       fields = [:implied_volatility, :under_price, :option_price]
       !fields.detect{|y| self.send(y).nil?}
