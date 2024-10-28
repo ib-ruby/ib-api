@@ -50,17 +50,18 @@ module IB
         event :initialize_managed_accounts, transitions_to: :account_based_operations
       end
       state :ready do
-        event :initialize_managed_accounts, transitions_to: :account_based_operations
+        event :initialize_managed_accounts, transitions_to: :account_based_operations  #  plugin managed_account
         event :disconnect,                  transitions_to: :disconnected
       end
       state :disconnected do
         event :try_connection,              transitions_to: :ready
-        event :activate_managed_accounts,   transitions_to: :gateway_mode
+        event :activate_managed_accounts,   transitions_to: :gateway_mode              #  plugin managed_account
+
       end
 
       state :account_based_operations do
         event :disconnect,                  transitions_to: :disconnected
-        event :initialize_order_handling,   transitions_to: :account_based_orderflow
+        event :initialize_order_handling,   transitions_to: :account_based_orderflow   # plugin process-orders
       end
 
       state :account_based_orderflow do
@@ -70,6 +71,26 @@ module IB
        on_transition do |from, to, triggering_event, *event_args|
          logger.warn{ "Workflow:: #{workflow_state} -> #{to}" }
        end
+    end
+
+    def reconnect
+      return if workflow_state == "virgin"
+      old_workflowstate =  workflow_state.dup
+      disconnect!
+
+      unsubscribe *@subscribers.map{|_,m| m.keys}.flatten.uniq
+      puts "subscrbers: #{@subscribers.inspect}"
+
+      puts "ows: #{old_workflowstate}"
+      if ["ready", "lean_mode"].include? old_workflowstate
+        try_connection!
+      else
+        activate_managed_accounts!
+        unless old_workflowstate == 'gateway_mode' 
+          initialize_managed_accounts! 
+          initialize_order_handling!   unless old_workflowstate != "account_based_orderflow"
+        end
+      end
     end
 
 
@@ -108,18 +129,11 @@ module IB
       @connected = false
 
       @plugins.each do |name|
-        puts "activating #{name}"
         activate_plugin name
       end
 
       @next_local_id = nil
 
-      # TWS always sends NextValidId message at connect -subscribe save this id
-      self.subscribe(:NextValidId) do |msg|
-        self.logger.progname = "Connection"
-        @next_local_id = msg.local_id
-        self.logger.info { "Got next valid order id: #{@next_local_id}." }
-      end
       #
       # this block is executed before tws-communication is established
       # Its intended for globally available subscriptions of tws-messages
@@ -160,6 +174,12 @@ module IB
       if connected?
         error  "Already connected!"
         return
+      end
+      # TWS always sends NextValidId message at connect -subscribe save this id
+      subscribe(:NextValidId) do |msg|
+        logger.progname = "Connection"
+        @next_local_id = msg.local_id
+        logger.info { "Got next valid order id: #{@next_local_id}." }
       end
 
       self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
@@ -254,7 +274,6 @@ module IB
       end
     end
     ### Working with received messages Hash
-
     # Clear received messages Hash
     def clear_received *message_types
       @receive_lock.synchronize do
@@ -265,6 +284,8 @@ module IB
         end
       end
     end
+
+
 
     # Hash of received messages, keyed by message type
     def received
@@ -452,6 +473,7 @@ module IB
     def process_message
       logger.progname='IB::Connection#process_message'
 
+      ## decode mesage is included throught `prepare_data
       socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
       # puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
       msg_id = the_decoded_message.shift.to_i
@@ -462,7 +484,10 @@ module IB
         # Create new instance of the appropriate message type,
         # and have it read the message from socket.
         # NB: Failure here usually means unsupported message type received
-        logger.error { "Got unsupported message #{msg_id}" } unless Messages::Incoming::Classes[msg_id]
+         
+      ## raising IB::TransmissionError if something went wrong.
+      ## the calling program has to initiate reconnection
+        error "Got unsupported message #{msg_id}", :reader  unless Messages::Incoming::Classes[msg_id]
         error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
         msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
 

@@ -1,13 +1,12 @@
 module IB
   module Plugins
     def activate_plugin *names
-      root= Pathname.new( File.expand_path("../../../", __FILE__ ))
-
+      root= Pathname(__dir__).parent.parent
       names.map{|y| y.to_s.gsub("_","-")}.each do |n|
         unless  @plugins.include? n
           # root=  base directory of the ib-api source
           # plugins are defined in ib-api/plugins/ib
-          filename=  root + "plugins/ib/#{n}.rb"
+          filename =  root.join( "plugins", "ib", n+".rb" )
           if filename.exist?
             if require  filename
               @plugins << n

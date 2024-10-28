@@ -49,6 +49,7 @@ module IB
                                 :right    => :put,
                                 :currency => "USD",
                                 :exchange => 'SMART',
+                                :trading_class => 'RUT',
                                  description: "Monthly settled RUT options"),
         :rutw => IB::Option.new( :symbol   => :RUT,
                                 :expiry   => IB::Option.next_expiry,
