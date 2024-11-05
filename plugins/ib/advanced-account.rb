@@ -270,7 +270,8 @@ This has to be done manually in the provided block
     #
     # Submits a "WhatIf" Order
     #
-    # Returns the presubmiited order record, where the local_id is erased and the what_if-flag is false
+    # Returns the presubmitted order record, where the local_id is erased and the what_if-flag is false
+    #
     #
     # output of the results:
     #   u =  Connection.current.clients.last
@@ -303,7 +304,7 @@ This has to be done manually in the provided block
     the_local_id = nil
     # put the order into the queue (and exit) if the event is fired
     req =  ib.subscribe( :OpenOrder ) do |m|
-      q << m.order if m.order.local_id.to_i == the_local_id.to_i #&& !m.order.init_margin.nil?
+      q << m.order if m.order.local_id.to_i == the_local_id.to_i && !m.order.order_state.init_margin_after.nil?
     end
 
     order.what_if = true

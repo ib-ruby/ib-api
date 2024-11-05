@@ -73,26 +73,6 @@ module IB
        end
     end
 
-    def reconnect
-      return if workflow_state == "virgin"
-      old_workflowstate =  workflow_state.dup
-      disconnect!
-
-      unsubscribe *@subscribers.map{|_,m| m.keys}.flatten.uniq
-      puts "subscrbers: #{@subscribers.inspect}"
-
-      puts "ows: #{old_workflowstate}"
-      if ["ready", "lean_mode"].include? old_workflowstate
-        try_connection!
-      else
-        activate_managed_accounts!
-        unless old_workflowstate == 'gateway_mode' 
-          initialize_managed_accounts! 
-          initialize_order_handling!   unless old_workflowstate != "account_based_orderflow"
-        end
-      end
-    end
-
 
     def initialize host: '127.0.0.1:4002',  # combination of host +  port
       port: nil,
@@ -205,6 +185,11 @@ module IB
                  "#{@local_connect_time} local, " +
                  "#{@remote_connect_time} remote." }
       start_reader
+    rescue IB::TransmissionError =>e
+      logger.fatal "Transmission Error: Retrying establishing the connection"
+      logger.fatal  e.msg
+      disconnect!
+       try_connection!
     #  update_next_order_id
     end
 
@@ -219,6 +204,26 @@ module IB
       @connected = false
     end
 
+
+    def reconnect
+      return if workflow_state == "virgin"
+      old_workflowstate =  workflow_state.dup
+      disconnect!
+
+      unsubscribe *@subscribers.map{|_,m| m.keys}.flatten.uniq
+      puts "subscrbers: #{@subscribers.inspect}"
+
+      puts "ows: #{old_workflowstate}"
+      if ["ready", "lean_mode"].include? old_workflowstate
+        try_connection!
+      else
+        activate_managed_accounts!
+        unless old_workflowstate == 'gateway_mode' 
+          initialize_managed_accounts! 
+          initialize_order_handling!   unless old_workflowstate != "account_based_orderflow"
+        end
+      end
+    end
 
 
     ### Working with message subscribers
@@ -398,8 +403,7 @@ module IB
       end
       rescue Errno::EPIPE
         logger.error{ "Broken Pipe, trying to reconnect"  }
-        disconnect!
-        try_connection!
+        reconnect
         retry
       end
       ## return the transmitted message

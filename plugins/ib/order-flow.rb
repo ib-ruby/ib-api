@@ -82,20 +82,29 @@ Extends IB::Order
 
     # returns the order if the margin-requirements are met
     #
+    # Details of the test are published in the log (level: LOGGER::INOT)
+    #
     # typical setup
     # ```ruby
     #  ib =  IB::Connection.new
     #  ib.activate_plugin ...
     #  u =  ib.clients.last
-    #  submitted_order = u.preview( order: some_order, contract: some_contract ) .check_margin( 0.25 ) &.place
+    #  submitted_order = u.preview( order: some_order, contract: some_contract ) 
+    #                     .check_margin( 0.25 ) &.place
+    #  place order only if after its placement Equity-with-loan ist minimal 25 percent higher then the margin requirements
+    #  i.e.  the margin utilization is max. 75 %. 
+    # 
     # ```
     def check_margin treshold = 0.1
-      error "Unable to check margin, forcast is not initialized" if order_state.nil or order_state.forecast[ :init_margin ].nil?
-      ib =  Connection.current
-#      client =  ib.clients.find{|y| y.account == account}
-#      net_liquidation =  client.account_data_scan( /NetLiquidation$/ ).first.value.to_i
-      buffer = order_state.forcast.then{ |x| x[ :equity_with_loan ] - x[ :init_margin ] }
-      buffer > order_state.forcast[ :equity_with_loan ] * treshold ?  self : nil
+      error "Unable to check margin, forcast is not initialized" if order_state.nil? or order_state.init_margin_after.nil?
+      utilization = order_state.init_margin_after / order_state.equity_with_loan_after
+     if  1 - utilization >  treshold 
+       Connection.current.logger.info "Margin OK:  #{action} #{total_quantity} of #{contract.to_human}: requirements: #{order_state.init_margin_change.round} #{contract.currency} equals to #{utilization.round(1) *100} % margin utilization"
+       self 
+     else
+       Connection.current.logger.info "Margin requirements NOT met, utilization: #{utilization.round(2) *100} % ( margin requirement: #{order_state.init_margin_change.round)} #{contract.currency})"
+       nil
+     end
     end
     #
     # Auto Adjust implements a simple algorithm  to ensure that an order is accepted
