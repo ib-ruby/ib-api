@@ -500,7 +500,7 @@ ib.activate_plugin :process_orders
 </div>
 
 <p>The <code class="language-plaintext highlighter-rouge">:process_orders</code> plugin works on the <code class="language-plaintext highlighter-rouge">account-based-ordermanagement</code> state of <code class="language-plaintext highlighter-rouge">IB::Connection</code>.
-It provides useful automations for the order-process</p>
+It provides useful automations for the order-process.</p>
 
 <h3 id="workflow">Workflow</h3>
 
@@ -508,29 +508,46 @@ It provides useful automations for the order-process</p>
 <span class="n">ib</span><span class="p">.</span><span class="nf">activate_plugin</span> <span class="ss">:process_order</span><span class="p">,</span> <span class="ss">:order_prototypes</span><span class="p">,</span> <span class="ss">:symbols</span><span class="p">,</span> <span class="ss">:auto_adjust</span>
 <span class="n">u</span> <span class="o">=</span>  <span class="n">ib</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>
 <span class="n">c</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Stocks</span><span class="p">.</span><span class="nf">msft</span>  <span class="c1"># Microsoft</span>
-<span class="n">o</span> <span class="o">=</span>  <span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">100</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">500</span> 
+<span class="n">o</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">100</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">500</span> 
+</code></pre></div></div>
+<h4 id="preview">preview</h4>
 
-<span class="c1">## preview</span>
-<span class="n">z</span><span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span>
-<span class="nb">puts</span> <span class="n">z</span><span class="p">.</span><span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">|</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">.</span><span class="nf">to_f</span><span class="p">].</span><span class="nf">join</span><span class="p">(</span><span class="s1">': '</span><span class="p">)}.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-    <span class="ss">init_margin: </span><span class="mf">25038.99</span>
-    <span class="ss">maint_margin: </span><span class="mf">22752.2</span>
-    <span class="ss">equity_with_loan: </span><span class="mf">1033590.86</span>
-    <span class="ss">commission: </span><span class="mf">1.0</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">z</span><span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span>
+ <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="no">Order</span><span class="p">:</span> <span class="no">LMT</span> <span class="no">GTC</span> <span class="n">buy</span> <span class="mf">100.0</span>  <span class="err">@</span> <span class="mf">500.0</span> <span class="no">PreSubmitted</span>  <span class="o">...</span> <span class="o">&gt;</span>
+<span class="n">z</span><span class="p">.</span><span class="nf">order_state</span><span class="p">.</span><span class="nf">forcast</span>
+ <span class="o">=&gt;</span> 
+   <span class="p">{</span> <span class="ss">:init_margin</span><span class="o">=&gt;</span><span class="mf">0.5916</span><span class="n">xxxex</span><span class="p">,</span> 
+     <span class="ss">:maint_margin</span><span class="o">=&gt;</span><span class="mf">0.503</span><span class="n">xxxex</span><span class="p">,</span>
+     <span class="ss">:equity_with_loan</span><span class="o">=&gt;</span><span class="mf">0.70</span><span class="n">xxxex</span><span class="p">,</span>
+     <span class="ss">:commission</span><span class="o">=&gt;</span><span class="kp">nil</span><span class="p">,</span>
+     <span class="ss">:commission_currency</span><span class="o">=&gt;</span><span class="s2">"USD"</span><span class="p">,</span>
+     <span class="ss">:warning</span><span class="o">=&gt;</span><span class="s2">""</span> <span class="p">}</span> 
 
-<span class="c1">### place </span>
-<span class="n">u</span><span class="p">.</span><span class="nf">place</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span>
+</code></pre></div></div>
+
+<h4 id="place">place</h4>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">u</span><span class="p">.</span><span class="nf">place</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span>
 <span class="n">o</span><span class="p">.</span><span class="nf">to_human</span>
   <span class="o">=&gt;</span> <span class="s2">"&lt;Order: LMT GTC buy 100.0  @ 300 New /#40/ from 2000/DU4035275&gt;"</span>
 
-<span class="c1">## modify</span>
-<span class="n">o</span><span class="p">.</span><span class="nf">limit_price</span> <span class="o">=</span> <span class="mi">350</span>
+</code></pre></div></div>
+<p>or</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">u</span><span class="p">.</span><span class="nf">preview</span><span class="p">(</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span> <span class="p">)</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">place</span>
+</code></pre></div></div>
+<p>or</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">u</span><span class="p">.</span><span class="nf">preview</span><span class="p">(</span> <span class="ss">order: </span><span class="n">o</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">c</span> <span class="p">)</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">check_margin</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">place</span>
+
+</code></pre></div></div>
+
+<h4 id="modify">modify</h4>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">o</span><span class="p">.</span><span class="nf">limit_price</span> <span class="o">=</span> <span class="mi">350</span>
 <span class="n">u</span><span class="p">.</span><span class="nf">modify</span> <span class="ss">order: </span><span class="n">o</span>
 <span class="n">o</span><span class="p">.</span><span class="nf">to_human</span>
   <span class="o">=&gt;</span> <span class="s2">"&lt;Order: LMT GTC buy 100.0  @ 350 New /#41/ from 2000/DU4035275&gt;"</span>
+</code></pre></div></div>
 
-<span class="c1">## cancel</span>
-<span class="n">u</span><span class="p">.</span><span class="nf">cancel</span> <span class="ss">order: </span><span class="n">o</span>
+<h2 id="cancel">cancel</h2>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">u</span><span class="p">.</span><span class="nf">cancel</span> <span class="ss">order: </span><span class="n">o</span>
 <span class="n">u</span><span class="p">.</span><span class="nf">orders</span><span class="p">.</span><span class="nf">to_human</span>
  <span class="o">=&gt;</span>
  <span class="p">[</span><span class="s2">"&lt;Order: LMT GTC buy 100.0  @ 350.0 Submitted #41/1699720638 from 2000/DU4035275&gt;"</span><span class="p">,</span>
@@ -562,7 +579,7 @@ It provides useful automations for the order-process</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2024 IB-Ruby. All rights reserved. <br />
-<span>Page last updated:</span> November 3, 2020<br/> Site last generated: Jul 12, 2024 <br />
+<span>Page last updated:</span> November 3, 2020<br/> Site last generated: Nov 5, 2024 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>

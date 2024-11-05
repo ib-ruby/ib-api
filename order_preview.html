@@ -496,7 +496,7 @@ To use the features described, activate <em>process-orders</em> plugin
 <pre> 
 require 'ib-api' 
 ib =  IB::Connection.new
-ib.activate_plugin :process_orders 
+ib.activate_plugin :process_orders, :advanced_account 
 </pre>
 
 in your scripts.
@@ -509,59 +509,53 @@ in your scripts.
 <p><code class="language-plaintext highlighter-rouge">IB::Gateway</code> keeps this methodology.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Account.preview order: {IB::Order} , contract: {IB::Contract}
-  ==&gt; Hash: { :init_margin , :maint_margin, :equity_with_loan, 
-              :commission, :commission_currency, :warning  }
+  ==&gt;  &lt;Order: (...)  @ {price} PreSubmitted #/{order-id} from {client-id}/{account-id}&gt; 
 </code></pre></div></div>
 
 <p>Behind the scene, the <code class="language-plaintext highlighter-rouge">what_if</code>-Flag on the <code class="language-plaintext highlighter-rouge">Limit.order</code> is set. Then the order is placed the usual way.
-The response from the TWS is recognized through the <code class="language-plaintext highlighter-rouge">OpenOrder</code>-Message. Parts of the Order-State-Response 
-are returned.</p>
-
-<h2 id="use-the-tws-to-validate-and-inspect-complex-orders">Use the TWS to validate and inspect Complex Orders</h2>
-
-<p>A neat feature of the TWS-Platform is the appearance of <code class="language-plaintext highlighter-rouge">whatIf</code>-Order-Requests in the <code class="language-plaintext highlighter-rouge">API</code>-Section of the Trading-Desk. After firing an <code class="language-plaintext highlighter-rouge">IB::Account.preview(order,contract)</code>-Request, one can comfortably inspect any part with TWS-Tools.</p>
+The response from the TWS is recognized through the <code class="language-plaintext highlighter-rouge">OpenOrder</code>-Message, which is returned.</p>
 
 <h2 id="margin-impact">Margin Impact</h2>
 
-<p>Lets estimate the margin-impact of a limit-order for a S&amp;P 500 Mini-Future.
-For convenience we use the <code class="language-plaintext highlighter-rouge">IB::Gateway</code> variant.</p>
+<p>Lets estimate the margin-impact of a limit-order for a S&amp;P 500 Mini-Future.</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="no">G</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">current</span>
-<span class="o">&gt;</span> <span class="n">the_order</span> <span class="o">=</span>  <span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">action: :buy</span><span class="p">,</span> <span class="ss">size: </span><span class="mi">1</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">3500</span><span class="p">,</span>
-                           <span class="ss">contract: </span><span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">es</span><span class="p">.</span><span class="nf">verify</span><span class="p">.</span><span class="nf">first</span>
-<span class="o">&gt;</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="n">the_order</span> 
- <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:init_margin</span><span class="o">=&gt;</span><span class="mf">0.23887e5</span><span class="p">,</span> <span class="ss">:maint_margin</span><span class="o">=&gt;</span><span class="mf">0.2079412e5</span><span class="p">,</span> 
-     <span class="ss">:equity_with_loan</span><span class="o">=&gt;</span><span class="mf">0.119007517e7</span><span class="p">,</span> <span class="ss">:commission</span><span class="o">=&gt;</span><span class="mf">0.21e1</span><span class="p">,</span> 
-		<span class="ss">:commission_currency</span><span class="o">=&gt;</span><span class="s2">"USD"</span><span class="p">,</span> <span class="ss">:warning</span><span class="o">=&gt;</span><span class="s2">""</span><span class="p">}</span> 
-<span class="o">&gt;</span> <span class="no">G</span><span class="p">.</span><span class="nf">active_accounts</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nf">place</span> <span class="ss">order: </span><span class="n">the_order</span>   
-  <span class="o">=&gt;</span> <span class="mi">123</span>   <span class="c1"># local_id</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">ib</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">the_order</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">1</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">5800</span><span class="p">,</span>
+<span class="o">&gt;</span> <span class="n">the_contract</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">es</span>
+<span class="o">&gt;</span> <span class="n">preview</span> <span class="o">=</span> <span class="n">ib</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="n">the_order</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">the_contract</span> 
+ <span class="o">=&gt;</span>  <span class="o">&lt;</span><span class="no">Order</span><span class="p">:</span> <span class="no">LMT</span> <span class="no">GTC</span> <span class="n">buy</span> <span class="mf">1.0</span>  <span class="err">@</span> <span class="mf">5800.0</span> <span class="no">PreSubmitted</span> <span class="c1">#/1654228057 from {client-id&gt;}/{account-id}</span>
+<span class="n">preview</span><span class="p">.</span><span class="nf">order_state</span>
+  <span class="o">=&gt;</span><span class="c1">#&lt;IB::OrderState:0x000075170d1463f8                   </span>
+     <span class="vi">@attributes</span><span class="o">=</span>                                                          
+      <span class="p">{</span><span class="ss">:status</span><span class="o">=&gt;</span><span class="s2">"PreSubmitted"</span><span class="p">,</span>                                            
+       <span class="ss">:init_margin_before</span><span class="o">=&gt;</span><span class="mf">0.5</span><span class="n">xxen</span><span class="p">,</span>                                      
+       <span class="ss">:maint_margin_before</span><span class="o">=&gt;</span><span class="mf">0.44</span><span class="n">xxen</span><span class="p">,</span>                                  
+       <span class="ss">:equity_with_loan_before</span><span class="o">=&gt;</span><span class="mf">0.70</span><span class="n">xxen</span><span class="p">,</span>             
+       <span class="ss">:init_margin_change</span><span class="o">=&gt;</span><span class="mf">0.22574690000000002e5</span><span class="p">,</span>        
+       <span class="ss">:maint_margin_change</span><span class="o">=&gt;</span><span class="mf">0.13502849999999999e5</span><span class="p">,</span>       
+       <span class="ss">:equity_with_loan_change</span><span class="o">=&gt;-</span><span class="mf">0.20599999999976717e1</span><span class="p">,</span>  
+       <span class="ss">:init_margin_after</span><span class="o">=&gt;</span><span class="mf">0.75</span><span class="n">xxen</span><span class="p">,</span>                   
+       <span class="ss">:maint_margin_after</span><span class="o">=&gt;</span><span class="mf">0.57</span><span class="n">xxen</span><span class="p">,</span>                  
+       <span class="ss">:equity_with_loan_after</span><span class="o">=&gt;</span><span class="mf">0.70</span><span class="n">xxen</span><span class="p">,</span>
+    
 </code></pre></div></div>
 
-<p>The <em>TWS</em> offers a comparison of current and projected values. This can be achieved through</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">z</span><span class="o">=</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">preview</span> <span class="ss">order: </span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span><span class="p">(</span> <span class="ss">total_quantity: </span><span class="mi">1</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">3500</span><span class="p">,</span> <span class="ss">action: :sell</span><span class="p">,</span> <span class="ss">contract: </span><span class="no">Symbols</span><span class="o">::</span><span class="no">Futures</span><span class="p">.</span><span class="nf">es</span><span class="p">.</span><span class="nf">verify</span><span class="p">.</span><span class="nf">first</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">d</span><span class="o">=</span><span class="p">{}</span>
-<span class="o">&gt;</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">account_data_scan</span><span class="p">(</span> <span class="s1">'^Equity'</span> <span class="p">).</span><span class="nf">key</span> 
-  <span class="o">=&gt;</span> <span class="p">[</span><span class="ss">:EquityWithLoanValue</span><span class="p">,</span> <span class="ss">:"EquityWithLoanValue-C"</span><span class="p">,</span> <span class="ss">:"EquityWithLoanValue-S"</span><span class="p">]</span> 
-<span class="o">&gt;</span> <span class="n">e</span><span class="o">=</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">account_data_scan</span><span class="p">(</span> <span class="s1">'^Equity'</span> <span class="p">).</span><span class="nf">value</span>
-   <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"1190427.52"</span><span class="p">,</span> <span class="s2">"99960.00"</span><span class="p">,</span> <span class="s2">"1090467.52"</span><span class="p">]</span>    <span class="c1">#  compare the first value with z</span>
-<span class="o">&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">account_data_scan</span><span class="p">(</span> <span class="s1">'^FullMaintMargin'</span> <span class="p">).</span><span class="nf">value</span>
- <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"7331.49"</span><span class="p">,</span> <span class="s2">"0.00"</span><span class="p">,</span> <span class="s2">"7331.49"</span><span class="p">]</span>      <span class="c1"># complete, commodity account, securities account</span>
-<span class="o">&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="no">G</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">account_data_scan</span><span class="p">(</span> <span class="s1">'^FullInitMargin'</span> <span class="p">).</span><span class="nf">value</span>
- <span class="o">=&gt;</span> <span class="p">[</span><span class="s2">"9092.67"</span><span class="p">,</span> <span class="s2">"0.00"</span><span class="p">,</span> <span class="s2">"9092.67"</span><span class="p">]</span>      <span class="c1"># complete, commodity account, securities account</span>
+<h2 id="check-margin">Check Margin</h2>
 
+<p>To estimate, if an order will met basic risk-requirements, a handy <code class="language-plaintext highlighter-rouge">order.check_margin</code> method is provided.</p>
 
-<span class="o">&gt;</span> <span class="n">d</span><span class="p">[</span><span class="ss">:equity_with_loan</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">e</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">to_f</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="ss">:equity_with_loan</span><span class="p">].</span><span class="nf">to_f</span> <span class="p">,</span> <span class="n">z</span><span class="p">[</span><span class="ss">:equity_with_loan</span><span class="p">]]</span>              
-<span class="o">&gt;</span> <span class="n">d</span><span class="p">[</span><span class="ss">:maint_margin</span> <span class="p">]</span><span class="o">=</span>   <span class="p">[</span><span class="n">f</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="n">f</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">to_f</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="ss">:maint_margin</span><span class="p">].</span><span class="nf">to_f</span><span class="p">,</span> <span class="n">z</span><span class="p">[</span><span class="ss">:maint_margin</span><span class="p">]</span> <span class="p">]</span>                  
-<span class="o">&gt;</span> <span class="n">d</span><span class="p">[</span><span class="ss">:init_margin</span>  <span class="p">]</span><span class="o">=</span>   <span class="p">[</span><span class="n">g</span><span class="p">.</span><span class="nf">first</span><span class="p">,</span> <span class="n">g</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">to_f</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="ss">:init_margin</span><span class="p">].</span><span class="nf">to_f</span> <span class="p">,</span> <span class="n">z</span><span class="p">[</span><span class="ss">:init_margin</span><span class="p">]</span> <span class="p">]</span>
-<span class="o">&gt;</span> <span class="n">d</span><span class="p">.</span><span class="nf">each</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2"> : </span><span class="se">\t</span><span class="s2"> </span><span class="si">#{</span> <span class="n">y</span><span class="p">.</span><span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">z</span><span class="o">|</span> <span class="n">z</span><span class="p">.</span><span class="nf">to_f</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="mf">10.2</span><span class="p">)</span><span class="si">}</span><span class="s2">.join("</span> <span class="p">:</span> <span class="s2">")} "</span><span class="p">}</span>
- <span class="o">--------------------</span> <span class="n">current</span>    <span class="o">---</span> <span class="n">change</span>  <span class="o">----</span> <span class="n">projection</span>
- <span class="n">equity_with_loan</span> <span class="p">:</span> 	 <span class="mf">1190427.52</span> <span class="p">:</span> <span class="mf">352.3500000001</span> <span class="p">:</span> <span class="mf">1190075.17</span> 
- <span class="n">maint_margin</span>     <span class="p">:</span> 	 <span class="mf">7331.49</span> <span class="p">:</span> <span class="o">-</span><span class="mf">13462.63</span> <span class="p">:</span> <span class="mf">20794.12</span> 
- <span class="n">init_margin</span>      <span class="p">:</span> 	 <span class="mf">9092.67</span> <span class="p">:</span> <span class="o">-</span><span class="mf">14794.33</span> <span class="p">:</span> <span class="mf">23887.0</span> 
-
-
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">ib</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">current</span>
+<span class="o">&gt;</span> <span class="n">the_order</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span> <span class="ss">size: </span><span class="mi">100</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">10</span>
+<span class="o">&gt;</span> <span class="n">ford</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span> <span class="ss">symbol: </span><span class="s1">'F'</span>
+<span class="o">&gt;</span> <span class="n">ib_clients</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">preview</span><span class="p">(</span> <span class="ss">order: </span><span class="n">the_order</span><span class="p">,</span> <span class="ss">contract: </span><span class="n">ford</span><span class="p">)</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">check_margin</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span> <span class="o">&amp;</span><span class="p">.</span><span class="nf">place</span>
 
 </code></pre></div></div>
+
+<p>This example sets up a limit-order to buy Ford-stocks.  <code class="language-plaintext highlighter-rouge">client.preview</code> provides a new order-object.
+The <code class="language-plaintext highlighter-rouge">check_margin</code>-method analyses the OrderState records and checks it the margin utilization is
+below the specified treshold. In this case, the order is only placed, if a minimum of 25 % of unused margin
+is left.</p>
+
 
 
     <div class="tags">
@@ -585,7 +579,7 @@ For convenience we use the <code class="language-plaintext highlighter-rouge">IB
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2024 IB-Ruby. All rights reserved. <br />
-<span>Page last updated:</span> Jul 12, 2024<br/> Site last generated: Jul 12, 2024 <br />
+<span>Page last updated:</span> Jul 12, 2024<br/> Site last generated: Nov 5, 2024 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>
