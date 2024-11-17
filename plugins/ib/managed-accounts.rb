@@ -30,12 +30,10 @@ The plugin should be activated **before** the connection attempt.
 
 Standard usage
 
-  ib = Connection.new connect: false do | c |
-   c.activate_plugin 'managed-accounts'
-   c.initialize_managed_accounts             #  connects to the tws
-   c.get_account_data                        #  populates c.clients
-  end
-
+  ib = IB::Connection.new 
+  ib.activate_plugin 'managed-accounts'
+  ib.initialize_managed_accounts!             #  connects to the tws
+  ib.get_account_data                        #  populates c.clients
   account = ib.clients.first
   puts account.portfolio_values.as_table
 
@@ -43,45 +41,6 @@ Standard usage
 
 module ManagedAccounts
 
-=begin
---------------------------- InitializeManageAccounts ----------------------------------
-
-If initiated with the parameter `force: true`, a reconnect is performed to initiate the
-transmission of available managed-accounts.
-
-=end
-    def initialize_managed_accounts( force: false )
-     queue =  Queue.new
-     # in case of advisor-accounts:  proper initialiastion of account records
-      rec_id = subscribe( :ReceiveFA )  do |msg|
-        msg.accounts.each do |a|
-          account_data( a.account ){| the_account | the_account.update_attribute :alias, a.alias } unless a.alias.blank?
-        end
-        logger.info { "Accounts initialized \n #{@accounts.map( &:to_human  ).join " \n " }" }
-        queue.push(true)
-      end
-
-      # initialisation of Account after a successful connection
-      man_id = subscribe( :ManagedAccounts ) do |msg|
-        @accounts =  msg.accounts
-        send_message( :RequestFA, fa_data_type: 3)
-      end
-
-      # single accounts return an alert message
-      error_id =  subscribe( :Alert ){|x| queue.push(false) if x.code == 321 }
-      @accounts = []
-
-      if connected?
-        disconnect!
-        sleep(0.1)
-      end
-      try_connection!
-      result = queue.pop
-      unsubscribe man_id, rec_id, error_id
-
-      @accounts
-
-    end # def
 
 =begin
 clients returns a list of Account-Objects
@@ -180,7 +139,47 @@ Raises an IB::Error if less then 100 items are received.
   end
 
 
-  private
+=begin
+--------------------------- InitializeManageAccounts ----------------------------------
+
+If initiated with the parameter `force: true`, any active connection is terminated.
+All subscriptiona are lost. The connection ist then re-established to initiate the
+transmission of available managed-accounts by the tws.
+
+=end
+  protected
+    def initialize_managed_accounts( force: false )
+     queue =  Queue.new
+     if connected?
+       disconnect!
+       sleep(0.1)
+     end
+     try_connection!
+     @accounts = []
+     # in case of advisor-accounts:  proper initialiastion of account records
+      rec_id = subscribe( :ReceiveFA )  do |msg|
+        msg.accounts.each do |a|
+          account_data( a.account ){| the_account | the_account.update_attribute :alias, a.alias } unless a.alias.blank?
+        end
+        logger.info { "Accounts initialized \n #{@accounts.map( &:to_human  ).join " \n " }" }
+        queue.push(true)
+      end
+
+      # initialisation of Account after a successful connection
+      man_id = subscribe( :ManagedAccounts ) do |msg|
+        @accounts =  msg.accounts
+        send_message( :RequestFA, fa_data_type: 3)
+      end
+
+      # single accounts return an alert message
+      error_id =  subscribe( :Alert ){|x| queue.push(false) if x.code == 321 }
+
+      result = queue.pop
+      unsubscribe man_id, rec_id, error_id
+
+      @accounts
+
+    end # def
 
   # The subscription method should called only once per session.
   # It places subscribers to AccountValue and PortfolioValue Messages, which should remain
@@ -196,7 +195,17 @@ Raises an IB::Error if less then 100 items are received.
   # clears the subscription
   #
 
+    private
   def subscribe_account_updates continuously: true
+
+    add_or_update = ->(apv, new_hash) do
+      existing_index = apv.index { |h| h.contract.con_id == new_hash.contract.con_id }
+        if existing_index
+          apv[existing_index] = new_hash
+        else
+          apv << new_hash
+        end
+     end
     subscribe( :AccountValue, :PortfolioValue,:AccountDownloadEnd )  do | msg |
       account_data( msg.account_name ) do | account |   # enter mutex controlled zone
         case msg
@@ -206,9 +215,6 @@ Raises an IB::Error if less then 100 items are received.
           IB::Connection.logger.debug { "#{account.account} :: #{msg.account_value.to_human }"}
         when IB::Messages::Incoming::AccountDownloadEnd
           if account.account_values.size > 10
-              # simply don't cancel the subscription if continuously is specified
-              # the connected flag is set in any case, indicating that valid data are present
-  #          send_message :RequestAccountData, subscribe: false, account_code: account.account unless continuously
             account.update_attribute :connected, true   ## flag: Account is completely initialized
             IB::Connection.logger.info { "#{account.account} => Count of AccountValues: #{account.account_values.size}"  }
           else # unreasonable account_data received -  request is still active
@@ -216,17 +222,23 @@ Raises an IB::Error if less then 100 items are received.
           end
         when IB::Messages::Incoming::PortfolioValue
           account.contracts << msg.contract unless account.contracts.detect{|y| y.con_id == msg.contract.con_id }
-          account.portfolio_values << msg.portfolio_value
-#           msg.portfolio_value.account = account
-#           # link contract -> portfolio value
-#           account.contracts.find{ |x| x.con_id == msg.contract.con_id }
-#               .portfolio_values
-#               .update_or_create( msg.portfolio_value ) { :account }
+          add_or_update[account.portfolio_values,msg.portfolio_value]
           IB::Connection.logger.debug { "#{ account.account } :: #{ msg.contract.to_human }" }
         end # case
       end # account_data
     end # subscribe
   end  # def
+  # safe access to account-data
+  def account_data account_or_id=nil
+
+    if account_or_id.present?
+      account = account_or_id.is_a?(IB::Account) ? account_or_id :  @accounts.detect{|x| x.account == account_or_id }
+      yield account
+    else
+      @accounts.map{|a| yield a}
+    end
+
+  end
 
   alias activate_managed_accounts subscribe_account_updates
 

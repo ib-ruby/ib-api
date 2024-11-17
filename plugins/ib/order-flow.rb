@@ -102,7 +102,7 @@ Extends IB::Order
        Connection.current.logger.info "Margin OK:  #{action} #{total_quantity} of #{contract.to_human}: requirements: #{order_state.init_margin_change.round} #{contract.currency} equals to #{utilization.round(1) *100} % margin utilization"
        self 
      else
-       Connection.current.logger.info "Margin requirements NOT met, utilization: #{utilization.round(2) *100} % ( margin requirement: #{order_state.init_margin_change.round)} #{contract.currency})"
+       Connection.current.logger.info "Margin requirements NOT met, utilization: #{utilization.round(2) *100} % ( margin requirement: #{order_state.init_margin_change.round} #{contract.currency})"
        nil
      end
     end

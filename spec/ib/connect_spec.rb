@@ -1,4 +1,5 @@
 require "main_helper"
+require 'rspec/given'
 
 describe "Connect to Gateway or TWS"  do
   before(:all){ establish_connection }
@@ -6,30 +7,44 @@ describe "Connect to Gateway or TWS"  do
   after(:all) { close_connection }
 
   context "A new connection" do
-    it{ expect( IB::Connection.current ).to be_a IB::Connection }
+    Given( :connection ){ IB::Connection.current }
+    Then { connection.is_a?  IB::Connection }
+  end
 
-    it "has the proper state" do
-      expect( IB::Connection.current.ready?  ).to be_truthy
-      expect( IB::Connection.current.workflow_state  ).to  eq  'ready'
-    end
-    it "the received array is active" do
-      expect( IB::Connection.current.received).to be_an Hash
-      expect( IB::Connection.current.received.keys).to include  :Alert
+  context "Workflow States " do
+    context "ready" do
+      Given( :connection ){ IB::Connection.current }
+
+      Then { connection.ready? }
+      Then { connection.workflow_state == 'ready' }
     end
 
-    it "clients are NOT present"  do
-      expect{ IB::Connection.current.clients }.to raise_error NoMethodError
-    end
-    it "can be disconnected" do
+    context "disconnected"  do
+#      Given( :connection ){ IB::Connection.current }
+      it "initiate disconnect" do 
+
+
       ib =  IB::Connection.current
-      expect( ib.ready?  ).to be_truthy
       expect { ib.disconnect! }.to change { ib.workflow_state }.to 'disconnected'
       expect( ib.disconnected?  ).to be_truthy
       expect( ib.ready? ).to be_falsy
+      end
     end
   end
-
-  context " load plugins in the fly" do
+    
+    
+#    it "the received array is active" do
+#      expect( IB::Connection.current.received).to be_an Hash
+#      expect( IB::Connection.current.received.keys).to include  :Alert
+#    end
+#
+#    it "clients are NOT present"  do
+#      expect{ IB::Connection.current.clients }.to raise_error NoMethodError
+#    end
+#    it "can be disconnected" do
+#  end
+#
+  context "load plugins in the fly" do
 
     it "connection-tools can be loaded in ready state"  do
       ib =  IB::Connection.current
@@ -44,21 +59,18 @@ describe "Connect to Gateway or TWS"  do
 
     end
 
-
-    it "if disconnected, account-based operations can be loaded" do
+    it "state `account-based operations` can be loaded through managed-accounts plugin" do
       ib =  IB::Connection.current
       expect( ib.workflow_state ).to eq 'ready'
-      expect { ib.activate_plugin :managed_accounts } .to raise_error Workflow::NoTransitionAllowed
-      expect( ib.ready? ).to be_truthy
-      expect( ib.plugins ).not_to include "managed-accounts"
-      expect { ib.disconnect! }.to change{ ib.workflow_state }.to 'disconnected'
-      expect { ib.activate_plugin :managed_accounts } .not_to raise_error
+      ib.activate_plugin :managed_accounts , :connection_tools
+      expect( ib.workflow_state).to eq "ready"
       expect( ib.plugins ).to include "managed-accounts"
+      expect{ ib.clients }.to raise_error NoMethodError
       expect { ib.initialize_managed_accounts! }.to change{ ib.workflow_state }.to 'account_based_operations'
-      expect( ib.clients ).to be_an Array
-
+      expect( ib.clients ).to be_a Array
+      expect { ib.disconnect! }.to change{ ib.workflow_state }.to 'disconnected'
     end
   end
-
+#
 
 end

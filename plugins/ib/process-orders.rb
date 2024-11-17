@@ -19,6 +19,7 @@ Extends IB::Connection
 
 =end
   module ProcessOrders
+  protected
   def initialize_order_handling
 
     subscribe( :CommissionReport, :ExecutionData, :OrderStatus, :OpenOrder, :OpenOrderEnd, :NextValidId ) do |msg|
@@ -90,7 +91,7 @@ Extends IB::Connection
   #
   # Waits until the OpenOrderEnd-Message is received
 
-
+  public
   def request_open_orders
 
     q =  Queue.new

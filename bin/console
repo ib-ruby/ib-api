@@ -31,6 +31,11 @@ class Array
   end
 end # Array
 
+class Object
+  def inspect
+    respond_to?(:to_human) ? to_human : super
+  end
+end
 
 # read items from console.yml
   read_yml = -> (key) do
@@ -69,6 +74,7 @@ end # Array
                     "order-prototypes", "spread-prototypes",
                     "advanced_account", 'process_orders'
   C.logger.level = Logger::INFO
+  puts C.workflow_state
   C.get_account_data
   C.request_open_orders
   C.logger.level = Logger::ERROR

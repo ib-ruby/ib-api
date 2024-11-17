@@ -24,7 +24,7 @@ describe "Connection tests" do
 
   end
   it "connect to localhost with host:port syntax" do  # expected: no GUI-TWS is running on localhost
-    c = IB::Connection.new host: '127.0.0.1:4001', connect: false
+    c = IB::Connection.new host: '127.0.0.1:4001'
     expect( c ).to be_a IB::Connection
     expect{ c.try_connection! }.to raise_error Errno::ECONNREFUSED
 

@@ -44,7 +44,6 @@ def establish_connection *plugins
   ib =  nil
   accounts = nil
   if plugins.map( &:to_s ).then {|y| y.include?("managed-accounts") ||y.include?("process-orders") || y.include?('gateway')}
-      OPTS[:connection].merge connect: false
        ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
        ib.activate_plugin 'verify', 'process-orders', 'advanced-account'
        ib.get_account_data

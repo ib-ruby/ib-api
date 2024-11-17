@@ -24,9 +24,11 @@ Provides
     #
     # check_connection reconnects if necessary and returns false if the connection is lost.
     #
-    # It delays the process by 6 ms (150 MBit Cable connection, loc. Europe)
+    # Individial subscriptions have to be placed **after** checking the connection!
     #
-    #  a =  Time.now; G.check_connection; b= Time.now ;b-a
+    # It delays the process by 6 ms (500 MBit Cable connection, loc. Europe)
+    #
+    #  a =  Time.now; IB::Connection.current.check_connection; b= Time.now ;b-a
     #   => 0.00066005
     #
     def check_connection
@@ -37,7 +39,7 @@ Provides
       loop do
         begin
           send_message(:RequestCurrentTime)                       # 10 ms  ##
-          th = Thread.new{ sleep 1 ; q.push nil }
+          th = Thread.new{ sleep 0.1 ; q.push nil }
           result =  q.pop
           count+=1
           break if result || count > 10
@@ -45,12 +47,13 @@ Provides
           count +=1
           retry
         rescue IB::Error # not connected
-          disconnect!
           logger.info{"not connected ... trying to reconnect "}
-          sleep 0.1
-          try_connection!
+          reconnect
+          z= subscribe( :CurrentTime ) { q.push true }
           count = 0
           retry
+        rescue Workflow::NoTransitionAllowed 
+          logger.warn{ "Reconnect is not possible, actual state: #{workflow_state} cannot be reached after disconnection"}
         end
       end
       unsubscribe z
@@ -64,6 +67,7 @@ Provides
     # Unsuccessful connecting attemps are logged.
     #
     #
+    protected
     def try_connection maximal_count_of_retry=100
 
       i= -1
@@ -95,7 +99,6 @@ Provides
       self #  return connection
     end # def
 
-    private
     def submit_to_alert_1102
       current.subscribe( :Alert ) do
         if [2102, 1101].include? msg.id.to_i # Connectivity between IB and Trader Workstation
@@ -107,33 +110,11 @@ Provides
       end
 
     end
-
-  end
-
-  module ReConnect
-    def safe_reconnect
-      used_plugins = current.plugins
-      used_client_id = current.client_id
-      used_host =  current.host
-      used_port =  current.port
-      used_received =  if current.received.nil? || current.received.empty?
-                         false
-                       else
-                         true
-                       end
-      current &.disconnect
-      current = nil
-      c = Connection.new client_id: used_client_id, host: used_host, port: used_port
-
-
-    end
-
   end
 
   class Connection
     alias _try_connection try_connection
     include ConnectionTools
-    #extend ReConnect
   end
 
 

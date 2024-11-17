@@ -119,10 +119,6 @@ module IB
       # Its intended for globally available subscriptions of tws-messages
       yield self if block_given?
 
-#      if connect
-#        Kernel.exit if @next_local_id.nil?  # emergency exit.
-        # update_next_order_id should have raised an error
-#      end
     end
 
     # read actual order_id and
@@ -149,6 +145,7 @@ module IB
     end
     #
     ### Event  –  call through  Connection-object.try_connection!
+    protected
     def try_connection
       logger.progname='IB::Connection#Event:TryConnection'
       if connected?
@@ -205,16 +202,22 @@ module IB
     end
 
 
+    public
+
+    # disconnect and restart communication with the tws.
+    #
+    # cancels all subscriptions and reestablishes standard
+    # subscriptions for the current workflow state.
+    #
+    # connects if called in the disconnected state
     def reconnect
       return if workflow_state == "virgin"
       old_workflowstate =  workflow_state.dup
-      disconnect!
+      disconnect! unless disconnected?
 
       unsubscribe *@subscribers.map{|_,m| m.keys}.flatten.uniq
-      puts "subscrbers: #{@subscribers.inspect}"
 
-      puts "ows: #{old_workflowstate}"
-      if ["ready", "lean_mode"].include? old_workflowstate
+      if ["ready", "lean_mode", "disconnected"].include? old_workflowstate
         try_connection!
       else
         activate_managed_accounts!
@@ -236,7 +239,7 @@ module IB
         subscriber = args.last.respond_to?(:call) ? args.pop : block
         id = random_id
 
-        error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
+       error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
 
         args.each do |what|
           message_classes =
@@ -278,6 +281,8 @@ module IB
         end.flatten
       end
     end
+
+
     ### Working with received messages Hash
     # Clear received messages Hash
     def clear_received *message_types
@@ -338,6 +343,7 @@ module IB
     ### Working with Incoming messages from IB
 
 
+    protected
     def reader_running?
       @reader_running && @reader_thread && @reader_thread.alive?
     end
@@ -384,6 +390,7 @@ module IB
 
     # Send an outgoing message.
     # returns the used request_id if appropiate, otherwise "true"
+    public
     def send_message what, *args
       message =
       case
@@ -417,7 +424,7 @@ module IB
     def place_order order, contract
      # order.place contract, self  ## old
       error "Unable to place order, next_local_id not known" unless @next_local_id
-      error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
+      error "local_id present. Order is already placed. Do might use modify insteed"  unless  order.local_id.nil?
       order.client_id = client_id
       order.local_id = @next_local_id
       @next_local_id += 1
@@ -447,6 +454,7 @@ module IB
     # Start reader thread that continuously reads messages from @socket in background.
     # If you don't start reader, you should manually poll @socket for messages
     # or use #process_messages(msec) API.
+    protected
     def start_reader
       if @reader_running
         @reader_thread
@@ -464,7 +472,6 @@ module IB
       end
     end
 
-    protected
     # Message subscribers. Key is the message class to listen for.
     # Value is a Hash of subscriber Procs, keyed by their subscription id.
     # All subscriber Procs will be called with the message instance
@@ -531,17 +538,5 @@ module IB
       end
     end
   end
-#  private
-    # safe access to account-data
-    def account_data account_or_id=nil
-
-        if account_or_id.present?
-          account = account_or_id.is_a?(IB::Account) ? account_or_id :  @accounts.detect{|x| x.account == account_or_id }
-          yield account
-        else
-          @accounts.map{|a| yield a}
-        end
-
-    end
 end # class Connection
 end # module IB

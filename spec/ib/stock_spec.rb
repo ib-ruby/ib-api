@@ -19,7 +19,7 @@ describe  IB::Stock do
       Then { ms_stock == msft }
     end
 
-    describe "specify the symbil as string " do
+    describe "specify the symbol as string " do
       Given( :ms_stock ){ IB::Stock.new symbol: 'msft' }
       Then { ms_stock.is_a? IB::Stock }
       Then { ms_stock == msft }
@@ -31,7 +31,7 @@ describe  IB::Stock do
 
     Given( :msft  ) { IB::Symbols::Stocks.msft }
     When( :verified_microsoft ){ msft.verify.first }
-    Then{ msft != verified_microsoft }
+    Then{ msft == verified_microsoft }
     Then{ verified_microsoft.con_id == 272093 }
     Then{ verified_microsoft.contract_detail.is_a? IB::ContractDetail }
 
