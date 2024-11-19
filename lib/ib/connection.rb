@@ -30,9 +30,9 @@ module IB
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
-      def workflow_state
-            @workflow_state
-      end
+    def workflow_state
+      @workflow_state
+    end
 
     workflow do
       state :virgin do
@@ -106,6 +106,8 @@ module IB
       @subscribe_lock = Mutex.new
       @receive_lock = Mutex.new
       @message_lock = Mutex.new
+
+      @parser =  nil
       @connected = false
 
       @plugins.each do |name|
@@ -161,7 +163,9 @@ module IB
 
       self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
       socket.initialising_handshake
-      socket.decode_message( socket.receive_messages ) do  | the_message |
+      @parser =  RawMessageParser.new socket
+      @parser.each do | the_message |
+#      socket.decode_message( socket.receive_messages ) do  | the_message |
                 #puts "TheMessage :: #{the_message.inspect}" 
         @server_version =  the_message.shift.to_i.freeze
         error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
@@ -169,6 +173,7 @@ module IB
         @remote_connect_time = DateTime.parse the_message.shift.freeze
         @local_connect_time = Time.now.freeze
         @connected = true
+        break  #  only receive one message
       end
 
       # V100 initial handshake
@@ -485,7 +490,8 @@ module IB
       logger.progname='IB::Connection#process_message'
 
       ## decode mesage is included throught `prepare_data
-      socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
+#      socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
+      @parser.each do | the_decoded_message |
       # puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
       msg_id = the_decoded_message.shift.to_i
 
@@ -498,9 +504,15 @@ module IB
          
       ## raising IB::TransmissionError if something went wrong.
       ## the calling program has to initiate reconnection
+      logger.fatal { the_decoded_message } unless Messages::Incoming::Classes[msg_id]
         error "Got unsupported message #{msg_id}", :reader  unless Messages::Incoming::Classes[msg_id]
         error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
+        begin
         msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        rescue IB::TransmissionError 
+          logger.fatal { the_decoded_message } 
+          raise
+        end
 
         # Deliver message to all registered subscribers, alert if no subscribers
         # Ruby 2.0 and above: Hashes are ordered.
