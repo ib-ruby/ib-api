@@ -13,8 +13,8 @@ RSpec.shared_examples 'serialize two Combo-legs' do
       con_ids =  subject.contract.combo_legs.map &:con_id
       buy_and_sell =  subject.contract.combo_legs.map{|y| y.action.to_s.upcase}
       exchanges =  subject.contract.combo_legs.map &:exchange
-      expect( subject.serialize_combo_legs.size ).to eq 5
-      expect( subject.serialize_combo_legs.flatten.slice(1,8 )).to eq [ con_ids[0],
+      expect( subject.serialize_combo_legs(subject.contract).size ).to eq 5
+      expect( subject.serialize_combo_legs(subject.contract).flatten.slice(1,8 )).to eq [ con_ids[0],
                                                                         1,                # quantity
                                                                         buy_and_sell[0],
                                                                         exchanges[0],0,0,"",-1 ]
@@ -64,7 +64,7 @@ RSpec.describe "IB::Spread" do
 
         it_behaves_like "serialize limit order fields"
         it_behaves_like "serialize two Combo-legs"
-        it { expect( subject.serialize_combo_legs ).to eq [ the_spread.serialize_legs,
+        it { expect( subject.serialize_combo_legs(the_spread) ).to eq [ the_spread.serialize_legs,
                                                            0 ,[], 0 , [] ] }
                                                    # leg-prices  + combo-params
 

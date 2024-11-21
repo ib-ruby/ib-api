@@ -20,15 +20,16 @@ module IB
 
 
         initialize_spread( master ) do | the_spread |
+          the_spread.add_leg master.verify.first
           the_spread.add_leg master
-          the_spread.add_leg( master
                              .essential
                              .merge( right: flip_right[master.right],
                                      strike: master.strike.to_f + distance.to_f ,
                                      local_symbol: '',
-                                     con_id: 0 ) )
+                                     con_id: 0 ) 
+                             .verify.first
           error "Initialisation of Legs failed" if the_spread.legs.size != 2
-          the_spread.description =  the_description( the_spread )
+#          the_spread.description =  the_description( the_spread )
         end
       end
 
@@ -41,28 +42,25 @@ module IB
 #
 #   Call with
 #   IB::Strangle.build from: IB::Contract, p:  a_value,  c:  a_value, expiry: yyyymm(dd)
-      def build from:, **fields
+      def build from:,  p: nil, c: nil, expiry: nil, **fields
         underlying = if from.is_a?  IB::Option
-                       fields[:p] = from.strike unless fields.key?(:p) || from.right == :call
-                       fields[:c] = from.strike unless fields.key?(:c) || from.right == :puta
-                       fields[:expiry] = from.expiry unless fields.key?(:expiry)
-                       fields[:trading_class] = from.trading_class unless fields.key?(:trading_class) || from.trading_class.empty?
-                       fields[:multiplier] = from.multiplier unless fields.key?(:multiplier) || from.multiplier.to_i.zero?
+                       p ||= from.strike
+                       c ||= from.strike
+                       expiry ||= from.expiry
 
                        details =  from.verify.first.contract_detail
-                       IB::Contract.new( con_id: details.under_con_id,
+                       IB::Contract.new(  con_id: details.under_con_id,
                                         currency: from.currency,
-                                        exchange: from.exchange)
-                                       .verify.first
-                                       .essential
+                                        exchange: from.exchange) .verify.first .essential
                      else
                        from
                      end
-        kind = { :p => fields.delete(:p), :c => fields.delete(:c) }
+        kind = { :p => p, :c => c }
         initialize_spread( underlying ) do | the_spread |
           leg_prototype  = IB::Option.new from.attributes
             .slice( :currency, :symbol, :exchange)
             .merge(defaults)
+            .merge( expiry: expiry )
             .merge( fields )
 
           leg_prototype.sec_type = 'FOP' if underlying.is_a?(IB::Future)

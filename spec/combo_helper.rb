@@ -45,7 +45,7 @@ end
 
 RSpec.shared_examples 'a valid ES-FUT Combo' do
 
-    its( :exchange ) { should eq 'GLOBEX' }
+    its( :exchange ) { should eq 'CME' }
     its( :symbol )   { should eq "ES" }
 #   its( :market_price )   { should be_a Numeric }
 end
@@ -58,8 +58,14 @@ end
 
 RSpec.shared_examples 'a valid wfc-stock Combo' do
 
-    its( :exchange ) { should eq 'EDGX' }
+    its( :exchange ) { should eq 'SMART' }
     its( :symbol )   { should eq "WFC" }
+#   its( :market_price )   { should be_a Numeric }
+end
+RSpec.shared_examples 'a valid apple-stock Combo' do
+
+    its( :exchange ) { should eq 'SMART' }
+    its( :symbol )   { should eq "AAPL" }
 #   its( :market_price )   { should be_a Numeric }
 end
 

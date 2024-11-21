@@ -6,17 +6,21 @@ module IB
       extend Symbols
 
       def self.contracts
-        base = 4500
+        base = 4800
+        exp = IB::Option.next_expiry
         @contracts ||= { #super.merge(
           stoxx_straddle: IB::Straddle.build( from: IB::Symbols::Index.stoxx, strike: base,
-                                             expiry: IB::Option.next_expiry, trading_class: 'OESX' ) ,
+                                             expiry: exp, trading_class: 'OESX' ) ,
           stoxx_calendar: IB::Calendar.build( from: IB::Symbols::Index.stoxx, strike: base, back: '2m' ,
-                                             front: IB::Option.next_expiry, trading_class: 'OESX' ),
+                                             front: exp, trading_class: 'OESX' ),
          stoxx_butterfly: IB::Butterfly.fabricate( IB::Symbols::Options.stoxx.merge( strike: base - 200,
-                                                                    expiry: IB::Option.next_expiry),
+                                                                    expiry: exp),
                                                                     front: base - 400, back: base),
-          stoxx_vertical: IB::Vertical.build( from: IB::Symbols::Index.stoxx, sell: base - 200, buy: base + 200, right: :put,
-                                            expiry: IB::Option.next_expiry, trading_class: 'OESX'),
+          stoxx_vertical: IB::Vertical.build( from: IB::Symbols::Index.stoxx, 
+                                              sell: base - 200, buy: base + 200, 
+                                             right: :put,
+                                            expiry: exp, 
+                                     trading_class: 'OESX'),
              zn_calendar: IB::Calendar.fabricate( IB::Symbols::Futures.zn.next_expiry, '3m') ,
 
              dbk_straddle: Bag.new( symbol: 'DBK', currency: 'EUR', exchange: 'EUREX', combo_legs:

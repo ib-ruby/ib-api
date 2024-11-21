@@ -15,6 +15,8 @@ module IB
         #   or
         #   IB::StockSpread.fabricate  IB::Stock.new(symbol:'GE'), 'F', ratio:[1,-2]
         #
+        #
+        #
         def  fabricate *underlying,  ratio: [1,-1], **args
           #
           are_stocks =  ->(l){ l.all?{|y| y.is_a? IB::Stock} }

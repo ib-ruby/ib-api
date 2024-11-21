@@ -36,11 +36,11 @@ module IB
           fabricate from.merge **fields
         else
           initialize_spread( from ) do | the_spread |
-            leg_prototype  = IB::Option.new from.invariant_attributes
-            .slice( :currency, :symbol, :exchange)
-            .merge(defaults)
-            .merge( fields )
-            puts leg_prototype.attributes
+            leg_prototype  = IB::Option.new from.attributes
+            .slice( :currency, :symbol, :exchange, :expiry)   # use only these fields
+            .merge(defaults)                                  # add defaults
+            .merge( fields )                                  # override attributes with parameters
+#            puts leg_prototype.attributes
 
             leg_prototype.sec_type = 'FOP' if from.is_a?( IB::Future )
             the_spread.add_leg leg_prototype.merge( right: :put ).verify.first
@@ -52,7 +52,7 @@ module IB
       end
 
       def defaults
-        super.merge expiry: IB::Future.next_expiry
+        super.merge expiry: IB::Option.next_expiry
       end
 
       def requirements
