@@ -42,46 +42,44 @@ module IB
 #   Call with
 #   IB::Calendar.build from: IB::Contract,  front: an_expiry,  back: an_expiry,
 #                                           right: {put or call}, strike: a_strike
-      def build from:, **fields
+      def build from:, front: nil, back: nil, right: :put, strike: nil,  **fields
         underlying = if from.is_a?  IB::Option
-                       fields[:right] = from.right unless fields.key?(:right)
-                       fields[:front] = from.expiry unless fields.key(:front)
-                       fields[:strike] = from.strike unless fields.key?(:strike)
-                       fields[:expiry] = from.expiry unless fields.key?(:expiry)
-                       fields[:trading_class] = from.trading_class unless fields.key?(:trading_class) || from.trading_class.empty?
-                       fields[:multiplier] = from.multiplier unless fields.key?(:multiplier) || from.multiplier.to_i.zero?
+                       right ||= from.right
+                       front ||= from.expiry
+                       strike ||= from.strike
                        details = from.verify.first.contract_detail
                        IB::Contract.new( con_id: details.under_con_id,
                                         currency: from.currency).verify.first.essential
                      else
+                       error "missing essential parameter: `strike`" unless strike.present?
                        from
                      end
-        kind = { :front => fields.delete(:front), :back => fields.delete(:back) }
-        error "Specification of :front and :back expiries necessary, got: #{kind.inspect}" if kind.values.any?(nil)
+        error "`front:` and `back:` expiries are required" unless front.present? && back.present?
+        kind = { :front => front, :back => back }
         initialize_spread( underlying ) do | the_spread |
-          leg_prototype  = IB::Option.new underlying.attributes
-            .slice( :currency, :symbol, :exchange)
+          leg_prototype  = IB::Option.new underlying.invariant_attributes.except( :sec_type )
+            .slice( :currency, :symbol, :exchange )
             .merge(defaults)
             .merge( fields )
-          kind[:back] = IB::Spread.transform_distance kind[:front], kind[:back]
+            .merge( strike: strike )
+          kind[:back] = IB::Spread.transform_distance front, back
           leg_prototype.sec_type = 'FOP' if underlying.is_a?(IB::Future)
-          leg1 =  leg_prototype.merge(expiry: kind[:front] ).verify.first
-          leg2 = leg_prototype.merge(expiry: kind[:back] ).verify.first
+          leg1 = leg_prototype.merge( expiry: kind[:front] ).verify.first
+          leg2 = leg_prototype.merge( expiry: kind[:back] ).verify.first
           unless leg2.is_a? IB::Option
             leg2_trading_class = ''
-            leg2 = leg_prototype.merge(expiry: kind[:back] ).verify.first
-
+            leg2 = leg_prototype.merge( expiry: kind[:back] ).verify.first
           end
           the_spread.add_leg leg1 , action: :buy
           the_spread.add_leg leg2 , action: :sell
           error "Initialisation of Legs failed" if the_spread.legs.size != 2
-          the_spread.description =  the_description( the_spread )
+          the_spread.description =  the_description( the_spread )  rescue nil
         end
       end
 
       def defaults
-      super.merge expiry: IB::Future.next_expiry,
-                  right: :put
+      super.merge right: :put
+#                expiry: IB::Future.next_expiry,
       end
 
 

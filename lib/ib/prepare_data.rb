@@ -41,18 +41,18 @@ module IB
         m = Hash.new
         while  not msg.blank?
           # the first item is the length
-          size= msg[0..4].unpack("N").first
-          msg =  msg[4..-1]
+          size = msg[ 0 .. 4 ].unpack( "N" ).first
+          msg  = msg[ 4 .. -1 ]
           # followed by a sequence of characters
-          message =  msg.unpack("A#{size}").first.split("\0")
+          message =  msg.unpack( "A#{size}" ).first.split( "\0" )
           # DEBUG display raw decoded message on STDOUT
-#          STDOUT::puts "message: #{message}"
+    #      STDOUT::puts "message: #{message}"
         if block_given?
           yield message
         else
-          m[message.shift.to_i] = message
+          m[ message.shift.to_i ] = message
         end
-        msg =  msg[size..-1]
+        msg =  msg[ size .. -1 ]
       end
       return m unless m == {}
     end

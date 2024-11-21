@@ -30,7 +30,7 @@ RSpec.describe "IB::Calendar" do
                                  right: :put,
                                  trading_class: 'OESX',
                                  front:  IB::Option.next_expiry ,
-                                 back:  '-1m'
+                                 back:  '3m'
                                ) }
 
     it{ puts subject.as_table }
