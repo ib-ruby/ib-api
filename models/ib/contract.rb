@@ -180,7 +180,7 @@ module IB
       when combo_legs.empty?
         [0]
       else
-        [combo_legs.size, combo_legs.map( &:serialize  ) ]
+        [combo_legs.size, combo_legs.map{|x| x.serialize :extended} ]
       end
     end
 

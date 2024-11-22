@@ -107,7 +107,7 @@ RSpec.shared_examples_for "serialize limit order fields" do
       expect( subject.serialize_mifid_order_fields.flatten.compact).to be_empty
       expect( subject.serialize_peg_best_and_mid).to be_empty
       unless subject.contract.is_a? IB::Bag
-        expect( subject.serialize_combo_legs).to be_empty
+        expect( subject.serialize_combo_legs(subject.contract)).to be_empty
       end
     end  # it
 

@@ -444,10 +444,10 @@ module IB
     def serialize_combo_legs(contract)
       if contract.bag?
         [ contract.serialize_legs,
-          leg_prices.size,
-          leg_prices,
-          combo_params.size,
-          combo_params.to_a
+          #  todo implement usecase
+          leg_prices.empty? ?  0 : [ leg_prices.size, leg_prices ],
+          #  combo_params is an array of hashes
+          contract.combo_params.nil? || contract.combo_params.empty? ? 0 : [ contract.combo_params.size, contract.combo_params.to_a ]
         ]
       else
         []

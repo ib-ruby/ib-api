@@ -37,6 +37,7 @@ module IB
             end
             the_spread.description =  the_description( the_spread )
             the_spread.symbol = legs.map( &:symbol ).sort.join(",")  # alphabetical order
+            the_spread.combo_params =  {'NonGuaranteed' => true} 
           end
         end
 
@@ -48,7 +49,6 @@ module IB
 
         # always route a order as NonGuaranteed
         def order_requirements
-          { combo_params:  ['NonGuaranteed', true] }
         end
 
       end # class

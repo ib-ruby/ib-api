@@ -152,7 +152,7 @@ Example
           if auto_adjust
             wrong_order = nil
             the_local_id =  -1
-            ib.logger.warn "adjusting order-price"
+            ib.logger.info "adjusting order-price"
           else
             ib.logger.error "The price #{order.limit_price}/ #{order.aux_price} not confirm to the minimum price variation for #{order.contract.to_human}"
           end
@@ -179,8 +179,6 @@ Example
       logger.info{ "Converted ordersize to #{order.total_quantity} and triggered a #{order.action}  order"} if  order.total_quantity.to_d < 0
       order.total_quantity  = order.total_quantity.to_d.abs
     end
-    # apply non_guarenteed and other stuff bound to the contract to order.
-    order.attributes.merge! order.contract.order_requirements unless order.contract.order_requirements.blank?
     #  con_id and exchange fully qualify a contract, no need to transmit other data
     #  if no contract is passed to order.place, order.contract is used for placement
     #   ... delegated to order#modify...

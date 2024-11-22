@@ -58,7 +58,7 @@ module IB
       the_output = ->(var){ var.empty? ? "none" : var.map{|x| x.join(" --> ") }.join("\n\t: ")}
 
       "Required : " + the_output[requirements] + "\n --------------- \n" +
-        "Optional : " + the_output[optional] + "\n --------------- \n" 
+      "Optional : " + the_output[optional] + "\n --------------- \n" 
 
     end
   end

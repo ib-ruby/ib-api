@@ -131,14 +131,14 @@ Adds (or substracts) relative (back) measures to the front month, just passes ab
     end
 
 
-    def non_guaranteed= x
-      super.merge   combo_params: [ ['NonGuaranteed', x] ]
-    end
-
-
-    def non_guaranteed
-      combo_params['NonGuaranteed']
-    end
+#    def non_guaranteed= x
+#      super.merge   combo_params: [ ['NonGuaranteed', x] ]
+#    end
+#
+#
+#    def non_guaranteed
+#      combo_params['NonGuaranteed']
+#    end
 #  optional: specify default order prarmeters for all spreads
 #   def order_requirements
 #    super.merge    symbol: symbol

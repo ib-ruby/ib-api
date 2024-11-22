@@ -215,6 +215,25 @@ module IB
     # subscriptions for the current workflow state.
     #
     # connects if called in the disconnected state
+    #
+    #
+    # Usecase:
+    # 3.2.0 :015 > Symbols::Stocks.msft.verify
+    # A: Error reading request. Unable to parse data. java.lang.NumberFormatException: For input string: "MSFT"
+    # 
+    # ^C/usr/share/rvm/rubies/ruby-3.2.0/lib/ruby/3.2.0/irb.rb:438:in `raise': abort then interrupt! (IRB::Abort)
+    #       from <internal:thread_sync>:18:in `pop'
+    #       from /home/ubuntu/labor/ib-api/plugins/ib/verify.rb:164:in `_verify'
+    #       from /home/ubuntu/labor/ib-api/plugins/ib/verify.rb:78:in `verify'
+    #       from (irb):15:in `<main>'
+    #       from ./console:96:in `<main>'
+    # 3.2.0 :016 > C.reconnect
+    #   F: Connected to server, version: 165, using client-id: 2000,
+    #      connection time: 2024-11-21 20:57:57 +0100 local, 2024-11-21T19:57:57+00:00 remote.
+    #   => 227896
+    # 3.2.0 :017 > Symbols::Stocks.msft.verify
+    #  => [<Stock: MSFT USD NASDAQ>]
+    #
     def reconnect
       return if workflow_state == "virgin"
       old_workflowstate =  workflow_state.dup

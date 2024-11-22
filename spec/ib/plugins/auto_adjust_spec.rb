@@ -2,8 +2,8 @@ require "main_helper"
 
 describe "Connect to TWS and activate Plugin"  do
   before(:all) do
-    establish_connection
-    c =  IB::Connection.current
+    establish_connection :gateway
+    c =  IB::Connection.current 
     c.activate_plugin "verify"
     c.activate_plugin "order-prototypes"
     c.activate_plugin "auto-adjust"

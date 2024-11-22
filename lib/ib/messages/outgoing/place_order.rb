@@ -22,9 +22,9 @@ module IB
                     order.serialize_auxilery_order_fields # including advisory order fields
                     ]
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]  # 103
+#          if server_version >= KNOWN_SERVERS[:min_server_ver_models_support]  # 103
             fields.push(order.model_code )
-          end
+ #         end
 
           fields += [
             order[:short_sale_slot] , # 0 only for retail, 1 or 2 for institution  (Institutional)
@@ -89,19 +89,19 @@ module IB
               order.adjustable_trailing_unit
             ]
 
-          fields.push(order.ext_operator) if server_version >= KNOWN_SERVERS[:min_server_ver_ext_operator] #  105
+          fields.push(order.ext_operator) # if server_version >= KNOWN_SERVERS[:min_server_ver_ext_operator] #  105
 
           fields << order.serialize_soft_dollar_tier
 
-          fields.push(order.cash_qty) if server_version >= KNOWN_SERVERS[:min_server_ver_cash_qty] # 111
+          fields.push(order.cash_qty) # if server_version >= KNOWN_SERVERS[:min_server_ver_cash_qty] # 111
 
           fields << order.serialize_mifid_order_fields
 
-          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_price_for_hedge]  # 141
-            fields.push(order.dont_use_auto_price_for_hedge)
-          end
+#          if server_version >= KNOWN_SERVERS[:min_server_ver_auto_price_for_hedge]  # 141
+          fields.push(order.dont_use_auto_price_for_hedge)
+#          end
 
-          fields.push(order.is_O_ms_container) if server_version >= KNOWN_SERVERS[:min_server_ver_order_container] # 145
+          fields.push(order.is_O_ms_container) #if server_version >= KNOWN_SERVERS[:min_server_ver_order_container] # 145
 
           if server_version >= KNOWN_SERVERS[:min_server_ver_d_peg_orders]  # 148
             fields.push(order.discretionary_up_to_limit_price)
