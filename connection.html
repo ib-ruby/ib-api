@@ -489,14 +489,12 @@ $('#toc').on('click', 'a', function() {
 
     
 
-   <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">initialize</span> <span class="ss">host: </span><span class="s1">'127.0.0.1:4002'</span><span class="p">,</span> <span class="c1"># IB Gateway connection  4001:  production</span>
-                <span class="c1"># or 'localhost:7497'  # TWS                    7496:  production</span>
-               <span class="ss">logger: </span><span class="n">default_logger</span><span class="p">,</span>
-               <span class="ss">client_id:  </span><span class="nb">rand</span><span class="p">(</span> <span class="mi">1001</span> <span class="o">..</span> <span class="mi">9999</span> <span class="p">)</span> 
-</code></pre></div></div>
-<p><strong><em>ib-api</em></strong> provides <code class="language-plaintext highlighter-rouge">IB::Connection.new</code> to connect to the TWS/Gateway.</p>
+   <p><strong><em>ib-api</em></strong> provides <code class="language-plaintext highlighter-rouge">IB::Connection.new</code> to connect to the TWS/Gateway.</p>
 
-<p>If called without arguments, it connects through port 4002 to a  locally running gateway and prints the logs to the standard output device.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ib</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span> <span class="ss">host: </span><span class="s1">'127.0.0.1:4002'</span><span class="p">,</span> <span class="c1"># IB Gateway(Papertrading) connection  4001:  production</span>
+                         <span class="c1"># or 'localhost:7497'  # TWS       (Papertrading)             7496:  production</span>
+</code></pre></div></div>
+<p>If called without arguments, it connects through port 4002 to a  locally running gateway (Papertrade).</p>
 
 <div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> <b>::</b> The Connection-Instance is always present via <code class="language-plaintext highlighter-rouge">IB::Connection.current</code></div>
 
@@ -565,10 +563,17 @@ $('#toc').on('click', 'a', function() {
       <td>→</td>
       <td>ready</td>
     </tr>
+    <tr>
+      <td> </td>
+      <td>→</td>
+      <td>activate_managed_accounts</td>
+      <td>→</td>
+      <td>gateway_mode</td>
+    </tr>
   </tbody>
 </table>
 
-<p>Events are triggert simply by adding a “!” to the event name.</p>
+<p>Events are triggered simply by adding a “!” to the event name.</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ib</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span> 
 <span class="n">ib</span><span class="p">.</span><span class="nf">workflow_state</span>                     <span class="o">=&gt;</span>  <span class="kp">nil</span>
@@ -578,12 +583,34 @@ $('#toc').on('click', 'a', function() {
 <span class="n">ib</span><span class="p">.</span><span class="nf">workflow_state</span>                     <span class="o">=&gt;</span>  <span class="n">disconnected</span>
 </code></pre></div></div>
 
+<h3 id="reconnect">Reconnect</h3>
+
+<p>To restore the Operating State after <code class="language-plaintext highlighter-rouge">Disconnect</code>, <code class="language-plaintext highlighter-rouge">IB::Connection.current.reconnect</code> is provided.<br />
+Individual subscriptions are cancelled, associated subscriptions are restored.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Connection#reconnect</code> is aimed to respond to <code class="language-plaintext highlighter-rouge">IB::TransmissionError</code>-Events.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">u</span> <span class="o">=</span> <span class="n">ib</span><span class="p">.</span><span class="nf">clients</span><span class="p">.</span><span class="nf">first</span>
+<span class="n">initial_order_state</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="nf">orders</span>
+<span class="k">begin</span>
+ <span class="n">u</span><span class="p">.</span><span class="nf">place</span> <span class="ss">order: </span><span class="no">IB</span><span class="o">::</span><span class="no">Limit</span><span class="p">.</span><span class="nf">order</span><span class="p">(</span> <span class="ss">size: </span><span class="mi">100</span><span class="p">,</span> <span class="ss">price: </span><span class="mi">10</span><span class="p">),</span> <span class="ss">contract: </span><span class="no">IB</span><span class="o">::</span><span class="no">Stock</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">symbol: </span><span class="s1">'F'</span><span class="p">)</span>
+<span class="k">rescue</span> <span class="no">IB</span><span class="o">::</span><span class="no">TransmissionError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+ <span class="n">ib</span><span class="p">.</span><span class="nf">reconnect</span>
+ <span class="k">retry</span> <span class="k">if</span> <span class="n">initial_order_state</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="nf">orders</span>   <span class="c1">#  normal execution after reestablishing the workflow state</span>
+ <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> <b>::</b> To check if a connection to the TWS is present,  <code class="language-plaintext highlighter-rouge">check_connection</code> is provided. If necessary it reconnects without changing the workflow-state and maintains custom subscriptions</div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">ib</span><span class="p">.</span><span class="nf">check_connection</span>                   <span class="o">=&gt;</span> <span class="kp">true</span>
+</code></pre></div></div>
+
 <h3 id="sending-and-receiving-messages">Sending and receiving messages</h3>
 <p>After a successful connection, the main purpose of <code class="language-plaintext highlighter-rouge">IB::Connection</code> is
 to submit <code class="language-plaintext highlighter-rouge">IB::Messages</code> to the <em>TWS-Api</em> and to receive 
 the response.</p>
 
-<p>One centerpiece is its <code class="language-plaintext highlighter-rouge">send_message</code> method.</p>
+<p><code class="language-plaintext highlighter-rouge">send_message</code> is used to provide low-level communication to the TWS-server..</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">c</span> <span class="o">=</span>  <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">current</span>
 <span class="o">&gt;</span> <span class="n">c</span><span class="p">.</span><span class="nf">send_message</span> <span class="p">{</span><span class="n">message</span> <span class="n">symbol</span> <span class="p">},</span> <span class="p">[</span> <span class="n">optional</span> <span class="n">arguments</span> <span class="p">]</span>
@@ -608,12 +635,12 @@ the response.</p>
 
 <p>Alternatively the user can subscribe to messages and assign a code-block for immediate asynchronous execution.</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">ib</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">host: </span><span class="s1">'localhost:7497'</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span> <span class="n">gw</span> <span class="o">|</span>
-      <span class="n">gw</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:Alert</span><span class="p">,</span> <span class="ss">:AccountValue</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">msg</span><span class="p">.</span><span class="nf">to_human</span> <span class="p">}</span>
-      <span class="n">gw</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:OpenOrder</span><span class="p">)</span>            <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">"Placed: </span><span class="si">#{</span><span class="n">msg</span><span class="p">.</span><span class="nf">order</span><span class="si">}</span><span class="s2">!"</span> <span class="p">}</span>
-      <span class="n">gw</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:ExecutionData</span><span class="p">)</span>        <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">"Filled: </span><span class="si">#{</span><span class="n">msg</span><span class="p">.</span><span class="nf">execution</span><span class="si">}</span><span class="s2">!"</span> <span class="p">}</span>
-      <span class="n">gw</span><span class="p">.</span><span class="nf">received</span> <span class="o">=</span> <span class="kp">true</span>  <span class="c1"># activate storing of messages in the received-array</span>
-    <span class="k">end</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">ib</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Connection</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span> <span class="ss">host: </span><span class="s1">'localhost:7497'</span> <span class="p">)</span>
+ <span class="n">ib</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:Alert</span><span class="p">,</span> <span class="ss">:AccountValue</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">msg</span><span class="p">.</span><span class="nf">to_human</span> <span class="p">}</span>
+ <span class="n">ib</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:OpenOrder</span><span class="p">)</span>            <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">"Placed: </span><span class="si">#{</span><span class="n">msg</span><span class="p">.</span><span class="nf">order</span><span class="si">}</span><span class="s2">!"</span> <span class="p">}</span>
+ <span class="n">ib</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="ss">:ExecutionData</span><span class="p">)</span>        <span class="p">{</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">"Filled: </span><span class="si">#{</span><span class="n">msg</span><span class="p">.</span><span class="nf">execution</span><span class="si">}</span><span class="s2">!"</span> <span class="p">}</span>
+ <span class="n">ib</span><span class="p">.</span><span class="nf">received</span> <span class="o">=</span> <span class="kp">true</span>  <span class="c1"># activate storing of messages in the received-array</span>
+   
  <span class="n">ib</span><span class="p">.</span><span class="nf">activate_plugin</span> <span class="ss">:order_prototypes</span> <span class="c1"># Easy order objects</span>
  <span class="n">ib</span><span class="p">.</span><span class="nf">try_connection!</span>  
  <span class="n">ib</span><span class="p">.</span><span class="nf">send_message</span> <span class="ss">:RequestAccountData</span><span class="p">,</span> <span class="ss">account_code: </span><span class="s1">'U123456'</span>
@@ -649,7 +676,7 @@ the response.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2024 IB-Ruby. All rights reserved. <br />
-<span>Page last updated:</span> Jul,11 2024<br/> Site last generated: Nov 5, 2024 <br />
+<span>Page last updated:</span> Nov, 23 2024<br/> Site last generated: Nov 23, 2024 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>

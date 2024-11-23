@@ -509,12 +509,10 @@ Its recommended to create a <code class="language-plaintext highlighter-rouge">s
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------ setup.rb ---------------</span>
 <span class="nb">require</span> <span class="s1">'bundler/setup'</span>
-<span class="nb">require</span> <span class="s1">'ib-gateway'</span>
-<span class="nb">require</span> <span class="s1">'ib/symbols'</span>
+<span class="nb">require</span> <span class="s1">'ib-api'</span>
 
 <span class="c1"># Connect to IB TWS.</span>
-<span class="no">G</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">new</span>   <span class="ss">port:  </span><span class="mi">4002</span>  
-<span class="no">C</span> <span class="o">=</span>  <span class="no">G</span><span class="p">.</span><span class="nf">tws</span>
+<span class="no">C</span> <span class="o">=</span> <span class="no">IB</span><span class="o">::</span><span class="no">Gateway</span><span class="p">.</span><span class="nf">new</span>   <span class="ss">port:  </span><span class="mi">4002</span>  
 </code></pre></div></div>
 
 <div class="alert alert-info" role="alert"><i class="fa fa-bars"></i> A sample file is included in <code class="language-plaintext highlighter-rouge">ib-examples</code>:  <a href="https://github.com/ib-ruby/ib-examples/blob/main/lib/iruby_init.rb">/lib/iruby_init.rb</a> </div>
@@ -574,7 +572,7 @@ traditional <code class="language-plaintext highlighter-rouge">to_human</code> m
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2024 IB-Ruby. All rights reserved. <br />
- Site last generated: Nov 5, 2024 <br />
+ Site last generated: Nov 23, 2024 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>
