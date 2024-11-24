@@ -383,10 +383,10 @@ In places where these terms are used to indicate a concept, we have left them as
         { value: con_id.zero? ? '' : con_id , alignment: :right},
          { value: exchange, alignment: :center},
          expiry,
-         { value: multiplier.zero??  "" : multiplier, alignment: :center},
-         { value: trading_class, alignment: :center},
-         { value: right == :none ? "": right, alignment: :center },
-         { value: strike.zero? ? "": strike, alignment: :right},
+         { value: multiplier.nil? || multiplier.zero??  "" : multiplier, alignment: :center},
+         { value: trading_class.nil? ? "" : trading_class, alignment: :center},
+         { value: right.nil? || right == :none ? "": right, alignment: :center },
+         { value: strike.nil? || strike.zero? ? "": strike, alignment: :right},
          { value: currency, alignment: :center} ]
 
     end
