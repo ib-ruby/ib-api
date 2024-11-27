@@ -81,6 +81,8 @@ module IB
     #
     # (always returns a new option, respects immutability of the IB::Contract)
     #
+    # raises IB::LoadError if no Option is available for the expiry given. 
+    #
     def next_expiry d =  Date.today
       # get the next regular option
       exp = block_given? ? yield : self.class.next_expiry( d )
@@ -91,7 +93,7 @@ module IB
           real_option = merge( expiry: exp ).verify.first
           break unless real_option.nil?
           exp =  ( exp.to_i - 1 ).to_s
-          error( "No suitable next expiry option found" ) if exp[-2..-1] == "00"
+          error( "No suitable next expiry option found", :load ) if exp[-2..-1] == "00"
         end
         real_option
       else

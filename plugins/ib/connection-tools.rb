@@ -54,6 +54,7 @@ Provides
           retry
         rescue Workflow::NoTransitionAllowed 
           logger.warn{ "Reconnect is not possible, actual state: #{workflow_state} cannot be reached after disconnection"}
+          raise
         end
       end
       unsubscribe z

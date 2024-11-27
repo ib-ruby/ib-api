@@ -482,14 +482,14 @@ module IB
     def start_reader
       if @reader_running
         @reader_thread
-      else # connected?  # if called frm try_connection, the connected state is not set
+      else # connected?  # if called from try_connection, the connected state is not set
         begin
         Thread.abort_on_exception = true
         @reader_running = true
         @reader_thread = Thread.new { process_messages while @reader_running }
       rescue Errno::ECONNRESET => e
           logger.fatal e.message
-          Kernel.exit
+          reconnect
         end
 #      else
 #        error "Could not start reader, not connected!", :reader, true
