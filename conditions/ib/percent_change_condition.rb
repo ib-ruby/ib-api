@@ -1,15 +1,12 @@
 module IB
 
-
-
-
   class PercentChangeCondition < OrderCondition
     using IB::Support   # refine Array-method for decoding of IB-Messages
     prop :percent_change
     include BaseProperties
 
     def condition_type
-    7
+      7
     end
 
     def self.make  buffer

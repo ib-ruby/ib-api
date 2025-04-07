@@ -1,8 +1,4 @@
 module IB
-
-
-
-
   class VolumeCondition < OrderCondition
     using IB::Support   # refine Array-method for decoding of IB-Messages
     include BaseProperties
@@ -10,7 +6,7 @@ module IB
     prop :volume
 
     def condition_type
-    6
+      6
     end
 
     def self.make  buffer

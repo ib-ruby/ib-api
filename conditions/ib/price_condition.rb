@@ -12,7 +12,7 @@ module IB
     end
 
     def condition_type
-    1
+      1
     end
 
     def self.make  buffer

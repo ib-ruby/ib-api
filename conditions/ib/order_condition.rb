@@ -1,13 +1,14 @@
 module IB
   class OrderCondition < IB::Base
     include BaseProperties
-
+    using IB::Support   # refine Array-method for decoding of IB-Messages
 
     prop :operator,                 # 1 ->  " >= " , 0 -> " <= "   see /lib/ib/constants # 338f
         :conjunction_connection,    # "o" -> or  "a"
         :contract
+
     def self.verify_contract_if_necessary c
-   c.con_id.to_i.zero? ||( c.primary_exchange.blank? && c.exchange.blank?) ? c.verify! : c
+       c.con_id.to_i.zero? ||( c.primary_exchange.blank? && c.exchange.blank?) ? c.verify! : c
     end
     def condition_type
       error "condition_type method is abstract"
@@ -24,7 +25,5 @@ module IB
       [ condition_type,  self[:conjunction_connection] ]
     end
   end
-
-
 
 end # module

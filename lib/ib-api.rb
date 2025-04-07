@@ -39,6 +39,6 @@ loader.setup
 loader.eager_load
 #require 'requires'
 require 'ib/contract.rb'
-#require 'ib/order_condition.rb'
+require 'ib/order_condition.rb'
 #IbRuby = Ib
 #IB = Ib
