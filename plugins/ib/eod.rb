@@ -81,6 +81,9 @@ Extends IB::Contract
                     (whole_weeks * 5) + extra_days
     end
   end
+    
+    # eod 
+    #
     # Receive EOD-Data and store the data in the `:bars`-property of IB::Contract
     #
     # contract.eod duration: {String or Integer}, start: {Date}, to: {Date}, what: {see below},  polars: {true|false}
@@ -96,7 +99,7 @@ Extends IB::Contract
     #
     # The parameter `:what` specifies the kind of received data.
     #
-    #  Valid values:
+    #  Valid values:   ( /lib/ib/constants.rb --> DATA_TYPES )
     #   :trades, :midpoint, :bid, :ask, :bid_ask,
     #   :historical_volatility, :option_implied_volatility,
     #   :option_volume, :option_open_interest
@@ -234,7 +237,7 @@ Extends IB::Contract
                     end
 
 
-         get_bars(to.to_time.to_ib , normalize_duration[duration], barsize, what, polars)
+         get_bars( to.to_ib(time_zone) , normalize_duration[duration], barsize, what, polars )
 
         end # def
 
@@ -254,6 +257,15 @@ Extends IB::Contract
         self.bars << IB::Bar.new( **row.to_h )
       end
     end
+
+# get_bars::  Helper method to fetch historical data 
+# 
+# parameter:  end_date_time:: A string representing the last datum to fetch. 
+#                             Date.to_ib and Time.to_ib  return the correct format
+#             duration::      A String "yx D", "yd W", "yx M" 
+#             barsize::       A valid BAR_SIZES-entry  (/lib/ib/constants.rb)
+#             what_to_show::  A valid DATA_TYPES-entry (/lib/ib/constants.rb)
+#             polars::        Flag to indicate if a polars-dataframe should be returned 
 
     def get_bars(end_date_time, duration, bar_size, what_to_show, polars)
 
@@ -279,8 +291,6 @@ Extends IB::Contract
           # TWS Error 354: Requested market data is not subscribed.
           # TWS Error 162  # Historical Market Data Service error
           received.close
-        elsif msg.code.to_i == 2174
-          tws.logger.info "Please switch to the \"10-19\"-Branch of the git-repository"
         end
       end
 

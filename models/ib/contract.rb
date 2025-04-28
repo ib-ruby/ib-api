@@ -336,6 +336,22 @@ module IB
     end
 
 
+    def time_zone
+      if contract_detail.present? 
+        contract_detail.time_zone
+      else
+        case currency
+          when "EUR"
+            "MET"
+          when "AUD"
+            "Australia/NSW"
+          when "USD"
+            "US/Eastern"
+          else
+            "UTC"
+        end
+      end
+    end
 =begin
 From the release notes of TWS 9.50
 

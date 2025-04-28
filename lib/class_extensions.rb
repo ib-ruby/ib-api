@@ -4,6 +4,8 @@
 #
 # Define the method `count_duplicates` for Arrays
 #
+require 'date'
+
 module ClassExtensions
   module Array
     module DuplicatesCounter
@@ -21,11 +23,37 @@ module ClassExtensions
     end
   end
 
+  module Date
+  # Render datetime in IB format (zero padded "yyyymmdd 12:00:00")
+
+    def to_ib timezone = 'UTC'
+      t =  to_time + 12 *  60 *  60  # convert to time (noon)
+      s=  "#{t.year}#{sprintf("%02d", t.month)}#{sprintf("%02d", t.day)}"
+      
+      if timezone == 'UTC'
+         s +  "-#{sprintf("%02d", t.hour)}:#{sprintf("%02d", t.min)}:#{sprintf("%02d", t.sec)}"
+      else
+         s + " #{sprintf("%02d", t.hour)}:#{sprintf("%02d", t.min)}:#{sprintf("%02d", t.sec)} #{timezone}"
+      end
+    end
+  
+  end
+    
   module Time
-    # Render datetime in IB format (zero padded "yyyymmdd HH:mm:ss")
-    def to_ib
-      "#{year}#{sprintf("%02d", month)}#{sprintf("%02d", day)} " +
-        "#{sprintf("%02d", hour)}:#{sprintf("%02d", min)}:#{sprintf("%02d", sec)}"
+  # Render datetime in IB format (zero padded "yyyymmdd HH:mm:ss")
+  #  Without specifying the timezone utc is used
+  
+    def to_ib timezone = 'UTC'
+      s=  "#{year}#{sprintf("%02d", month)}#{sprintf("%02d", day)}"
+      if timezone == 'UTC'
+           unless utc?
+              self.clone.utc.to_ib
+           else
+              s +  "-#{sprintf("%02d", hour)}:#{sprintf("%02d", min)}:#{sprintf("%02d", sec)}"
+           end
+      else
+         s + " #{sprintf("%02d", hour)}:#{sprintf("%02d", min)}:#{sprintf("%02d", sec)} #{timezone}"
+      end
     end
   end
 
@@ -108,6 +136,7 @@ Array.include ClassExtensions::Array::DuplicatesCounter
 Array.include ClassExtensions::Array::TablePresenter
 FalseClass.include ClassExtensions::BoolClass::Bool
 FalseClass.include ClassExtensions::BoolClass::Extensions
+Date.include  ClassExtensions::Date
 NilClass.include ClassExtensions::BoolClass::Bool
 NilClass.include ClassExtensions::BoolClass::Extensions
 Numeric.include ClassExtensions::Numeric::Bool
