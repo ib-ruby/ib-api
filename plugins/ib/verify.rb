@@ -139,7 +139,7 @@ Extends IB::Contract
             ## just notice failure in log and return nil instead of contract-object
             if msg.code == 200 && msg.error_id == message_id
               ib.logger.error { "Not a valid Contract :: #{self.to_human} " }
-              queue.close
+              queue.push "InvalidContract"
             end
           when Messages::Incoming::ContractData
             if msg.request_id.to_i == message_id
@@ -161,8 +161,17 @@ Extends IB::Contract
         # if contract_to_be_queried.present?   # is nil if query_contract fails
         message_id = ib.send_message :RequestContractData, :contract => query_contract
 
+        Thread.new do 
+          (0 .. 10).each{ sleep 0.1 } 
+          queue.push "TimeOut"  unless queue.closed?
+         end
+
         while r = queue.pop
-          received_contracts << r
+          if r.is_a? IB::Contract
+             received_contracts << r
+          else
+             error "No data received from IB-Servers", :verify  if r == "TimeOut"
+          end
         end
         ib.unsubscribe a
       end
