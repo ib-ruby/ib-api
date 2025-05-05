@@ -75,7 +75,18 @@ Extends IB::Contract
       if thread
         Thread.new { _verify  &b }
       else
-      _verify   &b
+       i = 0
+       begin
+         _verify   &b
+       rescue IB::VerifyError
+         i += 1
+         if i < 3
+            sleep 1
+            retry
+         else
+            raise
+          end
+        end
       end
     end # def
 
@@ -91,17 +102,7 @@ Extends IB::Contract
                                                                         # if the contract allows SMART routing
     end
 
-    #
-    #   depreciated:  Do not use  anymore
-    def verify!
-      c =  0
-      IB::Connection.logger.warn "Contract.verify! is depreciated. Use \"contract =  contract.verify.first\" instead"
-      c= verify.first
-      self.attributes = c.invariant_attributes
-      self.contract_detail = c.contract_detail
-      self
-    end
-
+    
     private
 
     # Base method to verify a contract
