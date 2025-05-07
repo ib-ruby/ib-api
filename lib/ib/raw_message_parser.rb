@@ -89,10 +89,11 @@ module IB
       raise "Message has an invalid last byte. expecting \0, received: #{last_byte}" if last_byte != "\0"
     end
 
-    def validate_data_header(length)
-      return true if length <= 5000
-
-      raise 'Message is longer than sane max length'
+    def validate_data_header(length)   # disabled
+                                       # todo:: verify length according to the expected dataframe
+                                       # RequestHistoryData returns large datastreams
+      return true# if length <= 5000  
+      raise "Message is longer then max length (#{length}/5000)"
     end
   end
 end

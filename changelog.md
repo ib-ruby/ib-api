@@ -23,3 +23,10 @@ Changelog
 |  4.4.2024 | Apply Zeitwerk, V10
               Put `model` to the root directory (the files are then easily fetched through zeitwerk)
               Reorganizing Messages. One message class per file. Keeping general incoming and outgoing-files
+|  1.1.2025 | introducing plugins 
+|           | using a state machine to organize access to advanced featurs
+
+|  7.5.2025 | Disabled verify buffer size to enable receiving historical datastreams
+|           | Removed contract#verify! in favour of #contract.verify 
+
+

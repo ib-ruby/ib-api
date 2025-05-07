@@ -285,11 +285,14 @@ Extends IB::Contract
         received.push Time.now
       end
       b = tws.subscribe( IB::Messages::Incoming::Alert) do  |msg|
-        if [321,162,200].include? msg.code
-          tws.logger.info msg.message
+        if [321,162,200,354].include? msg.code
+          tws.logger.warn msg.message
           # TWS Error 200: No security definition has been found for the request
           # TWS Error 354: Requested market data is not subscribed.
-          # TWS Error 162  # Historical Market Data Service error
+          # TWS Error 162: Historical Market Data Service error
+          # TWS Error 321: Error validating request.-'bK' : cause - 
+          #                Historical data requests for durations longer than 365 days must be made in years.
+            
           received.close
         end
       end
