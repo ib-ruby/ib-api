@@ -26,7 +26,7 @@ module IB
       :local_symbol => :s, # Local exchange symbol of the underlying asset
       :trading_class => :s,
       # Future/option contract multiplier (only needed when multiple possibilities exist)
-      :multiplier => {:set => :i},
+      :multiplier => :f,
 
       :strike => :f, # double: The strike price.
       :expiry => :s, # The expiration date. Use the format YYYYMM or YYYYMMDD

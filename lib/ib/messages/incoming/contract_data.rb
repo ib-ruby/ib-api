@@ -18,7 +18,7 @@ module IB
                     [:contract, :con_id, :int],
                     [:contract_detail, :min_tick, :decimal],
 #                    [:contract_detail, :md_size_multiplier, :int],  # Vers 10.12  not used anymore
-                    [:contract, :multiplier, :int],
+                    [:contract, :multiplier, :decimal],          ## Crypto-option multipliers can be decimal
                     [:contract_detail, :order_types, :string],
                     [:contract_detail, :valid_exchanges, :string],
                     [:contract_detail, :price_magnifier, :int],

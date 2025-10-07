@@ -155,7 +155,7 @@ module IB
          expiry:       read_string,
          strike:      read_decimal,
          right:        read_string,
-         multiplier:      read_int,
+         multiplier:  read_decimal,
          exchange:     read_string,
          currency:     read_string,
          local_symbol: read_string,
