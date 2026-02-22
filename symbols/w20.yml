@@ -1,0 +1,210 @@
+---
+0: !ruby/object:IB::Stock
+  attributes:
+    :symbol: ANW
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.303012890 +02:00
+    :include_expired: false
+    :description: 'Stock: ANW USD'
+1: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AEB
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.304535419 +02:00
+    :include_expired: false
+    :description: 'Stock: AEB USD'
+2: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AED
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.305076488 +02:00
+    :include_expired: false
+    :description: 'Stock: AED USD'
+3: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AEG
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.305668741 +02:00
+    :include_expired: false
+    :description: 'Stock: AEG USD'
+4: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AEH
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.306387580 +02:00
+    :include_expired: false
+    :description: 'Stock: AEH USD'
+5: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AER
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.307176556 +02:00
+    :include_expired: false
+    :description: 'Stock: AER USD'
+6: !ruby/object:IB::Stock
+  attributes:
+    :symbol: HIVE
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.308077562 +02:00
+    :include_expired: false
+    :description: 'Stock: HIVE USD'
+7: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AJRD
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.309462908 +02:00
+    :include_expired: false
+    :description: 'Stock: AJRD USD'
+8: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AET
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.311778738 +02:00
+    :include_expired: false
+    :description: 'Stock: AET USD'
+9: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AMG
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.313762230 +02:00
+    :include_expired: false
+    :description: 'Stock: AMG USD'
+10: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AFL
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.315120668 +02:00
+    :include_expired: false
+    :description: 'Stock: AFL USD'
+11: !ruby/object:IB::Stock
+  attributes:
+    :symbol: MITT
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.316746279 +02:00
+    :include_expired: false
+    :description: 'Stock: MITT USD'
+12: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AGCO
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.318371506 +02:00
+    :include_expired: false
+    :description: 'Stock: AGCO USD'
+13: !ruby/object:IB::Stock
+  attributes:
+    :symbol: A
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.320149849 +02:00
+    :include_expired: false
+    :description: 'Stock: A USD'
+14: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AEM
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.321989169 +02:00
+    :include_expired: false
+    :description: 'Stock: AEM USD'
+15: !ruby/object:IB::Stock
+  attributes:
+    :symbol: ADC
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.323900346 +02:00
+    :include_expired: false
+    :description: 'Stock: ADC USD'
+16: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AL
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.327106091 +02:00
+    :include_expired: false
+    :description: 'Stock: AL USD'
+17: !ruby/object:IB::Stock
+  attributes:
+    :symbol: APD
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.329187138 +02:00
+    :include_expired: false
+    :description: 'Stock: APD USD'
+18: !ruby/object:IB::Stock
+  attributes:
+    :symbol: AYR
+    :con_id: 0
+    :right: ''
+    :sec_type: STK
+    :currency: USD
+    :exchange: SMART
+    :created_at: 2024-07-11 11:13:47.332186539 +02:00
+    :include_expired: false
+    :description: 'Stock: AYR USD'
