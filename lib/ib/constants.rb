@@ -1,4 +1,5 @@
 module IB
+
   ### Widely used TWS constants:
 
   EOL = "\0"
@@ -109,7 +110,7 @@ module IB
       55 => :trade_rate, #              tickGeneric()
       56 => :volume_rate, #             tickGeneric()
       57 => :last_rth_trade, #
-		  58 => :rt_historical_vol,
+      58 => :rt_historical_vol,
       59 => :ib_dividends,
       60 => :bond_factor_multiplier,
       61 => :regulatory_imbalance,
@@ -140,9 +141,9 @@ module IB
       86 => :futures_open_interest,
       87 => :avg_opt_volume,
       88 => :not_set,
-			105 => :average_option_volume   #(for Stocks) tickGeneric()
+      105 => :average_option_volume   #(for Stocks) tickGeneric()
 
-	
+  
       #   Note 1: Tick types BID_OPTION, ASK_OPTION, LAST_OPTION, and MODEL_OPTION return
       #           all Greeks (delta, gamma, vega, theta), the underlying price and the
       #           stock and option reference price when requested.
@@ -166,8 +167,8 @@ module IB
       0 => :unknown,
       1 => :real_time,
       2 => :frozen,
-			3 => :delayed,
-			4 => :frozen_delayed }.freeze
+      3 => :delayed,
+      4 => :frozen_delayed }.freeze
 
   # Market depth messages contain these "operation" codes to tell you what to do with the data.
   # See also http://www.interactivebrokers.com/php/apiUsersGuide/apiguide/java/updatemktdepth.htm
@@ -196,17 +197,18 @@ module IB
        'QUOTE' => :request_for_quote, #    Request for Quote
        'STP' => :stop, #                   Stop
        'STP LMT' => :stop_limit, #         Stop Limit
-       'STP PRT' => :stop_protected, #	   Stop with Protection
+       'STP PRT' => :stop_protected, #     Stop with Protection
        'TRAIL' => :trailing_stop, #        Trailing Stop
        'TRAIL LIMIT' => :trailing_limit, # Trailing Stop Limit
        'TRAIL LIT' => :trailing_limit_if_touched, #  Trailing Limit if Touched
        'TRAIL MIT' => :trailing_market_if_touched, # Trailing Market If Touched
-       'REL' => :relative, #               Relative
+       'REL' => :pegged_to_primary ,  #    Relative aka Pegged to Primary
        'BOX TOP' => :box_top, #            Box Top
        'PEG MKT' => :pegged_to_market, # Pegged-to-Market
        'PEG STK' => :pegged_to_market, #   Pegged-to-Stock
        'PEG MID' => :pegged_to_midpoint, # Pegged-to-Midpoint
-       'PEG BENCH' => :pegged_to_benchmark, # Pegged-to-Benmchmark # Vers. 102
+       'PEG BENCH' => :pegged_to_benchmark, # Pegged-to-Benchmark # Vers. 102
+       'PEG BEST' => :pegged_to_best,
        'VWAP' => :vwap, #                  VWAP-Guaranted
        'VOL' => :volatility, #             Volatility
        'SCALE' => :scale, #                Scale
@@ -215,7 +217,7 @@ module IB
       }.freeze
   # Valid security types (sec_type attribute of IB::Contract)
   SECURITY_TYPES =
-    {	'BAG' =>  :bag,
+    { 'BAG' =>  :bag,
        'BOND' =>  :bond,
        'CASH' =>  :forex,
        'CMDTY'=>  :commodity,
@@ -231,12 +233,16 @@ module IB
        'IOPT' =>  :dutch_option,
        'STK'  =>  :stock,
        'WAR'  =>  :warrant,
-	     'ICU' =>   :icu,
-			 'ICS' =>  :ics, 
-	     'BILL' =>  :bill,
-	     'BSK'  =>  :basket,
-			 'FWD' =>   :forward,
-			 'FIXED' => :fixed }.freeze
+       'ICU' =>   :icu,
+       'ICS' =>  :ics,
+       'BILL' =>  :bill,
+       'BSK'  =>  :basket,
+       'FWD' =>   :forward,
+       'FIXED' => :fixed ,
+       'CRYPTO' => :crypto,
+       "EC"   => :event_contract  # 
+#  "Event Contracts are daily-expiring, cash settled, European Style, binary-options on futures contracts, offering short-term trading opportunities for individuals seeking to take a position on daily price moves on futures using smaller-value trades of up to $20 per contract. The Event Contracts allow market participants to trade their view on the price direction of key futures markets at the end of each day’s trading session."
+    }.freeze
 
   # Obtain symbolic value from given property code:
   # VALUES[:side]['B'] -> :buy
@@ -325,8 +331,8 @@ module IB
            'GTD' => :good_till_date,
            'GTC' => :good_till_cancelled,
            'IOC' => :immediate_or_cancel,
-	   'OPG' => :opening_price, 
-	   'AUC' => :at_auction},
+     'OPG' => :opening_price,
+     'AUC' => :at_auction},
 
       :rule_80a =>
           {'I' => :individual,
@@ -348,9 +354,9 @@ module IB
            'n' => :farmm,
            'y' => :specialist},
 # conditions
-		   :conjunction_connection => { 'o' =>  :or, 'a' => :and },
-			 :operator => { 1 => '>=' , 0 => '<=' }
- 
+       :conjunction_connection => { 'o' =>  :or, 'a' => :and },
+       :operator => { 1 => '>=' , 0 => '<=' }
+
   }.freeze
 
   # Obtain property code from given symbolic value:

@@ -17,3 +17,16 @@ Changelog
 |           | Preparation of a Gem-Release  |
 | 23.2.2021 | Fixed retrieving of ContractDetail requests of Options with strikes < 1 
 |           | Gem Release                   |
+
+|  1.4.2024 | Proper monkey patching of classes through class_extensions (Prepare for Zeitwerk, V10)
+|  2.4.2024 | Renaming of IBSupport and IBSocket to IB::Support and IB::Socket (Prepare for Zeitwerk, V10)
+|  4.4.2024 | Apply Zeitwerk, V10
+              Put `model` to the root directory (the files are then easily fetched through zeitwerk)
+              Reorganizing Messages. One message class per file. Keeping general incoming and outgoing-files
+|  1.1.2025 | introducing plugins 
+|           | using a state machine to organize access to advanced featurs
+
+|  7.5.2025 | Disabled verify buffer size to enable receiving historical datastreams
+|           | Removed contract#verify! in favour of #contract.verify 
+
+

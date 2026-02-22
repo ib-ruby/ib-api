@@ -11,6 +11,7 @@ gemspec
 
 gem 'rspec'
 gem 'rspec-its'
+gem 'rspec-given'
 gem 'rspec-collection_matchers'
 gem 'guard'
 gem 'guard-rspec'

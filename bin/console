@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+### loads the active-orient environment
+### and starts an interactive shell
 ###
 ### Parameter: t)ws | g)ateway (or number of port ) Default: Gateway ,
 ###							client_id , Default 2000
@@ -18,7 +20,7 @@ class Array
   #   => [16, 17, 21, 20, 19, 8, 7]
   #   2.5.0 :007 > C.received[:OpenOrder].contract.to_human
   #    => ["<Bag: IECombo SMART USD legs:  >", "<Stock: GE USD>", "<Stock: GE USD>", "<Stock: GE USD>", "<Stock: GE USD>", "<Stock: WFC USD>", "<Stock: WFC USD>"]
-
+  #
   # its included only in the console, for inspection purposes
 
   def method_missing(method, *key)
@@ -29,15 +31,19 @@ class Array
   end
 end # Array
 
+class Object
+  def inspect
+    respond_to?(:to_human) ? to_human : super
+  end
+end
 
 # read items from console.yml
-read_yml = -> (key) do
+  read_yml = -> (key) do
 		YAML::load_file( File.expand_path('../console.yml',__FILE__))[key]
 	end
 
-
   puts
-  puts ">> IB-Core Interactive Console <<"
+  puts ">> IB-API Interactive Console <<"
   puts '-'* 45
   puts
   puts "Namespace is IB ! "
@@ -46,44 +52,45 @@ read_yml = -> (key) do
   include IB
   require 'irb'
   client_id = ARGV[1] || read_yml[:client_id]
-  specified_port = ARGV[0] || 'Gateway'
-	port =  case specified_port
-					when Integer
-						specified_port  # just use the number
+  specified_host = ARGV[0] || 'Gateway'
+	host =  case specified_host
 					when /^[gG]/ 
 						read_yml[:gateway]
 					when /^[Tt]/
 						read_yml[:tws]
+          else
+            raise "Specify target from console.yml: `g|t` instead of #{specified_host}"
 					end
-
   ARGV.clear
 
-  ## The Block takes instructions which are executed  after initializing all instance-variables
-  ## and prior to the connection-process
-  ## Here we just subscribe to some events
-  C =  Connection.new client_id: client_id, port: port  do |c|  # future use__ , optional_capacities: "+PACEAPI"  do |c|
+  C =  Connection.new  client_id: client_id, host: host
+  C.logger.level = Logger::WARN
 
-    c.subscribe( :ContractData, :BondContractData) { |msg| c.logger.info { msg.contract.to_human } }
-    c.subscribe( :Alert, :ContractDataEnd, :ManagedAccounts, :OrderStatus ) {| m| c.logger.info { m.to_human } }
-    c.subscribe( :PortfolioValue, :AccountValue, :OrderStatus, :OpenOrderEnd, :ExecutionData ) {| m| c.logger.info { m.to_human }}
-#    c.subscribe :ManagedAccounts do  |msg|
-#        puts "------------------------------ Managed Accounts ----------------------------------"
-#				puts "Detected Accounts: #{msg.acounts.account.join(' -- ')} "
-#				puts
-#    end
+  C.subscribe(:Alert){ |m| puts "A: "+ m.message }
+  C.subscribe(:AccountUpdateTime){  }
 
-    c.subscribe( :OpenOrder){ |msg| puts  "Open Order detected and stored: C.received[:OpenOrders] " }
-	end
-  #C.logger.level = Logger::FATAL
+  C.received = true
+  C.activate_plugin :connection_tools, :symbols, :market_price,
+                    "order-prototypes", "spread-prototypes",
+                    "advanced_account", 'process_orders'
+  C.logger.level = Logger::INFO
+  puts C.workflow_state
+  C.get_account_data
+  C.request_open_orders
+  C.logger.level = Logger::ERROR
+  puts  "Connection established on  #{host}"
+
   unless  C.received[:OpenOrder].blank?
-        puts "------------------------------- OpenOrders ----------------------------------"
-    puts C.received[:OpenOrder].to_human.join "\n"
+        puts "---------------------------------------- OpenOrders -------------------------------------------"
+        puts C.clients.map{ |c| c.orders.map &:to_human }.flatten.join("\n")
   end
-  puts  "Connection established on Port  #{port}, client_id #{client_id} used"
+  puts ""
+  puts  Terminal::Table.new title: 'Active Plugins',
+                             rows: C.plugins.delete_if{ |x| x =~ /\// }.sort.each_slice(4),
+                            style: { border: :unicode  }
   puts
   puts  "----> C    points to the connection-instance"
   puts
-  puts  "some basic Messages are subscribed and accordingly displayed"
   puts '-'* 45
 
   IRB.start(__FILE__)

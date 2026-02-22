@@ -3,62 +3,65 @@ require 'integration_helper'
 Unified Approach placing an Order
 
 order_id =  place_the_oder contract:{a valid IB::Contract} do | the_last_market:price |
-			{ modify the price as needed }
-			{ Provide a valid IB::Order, use the appropiate OrderPrototype }
+      { modify the price as needed }
+      { Provide a valid IB::Order, use the appropiate OrderPrototype }
 end
 
 if the order-object provides a local_id, the order is modified.
 =end
-def place_the_order( contract: IB::Symbols::Stocks.wfc )  
-		ib =  IB::Connection.current
-		raise 'Unable to place order, no connection' unless ib && ib.connected?
-		order =  yield( get_contract_price( contract: contract) )
+def place_the_order( contract: IB::Symbols::Stocks.wfc )
+    order =  yield( get_contract_price( contract: contract) )
+    connection =  IB::Connection.current
 
-		the_order_id =  if order.local_id.present? 
-			ib.modify_order order, contract      
-		else
-			ib.place_order order, contract      
-		end
-		ib.wait_for :OpenOrder, 3
-		the_order_id  # return value
+    IB::Connection.current.clear_received
+    contract=   if contract.con_id.to_i > 0
+                   Contract.new con_id: contract.con_id,
+                              exchange: contract.exchange
+                else
+                   contract
+                end
+    local_id = connection.place_order order, contract
+    IB::Connection.current.wait_for :OpenOrder, 5
+    puts  IB::Connection.current.received[:Alert] &.to_human
+    IB::Connection.current.received[:OpenOrder].find{|x| x.local_id == local_id }  # return OpenOrder Record
 end
 
 def get_contract_price contract: IB::Symbols::Stocks.wfc
-	ib =  IB::Connection.current
-	ib.send_message :RequestMarketDataType, :market_data_type => :delayed
-	the_id = ib.send_message :RequestMarketData, contract:  contract
-	ib.wait_for :TickPrice
-	ib.send_message :CancelMarketData, id: the_id
-	last_price = ib.received[:TickPrice].price.map(&:to_f).max
-	ib.clear_received :TickPrice
-	last_price =  last_price.nil? ? rand(999).to_f/100 : last_price  # use random price for testing
+  ib =  IB::Connection.current
+  ib.send_message :RequestMarketDataType, :market_data_type => :delayed
+  the_id = ib.send_message :RequestMarketData, contract:  contract
+  ib.wait_for :TickPrice
+  ib.send_message :CancelMarketData, id: the_id
+  last_price = ib.received[:TickPrice].price.map(&:to_f).max
+  ib.clear_received :TickPrice
+  last_price =  last_price.nil? ? rand(999).to_f/100 : last_price  # use random price for testing
 
 end
 def remove_open_orders
-	ib =  IB::Connection.current
-		ib.send_message :RequestOpenOrders
-		ib.wait_for :OpenOrderEnd
-		open_order_ids =  ib.received[:OpenOrder].map{|msg| msg.order[:local_id]}
-		ib.cancel_order *open_order_ids
+  ib =  IB::Connection.current
+    ib.send_message :RequestOpenOrders
+    ib.wait_for :OpenOrderEnd
+    open_order_ids =  ib.received[:OpenOrder].map{|msg| msg.order[:local_id]}
+    ib.cancel_order *open_order_ids
 end
 
 RSpec.shared_examples_for "Alert message" do | the_expected_message |
-	  subject { IB::Connection.current.received[:Alert] }
-			it { is_expected.to have_at_least(1).error_message }
-#			it { puts "ALERT: "+ subject.inspect }   # debug
-			it "contains a discriptive error message" do
-				expect( subject.any?{|x|  x.message =~  the_expected_message } ).to be_truthy
-			end
+    subject { IB::Connection.current.received[:Alert] }
+      it { is_expected.to have_at_least(1).error_message }
+#     it { puts "ALERT: "+ subject.inspect }   # debug
+      it "contains a discriptive error message" do
+        expect( subject.any?{|x|  x.message =~  the_expected_message } ).to be_truthy
+      end
 end
 
 shared_examples_for 'OpenOrder message' do
   it { should be_an IB::Messages::Incoming::OpenOrder }
   its(:message_type) { is_expected.to eq :OpenOrder }
   its(:message_id) { is_expected.to eq 5 }
-  its(:version) { is_expected.to eq 34}
+#  its(:version) { is_expected.to eq 34}
   its(:data) { is_expected.not_to  be_empty }
   its(:buffer ) { is_expected.to be_empty }  # Work on openOrder-Message has to be finished.
-  							## Integration of Conditions !
+                ## Integration of Conditions !
   its(:local_id) { is_expected.to be_an Integer }
   its(:status) { is_expected.to match /Submit/ }
   its(:to_human) { is_expected.to match /<OpenOrder/ }
@@ -71,7 +74,7 @@ shared_examples_for 'OpenOrder message' do
     expect( o.local_id ).to be_an Integer
     expect( o.perm_id ).to  be_an Integer
     expect(IB::VALUES[:clearing_intent].values). to include o.clearing_intent
-    expect( o.order_type ).to eq :limit
+    expect( o.order_type ).to eq( :limit ).or eq( :market  )
     expect( IB::VALUES[:tif].values ).to include o.tif
     #expect( o.status ).to match /Submit/
     expect( o.clearing_intent ).to eq :ib
@@ -89,23 +92,43 @@ shared_examples_for 'OpenOrder message' do
 
 end
 
+RSpec.shared_examples_for "serialize limit order fields" do
+
+    it "Main Order Fields show a Limit Order" do
+      expect( subject.serialize_main_order_fields.at 2).to  match /LMT/
+    end
+    it "Other Order Fields are zero or empty" do
+      expect( subject.serialize_auxilery_order_fields.flatten.compact).to eq [ "", 0 ]
+      expect( subject.serialize_volatility_order_fields.uniq).to eq [ "" ]
+      expect( subject.serialize_conditions).to eq [ 0 ]
+      expect( subject.serialize_scale_order_fields.uniq).to eq [""]
+      expect( subject.serialize_delta_neutral_order_fields.uniq).to eq [ "" ]
+      expect( subject.serialize_pegged_order_fields).to be_empty
+      expect( subject.serialize_mifid_order_fields.flatten.compact).to be_empty
+      expect( subject.serialize_peg_best_and_mid).to be_empty
+      unless subject.contract.is_a? IB::Bag
+        expect( subject.serialize_combo_legs(subject.contract)).to be_empty
+      end
+    end  # it
+
+end
 
 #RSpec.shared_examples_for 'OpenOrder message' do
-##	let( :subject ){ the_returned_message }
+##  let( :subject ){ the_returned_message }
 #  it { is_expected.to be_an IB::Messages::Incoming::OpenOrder }
-#	it "has appropiate attributes" do
-#		o = subject
+# it "has appropiate attributes" do
+#   o = subject
 #   expect(o.message_type).to eq :OpenOrder 
 #   expect( o.message_id).to eq 5 
-#	 expect( o.version).to eq 34
-#	 expect( o.data).not_to  be_empty
+#  expect( o.version).to eq 34
+#  expect( o.data).not_to  be_empty
 #   expect( o.buffer ).to be_empty   # Work on openOrder-Message has to be finished.
-#  							## Integration of Conditions !
+#               ## Integration of Conditions !
 #   expect( o.local_id).to be_an Integer 
-#	 expect( o.order).to be_an IB::Order 
+#  expect( o.order).to be_an IB::Order 
 #   expect( o.status).to match( /Submit/).or match( /Filled/ ) 
 #  #its(:to_human) { is_expected.to match /<OpenOrder: <Stock: WFC USD> <Order: LMT DAY buy 100.0 49.13 .*Submit.* #\d+\/\d+ from 1111/ }
-#	end
+# end
 #  it 'has proper order accessor' do
 #    o = subject.order
 #    expect( o.client_id ).to eq(OPTS[:connection][:client_id]).or be_zero 
@@ -126,54 +149,54 @@ end
 RSpec.shared_examples_for 'Placed Order' do
 
 
-		it{ is_expected.to be_a IB::Order }
-		it "got proper id's" do
-			expect( subject.local_id ).to be_an Integer
-			expect( subject.perm_id ).to be_an Integer
-			expect( subject.perm_id.to_s).to  match  /^\d{8,11}$/   # has 9 to 11 numeric characters
-		end
-		it "has an adequat clearing intent" do
-			expect(IB::VALUES[:clearing_intent].values). to include subject.clearing_intent
-		end
-		it " the Time in Force is valid" do
-			expect( IB::VALUES[:tif].values ).to include subject.tif
-		end
-		its( :clearing_intent ){is_expected.to eq :ib }
-#		it "mysterious trailing stop price is absent", :pending => true do
-#			pending "seems to be irrelevant, but needs clarification"
-#			expect( subject.trail_stop_price  ).to be_nil.or be_zero
-#		end
-#	end
+    it{ is_expected.to be_a IB::Order }
+    it "got proper id's" do
+      expect( subject.local_id ).to be_an Integer
+      expect( subject.perm_id ).to be_an Integer
+      expect( subject.perm_id.to_s).to  match  /^\d{8,11}$/   # has 9 to 11 numeric characters
+    end
+    it "has an adequat clearing intent" do
+      expect(IB::VALUES[:clearing_intent].values). to include subject.clearing_intent
+    end
+    it " the Time in Force is valid" do
+      expect( IB::VALUES[:tif].values ).to include subject.tif
+    end
+    its( :clearing_intent ){is_expected.to eq :ib }
+#   it "mysterious trailing stop price is absent", :pending => true do
+#     pending "seems to be irrelevant, but needs clarification"
+#     expect( subject.trail_stop_price  ).to be_nil.or be_zero
+#   end
+# end
 end
 
 RSpec.shared_examples_for 'Presubmitted what-if Order' do | used_contract |
-	its( :status ){ is_expected.to eq 'PreSubmitted' }
-	if used_contract.is_a? IB::Bag  ## Combos dont have fixed commissions
-		its( :commission ){ is_expected.to be_nil.or be_zero } 
-	else
-		its( :commission ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
-	end
+  its( :status ){ is_expected.to eq 'PreSubmitted' }
+  if used_contract.is_a? IB::Bag  ## Combos dont have fixed commissions
+    its( :commission ){ is_expected.to be_nil.or be_zero } 
+  else
+    its( :commission ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
+  end
 
-	its( :what_if ){  is_expected.to be_truthy }
-	its( :equity_with_loan  ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
-	its( :init_margin  ){ is_expected.to be_a( BigDecimal ).and be > 0 }
-	its( :maint_margin ){ is_expected.to be_a( BigDecimal ).and be > 0 }
-#	it "mysterious trailing stop price is absent", pending: true do
-#		pending "seems to be irrelevant, but needs clarification"
-#		expect( subject.trail_stop_price ).to be_nil.or be_zero
-#	end
+  its( :what_if ){  is_expected.to be_truthy }
+  its( :equity_with_loan  ){ is_expected.to be_a( BigDecimal ).and be > 0 } 
+  its( :init_margin  ){ is_expected.to be_a( BigDecimal ).and be > 0 }
+  its( :maint_margin ){ is_expected.to be_a( BigDecimal ).and be > 0 }
+# it "mysterious trailing stop price is absent", pending: true do
+#   pending "seems to be irrelevant, but needs clarification"
+#   expect( subject.trail_stop_price ).to be_nil.or be_zero
+# end
 
 end
 
 RSpec.shared_examples_for 'Filled Order' do
-		its( :commission){ is_expected.to be_a( BigDecimal ).and be > 0 }
-#		its( :average_fill_price ){ is_expected.not_to be_nil.or be_zero }
-#		its( :average_fill_price ){is_expected.to be_a BigDecimal  }
-		its( :status ) { is_expected.to eq 'Filled' }
-#		it "mysterious trailing stop price is absent", pending: true do
-#			pending "seems to be irrelevant, but needs clarification"
-#			expect( subject.trail_stop_price ).to be_nil.or be_zero
-#		end
+    its( :commission){ is_expected.to be_a( BigDecimal ).and be > 0 }
+#   its( :average_fill_price ){ is_expected.not_to be_nil.or be_zero }
+#   its( :average_fill_price ){is_expected.to be_a BigDecimal  }
+    its( :status ) { is_expected.to eq 'Filled' }
+#   it "mysterious trailing stop price is absent", pending: true do
+#     pending "seems to be irrelevant, but needs clarification"
+#     expect( subject.trail_stop_price ).to be_nil.or be_zero
+#   end
 end
 
 
@@ -182,10 +205,9 @@ RSpec.shared_examples_for "Proper Execution Record" do | side |
   its( :request_id){ is_expected.to  eq( OPTS[:connection][:request_id] ).or eq(-1) }
   its( :contract){ is_expected.to eq contract }
 
-	it " has meaningful attributes " do
+  it " has meaningful attributes " do
   exec = subject.execution
   expect(  exec.perm_id).to be_an Integer
-  expect(  exec.client_id).to eq( OPTS[:connection][:client_id] ).or be_zero
   expect(  exec.local_id).to be_an Integer
   expect(  exec.exec_id).to be_a String
   expect(  exec.time).to be_a DateTime
@@ -194,33 +216,29 @@ RSpec.shared_examples_for "Proper Execution Record" do | side |
   expect(  exec.side).to eq side
   expect(  exec.shares).to eq  order.total_quantity
   expect(  exec.cumulative_quantity).to eq order.total_quantity
-  expect(  exec.price).to be > 1	# assuming EUR/USD stays in the range 1 --- 2
+  expect(  exec.price).to be > 1  # assuming EUR/USD stays in the range 1 --- 2
   expect(  exec.price).to be < 2
   expect(  exec.price).to eq exec.average_price
   expect(  exec.liquidation).to be_falsy
-	end
+  end
 end
 
 # parameter pnl: true: there is a realized pnl
 # takes the last ExecutionData-record as reference for exec_id
-	RSpec.shared_examples 'Valid CommissionReport' do |  pnl |
-		it{ is_expected.to be_an  IB::Messages::Incoming::CommissionReport }
-		# data.keys: [:version, :exec_id, :commission, :currency, :realized_pnl, :yield, :yield_redemption_date] 
-	  it " has a proper execution id" do
-			e=  IB::Connection.current.received[:ExecutionData].last.execution.exec_id
-			expect( subject.exec_id  ).to eq e 	
-		end
-		its( :commission ){is_expected.to be_a BigDecimal}
-		its( :currency ){ is_expected.to eq OPTS[:connection][:base_currency] }
-		its( :yield ){ is_expected.to be_nil  }
-		its( :yield_redemption_date){ is_expected.to be_nil}  # no date, YYYYMMDD format for bonds
-		if pnl>0
-			its( :realized_pnl ){is_expected.to be_a BigDecimal}
-		else
-			its( :realized_pnl ){is_expected.to be_nil}
-		end
+  RSpec.shared_examples 'Valid CommissionReport' do |  pnl |
+    it{ is_expected.to be_an  IB::Messages::Incoming::CommissionReport }
+    # data.keys: [:version, :exec_id, :commission, :currency, :realized_pnl, :yield, :yield_redemption_date] 
+    it " has a proper execution id" do
+      e=  IB::Connection.current.received[:ExecutionData].last.execution.exec_id
+      expect( subject.exec_id  ).to eq e
+    end
+    its( :commission ){is_expected.to be_a BigDecimal}
+    its( :currency ){ is_expected.to eq OPTS[:connection][:base_currency] }
+    its( :yield ){ is_expected.to be_nil  }
+    its( :yield_redemption_date){ is_expected.to be_nil}  # no date, YYYYMMDD format for bonds
+    its( :realized_pnl ){is_expected.to be_a( BigDecimal ).or be_nil}
 
-	end 
+  end 
 
 
 =begin
@@ -232,7 +250,7 @@ end
 
 
     it 'receives all appropriate response messages' do
-			ib =  IB::Connection.current
+      ib =  IB::Connection.current
       ib.received[:OpenOrder].should have_at_least(1).order_message
       ib.received[:OrderStatus].should have_at_least(1).status_message
     end

@@ -1,11 +1,3 @@
-require 'thread'
-#require 'active_support'
-require 'ib/socket'
-require 'logger'
-require 'logging'
-require 'ib/messages'
-require 'ib/errors'
-
 module IB
   # Encapsulates API connection to TWS or Gateway
   class Connection
@@ -14,43 +6,94 @@ module IB
   ## -------------------------------------------- Interface ---------------------------------
   ## public attributes: socket, next_local_id ( alias next_order_id)
   ## public methods:  connect (alias open), disconnect, connected?
-  ##		      subscribe, unsubscribe
-  ##		      send_message (alias dispatch)
-  ##		      place_order, modify_order, cancel_order
+  ##          subscribe, unsubscribe
+  ##          send_message (alias dispatch)
+  ##          place_order, modify_order, cancel_order
   ## public data-queue: received,  received?, wait_for, clear_received
-  ## misc:	      reader_running?
+  ## misc:        reader_running?
 
-  include Support::Logging   # provides default_logger
+  include ::Support::Logging   # provides default_logger
+  include  Plugins
+  include Workflow
 
     mattr_accessor :current
-    # Please note, we are realizing only the most current TWS protocol versions,
-    # thus improving performance at the expense of backwards compatibility.
-    # Older protocol versions support can be found in older gem versions.
 
     attr_accessor  :socket #   Socket to IB server (TWS or Gateway)
     attr_accessor  :next_local_id # Next valid order id
     attr_accessor  :client_id
     attr_accessor  :server_version
     attr_accessor  :client_version
+    attr_accessor  :host
+    attr_accessor  :received
+    attr_accessor  :port
+    attr_accessor  :plugins
     alias next_order_id next_local_id
     alias next_order_id= next_local_id=
 
-    def initialize host: '127.0.0.1',
-      port: '4002', # IB Gateway connection (default --> demo) 4001:  production
-      #:port => '7497', # TWS connection  --> demo				  7496:  production
-      connect: true, # Connect at initialization
-      received:  true, # Keep all received messages in a @received Hash
-      #									 redis: false,    # future plans
+    def workflow_state
+      @workflow_state
+    end
+
+    workflow do
+      state :virgin do
+        event :try_connection,              transitions_to: :ready
+        event :activate_managed_accounts,   transitions_to: :gateway_mode
+        event :collect_data,                transitions_to: :lean_mode
+      end
+
+      state :lean_mode do
+        event :try_connection,              transitions_to: :ready
+      end
+
+      state :gateway_mode do
+        event :try_connection,              transitions_to: :ready
+        event :initialize_managed_accounts, transitions_to: :account_based_operations
+      end
+      state :ready do
+        event :initialize_managed_accounts, transitions_to: :account_based_operations  #  plugin managed_account
+        event :disconnect,                  transitions_to: :disconnected
+      end
+      state :disconnected do
+        event :try_connection,              transitions_to: :ready
+        event :activate_managed_accounts,   transitions_to: :gateway_mode              #  plugin managed_account
+
+      end
+
+      state :account_based_operations do
+        event :disconnect,                  transitions_to: :disconnected
+        event :initialize_order_handling,   transitions_to: :account_based_orderflow   # plugin process-orders
+      end
+
+      state :account_based_orderflow do
+        event :disconnect,                  transitions_to: :disconnected
+      end
+
+       on_transition do |from, to, triggering_event, *event_args|
+         logger.warn{ "Workflow:: #{workflow_state} -> #{to}" }
+       end
+    end
+
+
+    def initialize host: '127.0.0.1:4002',  # combination of host +  port
+      port: nil,
+      #:port => '7497', # TWS connection  --> demo          7496:  production
+      # connect: true, # Connect at initialization                           ---> disabled in favour of Connection.new.try_connection!
+      # received:  true, # Keep all received messages in a @received Hash    ---> disabled; automatically disabled in lean- and
+      #                                                                                     gateway-modus
       logger: nil,
       client_id:  rand( 1001 .. 9999 ) ,
-      client_version: IB::Messages::CLIENT_VERSION,	# lib/ib/server_versions.rb
+      client_version: IB::Messages::CLIENT_VERSION, # lib/ib/server_versions.rb
       optional_capacities: "", # TWS-Version 974: "+PACEAPI"
+      plugins: [],
       #server_version: IB::Messages::SERVER_VERSION, # lib/messages.rb
       **any_other_parameters_which_are_ignored
     # V 974 release motes
     # API messages sent at a higher rate than 50/second can now be paced by TWS at the 50/second rate instead of potentially causing a disconnection. This is now done automatically by the RTD Server API and can be done with other API technologies by invoking SetConnectOptions("+PACEAPI") prior to eConnect.
 
+      Connection.current = self
       self.class.configure_logger logger
+      # enable specification of host and port through host: 'localhost:4002' as parameter
+      host, port = (host+':'+port.to_s).split(':')
       # convert parameters into instance-variables and assign them
       method(__method__).parameters.each do |type, k|
         next unless type == :key  ##  available: key , keyrest
@@ -64,105 +107,151 @@ module IB
       @receive_lock = Mutex.new
       @message_lock = Mutex.new
 
+      @parser =  nil
       @connected = false
-      self.next_local_id = nil
 
-      # TWS always sends NextValidId message at connect -subscribe save this id
-      self.subscribe(:NextValidId) do |msg|
-        self.logger.progname = "Connection#connect"
-        self.next_local_id = msg.local_id
-        self.logger.info { "Got next valid order id: #{next_local_id}." }
+      @plugins.each do |name|
+        activate_plugin name
       end
+
+      @next_local_id = nil
+
       #
       # this block is executed before tws-communication is established
       # Its intended for globally available subscriptions of tws-messages
       yield self if block_given?
 
-      if connect
-        disconnect if connected?
-        update_next_order_id
-        Kernel.exit if self.next_local_id.nil?  # emergency exit.
-        # update_next_order_id should have raised an error
-      end
-      Connection.current = self
     end
 
-		# read actual order_id and
-		# connect if not connected
-		def update_next_order_id
+    # read actual order_id and
+    # connect if not connected
+    def update_next_order_id
       q = Queue.new
       subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
-      unless connected?
-        connect() # connect implies requesting NextValidId
-      else
-        send_message :RequestIds
-      end
+      try_connection! unless connected?
+      send_message :RequestIds
       th = Thread.new { sleep 5; q.close }
-      local_id = q.pop
+      @next_local_id = q.pop
       if q.closed?
          error "Could not get NextValidID", :reader
       else
         th.kill
       end
       unsubscribe subscription
-      local_id  # return next_id
+      @next_local_id  # return next_id
     end
 
-		### Working with connection
+    ### Working with connection
+    def connected?
+      @connected
+    end
     #
-    ### connect can be called directly. but is mostly called through update_next_order_id
-		def connect
-			logger.progname='IB::Connection#connect'
-			if connected?
-        logger.info  "Already connected!"
-				return
-			end
+    ### Event  –  call through  Connection-object.try_connection!
+    protected
+    def try_connection
+      logger.progname='IB::Connection#Event:TryConnection'
+      if connected?
+        error  "Already connected!"
+        return
+      end
+      # TWS always sends NextValidId message at connect -subscribe save this id
+      subscribe(:NextValidId) do |msg|
+        logger.progname = "Connection"
+        @next_local_id = msg.local_id
+        logger.info { "Got next valid order id: #{@next_local_id}." }
+      end
 
-			self.socket = IBSocket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
-			socket.initialising_handshake
-			socket.decode_message( socket.recieve_messages ) do  | the_message |
-				#				logger.info{ "TheMessage :: #{the_message.inspect}" }
-				@server_version =  the_message.shift.to_i
-				error IB::Error  "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
+      self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
+      socket.initialising_handshake
+      @parser =  RawMessageParser.new socket
+      @parser.each do | the_message |
+#      socket.decode_message( socket.receive_messages ) do  | the_message |
+                #puts "TheMessage :: #{the_message.inspect}" 
+        @server_version =  the_message.shift.to_i.freeze
+        error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
 
-				@remote_connect_time = DateTime.parse the_message.shift
-				@local_connect_time = Time.now
-			end
+        @remote_connect_time = DateTime.parse the_message.shift.freeze
+        @local_connect_time = Time.now.freeze
+        @connected = true
+        break  #  only receive one message
+      end
 
-			# V100 initial handshake
-			# Parameters borrowed from the python client
-			start_api = 71
-			version = 2
-			#			optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
-			socket.send_messages start_api, version, @client_id  , @optional_capacities
-			@connected = true
-      # always print connected message to log
-			logger.fatal{ "Connected to server, version: #{@server_version}, " +
+      # V100 initial handshake
+      # Parameters borrowed from the python client
+      start_api = 71
+      version = 2
+      #     optcap = @optional_capacities.empty? ? "" : " "+ @optional_capacities
+      socket.send_messages start_api, version, @client_id  , @optional_capacities
+      logger.fatal{ "Connected to server, version: #{@server_version}, " +
                  "using client-id: #{client_id},\n   connection time: " +
-								 "#{@local_connect_time} local, " +
-									 "#{@remote_connect_time} remote." }
+                 "#{@local_connect_time} local, " +
+                 "#{@remote_connect_time} remote." }
+      start_reader
+    rescue IB::TransmissionError =>e
+      logger.fatal "Transmission Error: Retrying establishing the connection"
+      logger.fatal  e.msg
+      disconnect!
+       try_connection!
+    #  update_next_order_id
+    end
 
-			start_reader
-		end
 
-    alias open connect # Legacy alias
-
+    ### Event  –  call through  Connection-object.disconnect!
     def disconnect
       if reader_running?
         @reader_running = false
         @reader_thread.join
       end
-      if connected?
-        socket.close
-        @connected = false
+      socket.close
+      @connected = false
+    end
+
+
+    public
+
+    # disconnect and restart communication with the tws.
+    #
+    # cancels all subscriptions and reestablishes standard
+    # subscriptions for the current workflow state.
+    #
+    # connects if called in the disconnected state
+    #
+    #
+    # Usecase:
+    # 3.2.0 :015 > Symbols::Stocks.msft.verify
+    # A: Error reading request. Unable to parse data. java.lang.NumberFormatException: For input string: "MSFT"
+    # 
+    # ^C/usr/share/rvm/rubies/ruby-3.2.0/lib/ruby/3.2.0/irb.rb:438:in `raise': abort then interrupt! (IRB::Abort)
+    #       from <internal:thread_sync>:18:in `pop'
+    #       from /home/ubuntu/labor/ib-api/plugins/ib/verify.rb:164:in `_verify'
+    #       from /home/ubuntu/labor/ib-api/plugins/ib/verify.rb:78:in `verify'
+    #       from (irb):15:in `<main>'
+    #       from ./console:96:in `<main>'
+    # 3.2.0 :016 > C.reconnect
+    #   F: Connected to server, version: 165, using client-id: 2000,
+    #      connection time: 2024-11-21 20:57:57 +0100 local, 2024-11-21T19:57:57+00:00 remote.
+    #   => 227896
+    # 3.2.0 :017 > Symbols::Stocks.msft.verify
+    #  => [<Stock: MSFT USD NASDAQ>]
+    #
+    def reconnect
+      return if workflow_state == "virgin"
+      old_workflowstate =  workflow_state.dup
+      disconnect! unless disconnected?
+
+      unsubscribe *@subscribers.map{|_,m| m.keys}.flatten.uniq
+
+      if ["ready", "lean_mode", "disconnected"].include? old_workflowstate
+        try_connection!
+      else
+        activate_managed_accounts!
+        unless old_workflowstate == 'gateway_mode' 
+          initialize_managed_accounts! 
+          initialize_order_handling!   unless old_workflowstate != "account_based_orderflow"
+        end
       end
     end
 
-    alias close disconnect # Legacy alias
-
-    def connected?
-      @connected
-    end
 
     ### Working with message subscribers
 
@@ -174,20 +263,20 @@ module IB
         subscriber = args.last.respond_to?(:call) ? args.pop : block
         id = random_id
 
-        error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
+       error  "Need subscriber proc or block ", :args  unless subscriber.is_a? Proc
 
         args.each do |what|
           message_classes =
           case
-          when what.is_a?(Class) && what < Messages::Incoming::AbstractMessage
+          when what.is_a?(Class) && what < IB::Messages::Incoming::AbstractMessage
             [what]
           when what.is_a?(Symbol)
-            if Messages::Incoming.const_defined?(what)
-              [Messages::Incoming.const_get(what)]
-            elsif defined?( TechnicalAnalysis ) && TechnicalAnalysis::Signals.const_defined?(what)
-              [TechnicalAnalysis::Signals.const_get?(what)]
+            if IB::Messages::Incoming.const_defined?(what)
+              [IB::Messages::Incoming.const_get(what)]
+    #        elsif TechnicalAnalysis::Signals.const_defined?(what)
+    #          [TechnicalAnalysis::Signals.const_get?(what)]
             else
-              error "#{what} is no IB::Messages or TechnicalAnalyis::Signals class"
+              error "#{what} is no IB::Messages class"
             end
           when what.is_a?(Regexp)
             Messages::Incoming::Classes.values.find_all { |klass| klass.to_s =~ what }
@@ -207,17 +296,18 @@ module IB
     end
 
     # Remove all subscribers with specific subscriber id
-		def unsubscribe *ids
-			@subscribe_lock.synchronize do
-				ids.collect do |id|
-					removed_at_id = subscribers.map { |_, subscribers| subscribers.delete id }.compact
-					logger.error  "No subscribers with id #{id}"   if removed_at_id.empty?
-					removed_at_id # return_value
-				end.flatten
-			end
-		end
-    ### Working with received messages Hash
+    def unsubscribe *ids
+      @subscribe_lock.synchronize do
+        ids.collect do |id|
+          removed_at_id = subscribers.map { |_, subscribers| subscribers.delete id }.compact
+          logger.error  "No subscribers with id #{id}"   if removed_at_id.empty?
+          removed_at_id # return_value
+        end.flatten
+      end
+    end
 
+
+    ### Working with received messages Hash
     # Clear received messages Hash
     def clear_received *message_types
       @receive_lock.synchronize do
@@ -229,19 +319,21 @@ module IB
       end
     end
 
+
+
     # Hash of received messages, keyed by message type
     def received
       @received_hash ||= Hash.new do |hash, message_type|
-				# enable access to the hash via
-				# ib.received[:MessageType].attribute
-				the_array = Array.new
-				def the_array.method_missing(method, *key)
-					unless method == :to_hash || method == :to_str #|| method == :to_int
-						return self.map{|x| x.public_send(method, *key)}
-					end
-				end
-			hash[message_type] = the_array
-			end
+        # enable access to the hash via
+        # ib.received[:MessageType].attribute
+        the_array = Array.new
+        def the_array.method_missing(method, *key)
+          unless method == :to_hash || method == :to_str #|| method == :to_int
+            return self.map{|x| x.public_send(method, *key)}
+          end
+        end
+      hash[message_type] = the_array
+      end
     end
 
     # Check if messages of given type were received at_least n times
@@ -255,9 +347,8 @@ module IB
     # Wait for specific condition(s) - given as callable/block, or
     # message type(s) - given as Symbol or [Symbol, times] pair.
     # Timeout after given time or 1 second.
-		#
-		# wait_for depends heavyly on Connection#received. If collection of messages through recieved
-		# is turned off, wait_for loses most of its functionality
+    # wait_for depends on Connection#received. If collection of messages through recieved
+    # is turned off, wait_for loses most of its functionality
 
     def wait_for *args, &block
       timeout = args.find { |arg| arg.is_a? Numeric } # extract timeout from args
@@ -276,6 +367,7 @@ module IB
     ### Working with Incoming messages from IB
 
 
+    protected
     def reader_running?
       @reader_running && @reader_thread && @reader_thread.alive?
     end
@@ -286,28 +378,26 @@ module IB
       begin
       while (time_left = time_out - Time.now) > 0
         # If socket is readable, process single incoming message
-        if  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
-          process_message if select [socket], nil, nil, time_left
-
-				# the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
-				# unfortunately, it raises Errors in windows environment
-        else
-          if select [socket], nil, nil, time_left
-            #  # Peek at the message from the socket; if it's blank then the
-            #  # server side of connection (TWS) has likely shut down.
-            socket_likely_shutdown = socket.recvmsg(100, Socket::MSG_PEEK)[0] == ""
-    				#
-            #  # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
+  # windows environment: just read the socket
+  if  RUBY_PLATFORM.match(/cygwin|mswin|mingw|bccwin|wince|emx/)
+    process_message if select [socket], nil, nil, time_left
+  else
+  # the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
+  # unfortunately, it raises Errors in windows environment
+    if select [socket], nil, nil, time_left
+            #  Peek at the message from the socket; if it's blank then the
+            #  server side of connection (TWS) has likely shut down.
+            socket_likely_shutdown = socket.recvmsg(100, ::Socket::MSG_PEEK)[0] == ""
+            # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
             process_message
-            #
-            #  # After processing, if socket has shut down we sleep for 100ms
-            #  # to avoid spinning in a tight loop. If the server side somehow
-            #  # comes back up (gets reconnedted), normal processing
-            #  # (without the 100ms wait) should happen.
+            # After processing, if socket has shut down we sleep for 100ms
+            # to avoid spinning in a tight loop. If the server side somehow
+            # comes back up (gets reconnedted), normal processing
+            # (without the 100ms wait) should happen.
             sleep(0.1) if socket_likely_shutdown
-          end
-        end
-      end
+    end  # if
+  end    # if
+      end      # while
       rescue Errno::ECONNRESET => e
         logger.fatal e.message
         if e.message =~ /Connection reset by peer/
@@ -323,7 +413,8 @@ module IB
     ### Sending Outgoing messages to IB
 
     # Send an outgoing message.
-		# returns the used request_id if appropiate, otherwise "true"
+    # returns the used request_id if appropiate, otherwise "true"
+    public
     def send_message what, *args
       message =
       case
@@ -336,26 +427,18 @@ module IB
       else
        error "Only able to send outgoing IB messages"
       end
-      error  "Not able to send messages, IB not connected!"  unless connected?
-			begin
+      error   "Not able to send messages, IB not connected!"  unless connected?
+      begin
       @message_lock.synchronize do
       message.send_to socket
       end
-      rescue IB::TransmissionError => e
-        logger.error "TRANSMISSION ERROR ... retrying after reconnect"
-        disconnect
-        connect
-        logger.fatal "Retry communications after reconnect"
+      rescue Errno::EPIPE
+        logger.error{ "Broken Pipe, trying to reconnect"  }
+        reconnect
         retry
-#        message.send_to socket
-			rescue Errno::EPIPE
-				logger.error{ "Broken Pipe, trying to reconnect"  }
-				disconnect
-				connect
-				retry
-			end
-			## return the transmitted message
-		  message.data[:request_id].presence || true
+      end
+      ## return the transmitted message
+      message.data[:request_id].presence || true
     end
 
     alias dispatch send_message # Legacy alias
@@ -364,23 +447,23 @@ module IB
     # Assigns client_id and order_id fields to placed order. Returns assigned order_id.
     def place_order order, contract
      # order.place contract, self  ## old
-      error "Unable to place order, next_local_id not known" unless next_local_id
-			error "local_id present. Order is already placed.  Do might use  modify insteed"  unless  order.local_id.nil?
+      error "Unable to place order, next_local_id not known" unless @next_local_id
+      error "local_id present. Order is already placed. Do might use modify insteed"  unless  order.local_id.nil?
       order.client_id = client_id
-      order.local_id = next_local_id
-      self.next_local_id += 1
+      order.local_id = @next_local_id
+      @next_local_id += 1
       order.placed_at = Time.now
-			modify_order order, contract
+      modify_order order, contract
     end
 
     # Modify Order (convenience wrapper for send_message :PlaceOrder). Returns order_id.
     def modify_order order, contract
- #      order.modify contract, self    ## old
-			error "Unable to modify order; local_id not specified" if order.local_id.nil?
+      error "Unable to modify order; local_id not specified" if order.local_id.nil?
       order.modified_at = Time.now
+      # if con_id is present, to place an order  use only con_id and exchange
       send_message :PlaceOrder,
-        :order => order,
-        :contract => contract,
+        :order => order.then{|y| y.contract =  nil; y},
+        :contract => contract.con_id.to_i > 0 ?  Contract.new( con_id: contract.con_id, exchange: contract.exchange || 'SMART' ) : contract,
         :local_id => order.local_id
       order.local_id  # return value
     end
@@ -395,88 +478,96 @@ module IB
     # Start reader thread that continuously reads messages from @socket in background.
     # If you don't start reader, you should manually poll @socket for messages
     # or use #process_messages(msec) API.
+    protected
     def start_reader
       if @reader_running
         @reader_thread
-      elsif connected?
+      else # connected?  # if called from try_connection, the connected state is not set
         begin
         Thread.abort_on_exception = true
         @reader_running = true
         @reader_thread = Thread.new { process_messages while @reader_running }
       rescue Errno::ECONNRESET => e
           logger.fatal e.message
-          error "Socket Error" , :reader
+          reconnect
         end
-      else
-        error "Could not start reader, not connected!", :reader
+#      else
+#        error "Could not start reader, not connected!", :reader, true
       end
     end
 
-		protected
-		# Message subscribers. Key is the message class to listen for.
-		# Value is a Hash of subscriber Procs, keyed by their subscription id.
-		# All subscriber Procs will be called with the message instance
-		# as an argument when a message of that type is received.
-		def subscribers
-			@subscribers ||= Hash.new { |hash, subs| hash[subs] = Hash.new }
-		end
+    # Message subscribers. Key is the message class to listen for.
+    # Value is a Hash of subscriber Procs, keyed by their subscription id.
+    # All subscriber Procs will be called with the message instance
+    # as an argument when a message of that type is received.
+    def subscribers
+      @subscribers ||= Hash.new { |hash, subs| hash[subs] = Hash.new }
+    end
 
-		# Process single incoming message (blocking!)
-		def process_message
-			logger.progname='IB::Connection#process_message' if logger.is_a?(Logger)
+    # Process single incoming message (blocking!)
+    def process_message
+      logger.progname='IB::Connection#process_message'
 
-			socket.decode_message(  socket.recieve_messages ) do | the_decoded_message |
-				#	puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
-				msg_id = the_decoded_message.shift.to_i
+      ## decode mesage is included throught `prepare_data
+#      socket.decode_message(  socket.receive_messages ) do | the_decoded_message |
+      @parser.each do | the_decoded_message |
+      # puts "THE deCODED MESSAGE #{ the_decoded_message.inspect}"
+      msg_id = the_decoded_message.shift.to_i
 
-				# Debug:
-				logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
+        # Debug:
+    #   logger.debug { "Got message #{msg_id} (#{Messages::Incoming::Classes[msg_id]})"}
 
-				# Create new instance of the appropriate message type,
-				# and have it read the message from socket.
-				# NB: Failure here usually means unsupported message type received
-        unless Messages::Incoming::Classes[msg_id]
-          logger.error { "Got unsupported message #{msg_id}" }
-         error "Something strange happened - Reader has to be restarted", :reader  if msg_id.to_i.zero?
-        else
-          msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        # Create new instance of the appropriate message type,
+        # and have it read the message from socket.
+        # NB: Failure here usually means unsupported message type received
+         
+      ## raising IB::TransmissionError if something went wrong.
+      ## the calling program has to initiate reconnection
+      logger.fatal { the_decoded_message } unless Messages::Incoming::Classes[msg_id]
+        error "Got unsupported message #{msg_id}", :reader  unless Messages::Incoming::Classes[msg_id]
+        error "Something strange happened - Reader has to be restarted" , :reader, true if msg_id.to_i.zero?
+        begin
+        msg = Messages::Incoming::Classes[msg_id].new(the_decoded_message)
+        rescue IB::TransmissionError 
+          logger.fatal { the_decoded_message } 
+          raise
         end
 
-				# Deliver message to all registered subscribers, alert if no subscribers
-				# Ruby 2.0 and above: Hashes are ordered.
-				# Thus first declared subscribers of a class are executed first
-				@subscribe_lock.synchronize do
-					subscribers[msg.class].each { |_, subscriber| subscriber.call(msg) }
-				end
-				logger.info { "No subscribers for message #{msg.class}!" } if subscribers[msg.class].empty?
+        # Deliver message to all registered subscribers, alert if no subscribers
+        # Ruby 2.0 and above: Hashes are ordered.
+        # Thus first declared subscribers of a class are executed first
+        @subscribe_lock.synchronize do
+          subscribers[msg.class].each { |_, subscriber| subscriber.call(msg) }
+        end
+        logger.info { "No subscribers for message #{msg.class}!" } if subscribers[msg.class].empty?
 
-				# Collect all received messages into a @received Hash
-				if @received
-					@receive_lock.synchronize do
-						received[msg.message_type] << msg
-					end
-				end
-			end
-		end
+        # Collect all received messages into a @received Hash
+        if @received
+          @receive_lock.synchronize do
+            received[msg.message_type] << msg
+          end
+        end
+      end
+    end
 
-		def random_id
-			rand 999999
-		end
+    def random_id
+      rand 999999
+    end
 
-		# Check if all given conditions are satisfied
-		def satisfied? *conditions
-			!conditions.empty? &&
-				conditions.inject(true) do |result, condition|
-				result && if condition.is_a?(Symbol)
-				received?(condition)
-			elsif condition.is_a?(Array)
-				received?(*condition)
-			elsif condition.respond_to?(:call)
-				condition.call
-			else
-				logger.error { "Unknown wait condition #{condition}" }
-			end
-		end
-	end
+    # Check if all given conditions are satisfied
+    def satisfied? *conditions
+      !conditions.empty? &&
+        conditions.inject(true) do |result, condition|
+        result && if condition.is_a?(Symbol)
+        received?(condition)
+      elsif condition.is_a?(Array)
+        received?(*condition)
+      elsif condition.respond_to?(:call)
+        condition.call
+      else
+        logger.error { "Unknown wait condition #{condition}" }
+      end
+    end
+  end
 end # class Connection
 end # module IB

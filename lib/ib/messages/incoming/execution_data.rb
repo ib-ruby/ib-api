@@ -28,9 +28,9 @@ module IB
 
       class ExecutionData
 
-	def load
-	  simple_load
-	end
+  def load
+    simple_load
+  end
 
         def contract
           @contract = IB::Contract.build @data[:contract]

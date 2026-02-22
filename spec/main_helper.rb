@@ -34,26 +34,44 @@ def should_not_log *patterns
 end
 
 
-## Connection helpers
-def establish_connection
+## Connection helper
+# In gateway-mode ( establish_connection :gateway ) Connection#Clients is initialized,
+#    open orders apperar Connection#Client#Orders
+#
+# otherwise anything works through the Connection#Received Hash
 
-		ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
-		if ib
-			ib.wait_for :ManagedAccounts, 5
+def establish_connection *plugins
+  ib =  nil
+  accounts = nil
+  if plugins.map( &:to_s ).then {|y| y.include?("managed-accounts") ||y.include?("process-orders") || y.include?('gateway')}
+    ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
+    ib.activate_plugin 'verify', 'process-orders', 'advanced-account'
+    ib.get_account_data
+    ib.request_open_orders
+    accounts = ib.clients.map(&:account)
+    puts "Accounts: #{accounts}"
 
-			raise "Unable to verify IB PAPER ACCOUNT" unless ib.received?(:ManagedAccounts)
+  else
+      ib = IB::Connection.new **OPTS[:connection].merge(:logger => mock_logger)
+      ib.received =  true
+      ib.try_connection!
+      ib.wait_for :ManagedAccounts, 5
 
-			received = ib.received[:ManagedAccounts].first.accounts_list.split(',')
-			unless received.include?(ACCOUNT)
-				close_connection
-				raise "Connected to wrong account #{received}, expected #{ACCOUNT}" 
-			end
-			puts "Performing tests with ClientId: #{ib.client_id}"
-			OPTS[:account_verified] = true
-		else
-			OPTS[:account_verified] =  false
-			raise "could not establish connection!"
-		end
+      raise "Unable to verify IB PAPER ACCOUNT" unless ib.received?(:ManagedAccounts)
+
+      accounts = ib.received[:ManagedAccounts].first.accounts_list.split(',')
+  end
+  if ib
+      unless accounts.include?(ACCOUNT)
+        close_connection
+        raise "Connected to wrong account ! Expected #{ACCOUNT} to be included in  #{accounts},  \n edit \'spec/config.yml\' " 
+      end
+      puts "Performing tests with ClientId: #{ib.client_id}"
+      OPTS[:account_verified] = true
+  else
+      OPTS[:account_verified] =  false
+      raise "could not establish connection!"
+  end
 end
 
 
@@ -61,21 +79,18 @@ end
 
 # Clear logs and message collector. Output may be silenced.
 def clean_connection
-	ib =  IB::Connection.current
-	if ib
-		if OPTS[:verbose]
-			puts ib.received.map { |type, msg| [" #{type}:", msg.map(&:to_human)] }
-			puts " Logs:", log_entries if @stdout
-		end
-		@stdout.string = '' if @stdout
-		ib.clear_received 
-	end
+  ib =  IB::Connection.current
+  if ib
+    if OPTS[:verbose]
+      puts ib.received.map { |type, msg| [" #{type}:", msg.map(&:to_human)] }
+      puts " Logs:", log_entries if @stdout
+    end
+    @stdout.string = '' if @stdout
+    ib.clear_received
+  end
 end
 
 def close_connection
-	ib =  IB::Connection.current
-	if ib
-		clean_connection 
-		ib.close
-	end
+  clean_connection
+  IB::Connection.current.disconnect! unless IB::Connection.current.workflow_state == 'disconnected'
 end

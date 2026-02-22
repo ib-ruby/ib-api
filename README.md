@@ -1,7 +1,10 @@
 # ib-api
 Ruby interface to Interactive Brokers' TWS API 
 
-Reimplementation of the basic functions of ib-ruby
+Reimplementation of ib-ruby
+
+---
+__STATUS: Gem-Release is still pending
 
 ---
 
@@ -13,9 +16,7 @@ Try the V10 branch  (TWS V 10.19 and above)
 __Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__  (_work in progress_)
 
 ----
-`ib-ruby`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
-
-`ib-api`    provides a simple interface to low-level TWS API-calls.  
+`ib-api`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
 
 ----
 
@@ -25,7 +26,7 @@ Install in the usual way
 $ gem install ib-api
 ```
 
-In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `recieved-Array`.
+In its plain vanilla usage, it just exchanges messages with the TWS. Any response is stored in the `received-array`.
 
 It needs just a few lines of code to place an order
 
@@ -54,53 +55,43 @@ puts ib.recieved[:OrderStatus].to_human
 
 ```
 
-##### User-specific Actions
-Besides storing any TWS-response in an array, callbacks are implemented.
+## Plugins
 
-The user subscribes to a certain response and defines the actions in a typically ruby manner. These actions
-can be defined globaly
-```ruby
-ib =  IB::Connection.new do |tws|
-      # Subscribe to TWS alerts/errors and order-related messages
-	tws.subscribe(:Alert, :OpenOrder, :OrderStatus, :OpenOrderEnd) { |msg| puts msg.to_human }
-     end
-
-```
-
-or occationally
+**IB-API** ships with simple plugins to facilitate automations 
 
 ```ruby
-        # first define actions
-	q =  Queue.new    # Initialize as Queue
-	request_id = nil  # declare variable
-	a = ib.subscribe(:Alert, :ContractData, :ContractDataEnd ) do |msg| 
-		case msg
-		when Messages::Incoming::Alert
-			q.close if msg.code == 200   # No security found 
-		when Messages::Incoming::ContractData  # security returned
-			q.push msg.contract if msg.request_id == request_id
-	        when Messages::Incoming::ContractDataEnd
-		       q.close if msg.request_id == request_id
-		end  # case
-	end
-        # perform request
-        request_id = ib.send_message :RequestContractData, :contract => Stock.new(symbol: 'T')
-        
-	while contract = q.pop 
-	  puts contract.as_table 
-	end
-┌───────┬────────┬──────────┬──────────┬────────┬────────────┬───────────────┬───────┬────────┬──────────┐
-│       │ symbol │ con_id   │ exchange │ expiry │ multiplier │ trading-class │ right │ strike │ currency │
-╞═══════╪════════╪══════════╪══════════╪════════╪════════════╪═══════════════╪═══════╪════════╪══════════╡
-│ Stock │ T      │ 37018770 │  SMART   │        │            │       T       │       │        │   USD    │
-└───────┴────────┴──────────┴──────────┴────────┴────────────┴───────────────┴───────┴────────┴──────────┘
-  
-        ib.unsubscribe a    # release subscriptions
-         
+require 'ib-api'
+# connect with default parameters 
+ib =  IB::Connection.new do | c |
+  c.activate_plugin "verify"
+end
+
+g =  IB::Stock.new symbol: 'GE'
+puts g.verify.first.attributes
+{:symbol=>"GE", :sec_type=>"STK", :last_trading_day=>"", :strike=>0.0, :right=>"", :exchange=>"SMART", :currency=>"USD", :local_symbol=>"GE", :trading_class=>"GE", :con_id=>498843743, :multiplier=>0, :primary_exchange=>"NYSE", }
 ```
+
+Currently implemented plugins
+
+* connection-tools: ensure that a connection is established and active
+* verify:  get contract details from the tws
+* symbols: use predefined symbols 
+* managed-accounts: fetch and organize account- and portfoliovalues
+* advanced-account: perform account-based previewing, opening, modifying and closing of Positions
+* process-orders: account-based bookkeeping of orders
+* auto-adjust: properly adjust the orderprice to the next valid min-tick of the contract
+* market-price: fetch the current market-price of a contract
+* eod:  retrieve EOD-Data for the given contract
+* greeks: read current option greeks
+* roll: easy rolling of futures and options
+* option-chain: build option-chains for given strikes and expiries 
+* spread-prototypes:  create limit, stop, market, etc. orders through prototypes
+* probability-of-expiring: calculate the probability of expiring for the option-contract
+
+
 ## Minimal TWS-Version
 
-`ib-api` is tested via the _stable IB-Gateway_ (Version 10.12) and should work with any current tws-installation. 
+`ib-api` is tested via the _stable IB-Gateway_ (Version 10.19) and should work with any current tws-installation. 
 
 ## Tests
 

@@ -42,4 +42,12 @@ Gem::Specification.new do |spec|
 	spec.add_dependency 'activemodel'
 	spec.add_dependency 'ox'
 	spec.add_dependency 'terminal-table'
+	spec.add_dependency 'zeitwerk'
+  spec.add_dependency 'workflow', '~> 3.1'
+#  spec.add_dependency 'dry-schema'
+#  spec.add_dependency 'dry-struct'
+#  spec.add_dependency 'dry-core'
+#  spec.add_dependency 'dry-configurable'
+#  spec.add_dependency 'dry-monads'  # future use
+
 end
