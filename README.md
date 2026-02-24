@@ -4,8 +4,9 @@ Ruby interface to Interactive Brokers' TWS API
 Reimplementation of ib-ruby
 
 ---
-__STATUS: Gem-Release is still pending
+__VERSION 10__
 
+You have to switch from "require 'ib-extentions', 'ib-symbols'," etc.  to "activate_pulgin :name"
 ---
 
 *    Zeitwerk integration.  
