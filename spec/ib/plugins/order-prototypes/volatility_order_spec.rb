@@ -1,5 +1,7 @@
 require 'main_helper'
 
+##  2026/2/22   - on a sunday no data are received from the tws
+
 RSpec.describe IB::Order do
 
   before(:all) do
@@ -13,8 +15,8 @@ RSpec.describe IB::Order do
 
   context 'Volatility Order Prototype' do
 
-    Given( :strike ){ 2000 }
-    Given( :option ){ IB::Symbols::Options.rutw.merge( strike: strike, expiry: IB::Future.next_expiry[0..-3] ).verify.first }
+    Given( :strike ){ 2600 }
+    Given( :option ){ IB::Symbols::Options.rut.merge( strike: strike, expiry: IB::Future.next_expiry[0..-3] ).verify.first }
 
     When( :order ){ IB::Volatility.order size: -1, volatility: 0.2, contract: option, account: ACCOUNT }
     it{ puts order.as_table }

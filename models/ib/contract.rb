@@ -26,7 +26,7 @@ module IB
       :local_symbol => :s, # Local exchange symbol of the underlying asset
       :trading_class => :s,
       # Future/option contract multiplier (only needed when multiple possibilities exist)
-      :multiplier => :f,
+      :multiplier => :d,
 
       :strike => :f, # double: The strike price.
       :expiry => :s, # The expiration date. Use the format YYYYMM or YYYYMMDD
@@ -86,9 +86,9 @@ module IB
   #  alias combo_legs_description= legs_description=
 
   # for Delta-Neutral Combo Contracts
-#      has_one :underlying
-#    alias under_comp underlying
-#    alias under_comp= underlying=
+      has_one :underlying
+    alias under_comp underlying
+    alias under_comp= underlying=
 
 
       ### Extra validations

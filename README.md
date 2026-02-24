@@ -8,7 +8,6 @@ __STATUS: Gem-Release is still pending
 
 ---
 
-Try the V10 branch  (TWS V 10.19 and above)   
 *    Zeitwerk integration.  
 *    Plugin's to ease automations
 ---
@@ -91,7 +90,7 @@ Currently implemented plugins
 
 ## Minimal TWS-Version
 
-`ib-api` is tested via the _stable IB-Gateway_ (Version 10.19) and should work with any current tws-installation. 
+`ib-api` is tested via the _stable IB-Gateway_ (Version 10.33) and should work with any current tws-installation. 
 
 ## Tests
 

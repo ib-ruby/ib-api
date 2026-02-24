@@ -9,7 +9,7 @@ RSpec.describe ClassExtensions do
   end
   context "Time-Extensions" do
     Given( :the_time ){ Time.now }
-    Then{ the_time.to_ib == the_time.strftime("%Y%m%d %H:%M:%S") }
+    Then{ the_time.to_ib == the_time.strftime("%Y%m%d-%H:%M:%S") }
   end
 
   # Numeric positive Values are true, zero and below is false

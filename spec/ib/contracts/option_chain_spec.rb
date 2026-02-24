@@ -33,6 +33,7 @@ RSpec.describe 'IB::Contract.option_chain' , #:if => :us_trading_hours,
 
   before(:all) do
     establish_connection
+      IB::Connection.current.activate_plugin 'symbols', 'option-chain'
       IB::Connection.current.subscribe( :Alert ){|y|  puts y.to_human }
   end
 
@@ -50,7 +51,7 @@ RSpec.describe 'IB::Contract.option_chain' , #:if => :us_trading_hours,
   end
   context 'read complete Option chain' do
 
-   subject{ IB::Symbols::Stocks.wfc.option_chain( ref_price: 45 ) }
+   subject{ IB::Symbols::Stocks.wfc.option_chain( ref_price: 85 ) }
 
     it {is_expected.to be_a Hash }
     it "has numeric keys" do
@@ -62,28 +63,28 @@ RSpec.describe 'IB::Contract.option_chain' , #:if => :us_trading_hours,
   end   # context
 
   context  'itm put options'  do
-   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :put, ref_price: 40, count: 6) }
+   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :put, ref_price: 80, count: 6) }
     it_behaves_like 'option_chain'
     it_behaves_like 'otm/itm_chain'
   end
   context  'otm put options'  do
-   subject{ IB::Symbols::Stocks.wfc.otm_options( right: :put, ref_price: 40, count: 6) }
+   subject{ IB::Symbols::Stocks.wfc.otm_options( right: :put, ref_price: 80, count: 6) }
     it_behaves_like 'option_chain'
     it_behaves_like 'otm/itm_chain'
   end
   context  'itm call options'  do
-   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :call, ref_price: 40, count: 6) }
+   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :call, ref_price: 80, count: 6) }
     it_behaves_like 'option_chain'
     it_behaves_like 'otm/itm_chain'
   end
   context  'otm call options'  do
-   subject{ IB::Symbols::Stocks.wfc.otm_options( right: :call, ref_price: 40, count: 6) }
+   subject{ IB::Symbols::Stocks.wfc.otm_options( right: :call, ref_price: 80, count: 6) }
     it_behaves_like 'option_chain'
     it_behaves_like 'otm/itm_chain'
   end
 
   context  'itm put options sorted by expiry'  do
-   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :put, ref_price: 40, count: 6, sort: :expiry) }
+   subject{ IB::Symbols::Stocks.wfc.itm_options( right: :put, ref_price: 80, count: 6, sort: :expiry) }
     it "has numeric keys" do
       subject.keys.each{ |y| expect(y).to be_a Integer }
     end

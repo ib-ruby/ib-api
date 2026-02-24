@@ -156,6 +156,8 @@ transmission of available managed-accounts by the tws.
      end
      try_connection!
      @accounts = []
+     # Ensure reader thread is running to process messages
+     start_reader unless reader_running?
      # in case of advisor-accounts:  proper initialiastion of account records
       rec_id = subscribe( :ReceiveFA )  do |msg|
         msg.accounts.each do |a|
@@ -174,7 +176,18 @@ transmission of available managed-accounts by the tws.
       # single accounts return an alert message
       error_id =  subscribe( :Alert ){|x| queue.push(false) if x.code == 321 }
 
+      # Add timeout to prevent deadlock - wait up to 10 seconds for response
+      timeout_thread = Thread.new { sleep 10; queue.push(:timeout) unless queue.closed? }
       result = queue.pop
+      timeout_thread.kill if timeout_thread.alive?
+      timeout_thread.join rescue nil
+
+      if result == :timeout
+        error "Timeout waiting for account initialization", :reader
+        unsubscribe man_id, rec_id, error_id
+        raise IB::TransmissionError, "Timeout waiting for ManagedAccounts/ReceiveFA messages"
+      end
+
       unsubscribe man_id, rec_id, error_id
 
       @accounts
@@ -247,6 +260,10 @@ transmission of available managed-accounts by the tws.
 
   class Connection
     include ManagedAccounts
+    # Note: Automatic initialization may need to be removed if the program becomes unstable.
+    # This automatic call to activate_managed_accounts! can cause race conditions and deadlocks,
+    # particularly when the plugin is loaded mid-session. Consider removing this automatic
+    # initialization and requiring users to explicitly call initialize_managed_accounts! when needed.
     current.activate_managed_accounts!
   rescue  Workflow::NoTransitionAllowed => e
     if current.workflow_state == :ready
