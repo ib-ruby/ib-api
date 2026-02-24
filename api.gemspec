@@ -8,10 +8,12 @@ Gem::Specification.new do |spec|
   spec.version       = IB::VERSION
   spec.authors       = ["Hartmut Bischoff"]
   spec.email         = ["topofocus@gmail.com"]
+  spec.license       = "MIT"
 
   spec.summary       = %q{Ruby Implementation of the Interactive Brokers TWS API}
   spec.description   = %q{Ruby Implementation of the Interactive Brokers TWS API}
   spec.homepage      = "https://github.com/ib-ruby"
+  spec.required_ruby_version = ">= 3.0"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
@@ -35,14 +37,14 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-	spec.add_dependency 'activesupport', '>= 6.0'
-	spec.add_dependency 'activemodel'
-	spec.add_dependency 'ox'
-	spec.add_dependency 'terminal-table'
-	spec.add_dependency 'zeitwerk'
+  spec.add_dependency 'activesupport', '~> 7.0'
+  spec.add_dependency 'activemodel', '~> 7.0'
+  spec.add_dependency 'ox', '~> 2.14'
+  spec.add_dependency 'terminal-table', '~> 3.0'
+  spec.add_dependency 'zeitwerk', '~> 2.6'
   spec.add_dependency 'workflow', '~> 3.1'
 
 end

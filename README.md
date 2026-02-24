@@ -6,14 +6,16 @@ Reimplementation of ib-ruby
 ---
 __VERSION 10__
 
-You have to switch from "require 'ib-extentions', 'ib-symbols'," etc.  to "activate_pulgin :name"
+You have to switch from "require 'ib-extentions', 'ib-symbols'," etc.  to "activate_plugin :name"
 ---
+
+**Whats new**
 
 *    Zeitwerk integration.  
 *    Plugin's to ease automations
 ---
 
-__Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__  (_work in progress_)
+__Documentation: [https://ib-ruby.github.io/ib-doc/](https://ib-ruby.github.io/ib-doc/)__
 
 ----
 `ib-api`   offers a modular access to the TWS-API-Interface of Interactive Brokers.
