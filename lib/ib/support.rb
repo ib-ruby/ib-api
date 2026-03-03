@@ -28,9 +28,15 @@ module IB
 
     end
     def read_decimal
-      i= self.shift  rescue nil
-      i = i.to_d unless i.blank?
-      i.is_a?(Numeric)  && i < IB::TWS_MAX ?  i : nil  # return nil, if a very large number is transmitted
+      i = self.shift rescue nil
+      return nil if i.blank?
+      d = i.to_d
+      return nil unless d.is_a?(Numeric) && d < IB::TWS_MAX
+      if d == d.to_i
+        d.to_i
+      else
+        d.to_f
+      end
     end
 
     alias read_decimal_max read_decimal

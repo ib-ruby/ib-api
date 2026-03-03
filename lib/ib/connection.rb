@@ -385,16 +385,17 @@ module IB
   # the following  checks for shutdown of TWS side; ensures we don't run in a spin loop.
   # unfortunately, it raises Errors in windows environment
     if select [socket], nil, nil, time_left
-            #  Peek at the message from the socket; if it's blank then the
-            #  server side of connection (TWS) has likely shut down.
-            socket_likely_shutdown = socket.recvmsg(100, ::Socket::MSG_PEEK)[0] == ""
-            # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
-            process_message
-            # After processing, if socket has shut down we sleep for 100ms
-            # to avoid spinning in a tight loop. If the server side somehow
-            # comes back up (gets reconnedted), normal processing
-            # (without the 100ms wait) should happen.
-            sleep(0.1) if socket_likely_shutdown
+      # Peek at the message from the socket; if it's blank or recvmsg returns nil
+      # (Ruby 3.4+ behavior), the server side of connection (TWS) has likely shut down.
+      peek_result = socket.recvmsg(100, ::Socket::MSG_PEEK)
+      socket_likely_shutdown = peek_result.nil? || peek_result[0] == ""
+      # We go ahead process messages regardless (a no-op if socket_likely_shutdown).
+      process_message
+      # After processing, if socket has shut down we sleep for 100ms
+      # to avoid spinning in a tight loop. If the server side somehow
+      # comes back up (gets reconnedted), normal processing
+      # (without the 100ms wait) should happen.
+      sleep(0.1) if socket_likely_shutdown
     end  # if
   end    # if
       end      # while
@@ -483,16 +484,29 @@ module IB
       if @reader_running
         @reader_thread
       else # connected?  # if called from try_connection, the connected state is not set
-        begin
         Thread.abort_on_exception = true
         @reader_running = true
-        @reader_thread = Thread.new { process_messages while @reader_running }
-      rescue Errno::ECONNRESET => e
-          logger.fatal e.message
-          reconnect
+        @reader_thread = Thread.new do
+          begin
+            process_messages while @reader_running
+          rescue NoMethodError => e
+            # this error is raised if the socket is closed (recvfrom returns nil)
+            # a daily reset of the TWS is a typical reason for this
+            if e.message.include?("undefined method '[]' for nil")
+              logger.info "Socket read error. Connection likely closed by TWS. Reconnecting."
+              @reader_running = false
+              Thread.new{ reconnect }
+            else
+              # re-raise other NoMethodErrors
+              raise e
+            end
+          rescue Errno::ECONNRESET => e
+            logger.fatal "Connection reset. Reconnecting."
+            logger.fatal e.message
+            @reader_running = false
+            Thread.new{ reconnect }
+          end
         end
-#      else
-#        error "Could not start reader, not connected!", :reader, true
       end
     end
 
