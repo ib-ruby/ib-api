@@ -161,7 +161,19 @@ module IB
         logger.info { "Got next valid order id: #{@next_local_id}." }
       end
 
-      self.socket = IB::Socket.open(@host, @port)  # raises  Errno::ECONNREFUSED  if no connection is possible
+			retries = 5
+			begin
+				self.socket = IB::Socket.open(@host, @port)
+			rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => e
+				if (retries -= 1) > 0
+					logger.warn "Connection refused, retrying in 10 seconds (#{retries} retries left)..."
+					sleep 10
+					retry
+				else
+					logger.error "Connection failed after multiple retries: #{e.message}"
+					raise
+				end
+			end
       socket.initialising_handshake
       @parser =  RawMessageParser.new socket
       @parser.each do | the_message |
@@ -359,7 +371,7 @@ module IB
         if reader_running?
           sleep 0.05
         else
-          process_messages 50
+          process_messages
         end
       end
     end
@@ -372,7 +384,7 @@ module IB
       @reader_running && @reader_thread && @reader_thread.alive?
     end
 
-    # Process incoming messages during *poll_time* (200) msecs, nonblocking
+    # Process incoming messages during *poll_time* (50) msecs, nonblocking
     def process_messages poll_time = 50 # in msec
       time_out = Time.now + poll_time/1000.0
       begin
@@ -394,8 +406,8 @@ module IB
       # After processing, if socket has shut down we sleep for 100ms
       # to avoid spinning in a tight loop. If the server side somehow
       # comes back up (gets reconnedted), normal processing
-      # (without the 100ms wait) should happen.
-      sleep(0.1) if socket_likely_shutdown
+      # (without the 1s wait) should happen.
+      sleep(1) if socket_likely_shutdown
     end  # if
   end    # if
       end      # while
