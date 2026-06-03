@@ -28,9 +28,17 @@ raises an IB::Error in case of a conflict with existing class-names
   @@dir= Pathname.new File.expand_path("../../../../symbols/", __FILE__ )
   def self.set_origin directory
     p = Pathname.new directory
-    @@dir = p if p.directory?
-  rescue Errno::ENOENT
-    error "Setting up origin for symbol-files --> Directory (#{directory}) does not exist"
+    if p.directory?
+      @@dir = p
+    else
+      begin
+        p.mkpath
+        Connection.current.logger.warn "Setting up origin for symbol-files --> Created directory (#{p})"
+        @@dir = p
+      rescue Errno::EACCES, Errno::ENOENT
+        exit 1, "Exiting, because the specified directory for symbols (Watchlists) [#{p}] could not be created. Modify this setting and start again."
+      end
+    end
   end
 
   def self.allocate_collection name  # name might be a string or a symbol

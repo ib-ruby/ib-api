@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ib-api (10.19.1)
+    ib-api (10.33.1)
       activemodel
       activesupport (>= 6.0)
       ox
@@ -31,7 +31,7 @@ GEM
     connection_pool (2.4.1)
     diff-lcs (1.5.1)
     drb (2.2.1)
-    ffi (1.17.0-x86_64-linux-gnu)
+    ffi (1.17.3-x86_64-linux-gnu)
     formatador (1.1.0)
     given_core (3.8.2)
       sorcerer (>= 0.3.7)

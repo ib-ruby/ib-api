@@ -68,8 +68,8 @@ module IB
         event :disconnect,                  transitions_to: :disconnected
       end
 
-       on_transition do |from, to, triggering_event, *event_args|
-         logger.warn{ "Workflow:: #{workflow_state} -> #{to}" }
+       on_transition do |_from, to, _triggering_event, *_event_args|
+         logger.warn { "Workflow:: #{workflow_state} -> #{to}" }
        end
     end
 
@@ -127,13 +127,13 @@ module IB
     # connect if not connected
     def update_next_order_id
       q = Queue.new
-      subscription = subscribe(:NextValidId){ |msg| q.push msg.local_id }
+      subscription = subscribe(:NextValidId) { |msg| q.push msg.local_id }
       try_connection! unless connected?
       send_message :RequestIds
       th = Thread.new { sleep 5; q.close }
       @next_local_id = q.pop
       if q.closed?
-         error "Could not get NextValidID", :reader
+         error 'Could not get NextValidID', :reader
       else
         th.kill
       end
@@ -147,7 +147,9 @@ module IB
     end
     #
     ### Event  –  call through  Connection-object.try_connection!
-    protected
+
+  protected
+
     def try_connection
       logger.progname='IB::Connection#Event:TryConnection'
       if connected?
@@ -161,10 +163,23 @@ module IB
         logger.info { "Got next valid order id: #{@next_local_id}." }
       end
 
-			retries = 5
+			retries = 360   # 1 h 
 			begin
 				self.socket = IB::Socket.open(@host, @port)
-			rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => e
+        socket.initialising_handshake
+        @parser =  RawMessageParser.new socket
+        @parser.each do | the_message |
+  #      socket.decode_message( socket.receive_messages ) do  | the_message |
+                  #puts "TheMessage :: #{the_message.inspect}" 
+          @server_version =  the_message.shift.to_i.freeze
+          error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
+
+          @remote_connect_time = DateTime.parse the_message.shift.freeze
+          @local_connect_time = Time.now.freeze
+          @connected = true
+          break  #  only receive one message
+        end
+			rescue Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EHOSTUNREACH => e
 				if (retries -= 1) > 0
 					logger.warn "Connection refused, retrying in 10 seconds (#{retries} retries left)..."
 					sleep 10
@@ -173,19 +188,6 @@ module IB
 					logger.error "Connection failed after multiple retries: #{e.message}"
 					raise
 				end
-			end
-      socket.initialising_handshake
-      @parser =  RawMessageParser.new socket
-      @parser.each do | the_message |
-#      socket.decode_message( socket.receive_messages ) do  | the_message |
-                #puts "TheMessage :: #{the_message.inspect}" 
-        @server_version =  the_message.shift.to_i.freeze
-        error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
-
-        @remote_connect_time = DateTime.parse the_message.shift.freeze
-        @local_connect_time = Time.now.freeze
-        @connected = true
-        break  #  only receive one message
       end
 
       # V100 initial handshake

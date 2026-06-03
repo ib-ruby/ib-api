@@ -52,7 +52,7 @@ Provides
           z= subscribe( :CurrentTime ) { q.push true }
           count = 0
           retry
-        rescue Workflow::NoTransitionAllowed 
+        rescue Workflow::NoTransitionAllowed
           logger.warn{ "Reconnect is not possible, actual state: #{workflow_state} cannot be reached after disconnection"}
           raise
         end
@@ -60,32 +60,78 @@ Provides
       unsubscribe z
       result #  return value
     end
+  end
 
+  class Connection
+    include ConnectionTools
+
+    # Self-contained connection logic (based on the original base method)
+    # without internal retry — the plugin's try_connection is the sole retry mechanism.
+    def _do_try_connection
+      logger.progname='IB::Connection#Event:TryConnection'
+      if connected?
+        error  "Already connected!"
+        return
+      end
+      # TWS always sends NextValidId message at connect - subscribe saves this id
+      subscribe(:NextValidId) do |msg|
+        logger.progname = "Connection"
+        @next_local_id = msg.local_id
+        logger.info { "Got next valid order id: #{@next_local_id}." }
+      end
+
+      self.socket = IB::Socket.open(@host, @port)
+      socket.initialising_handshake
+      @parser =  RawMessageParser.new socket
+      @parser.each do | the_message |
+        @server_version =  the_message.shift.to_i.freeze
+        error "ServerVersion does not match  #{@server_version} <--> #{MAX_CLIENT_VER}" if @server_version != MAX_CLIENT_VER
+
+        @remote_connect_time = DateTime.parse the_message.shift.freeze
+        @local_connect_time = Time.now.freeze
+        @connected = true
+        break  #  only receive one message
+      end
+
+      # V100 initial handshake
+      # Parameters borrowed from the python client
+      socket.send_messages 71, 2, @client_id, @optional_capacities
+      logger.fatal{ "Connected to server, version: #{@server_version}, " +
+                 "using client-id: #{client_id},\n   connection time: " +
+                 "#{@local_connect_time} local, " +
+                 "#{@remote_connect_time} remote." }
+      start_reader
+    rescue IB::TransmissionError => e
+      logger.fatal "Transmission Error: Retrying establishing the connection"
+      logger.fatal  e.msg
+      disconnect!
+      try_connection!
+    end
+
+    # Enhanced try_connection with built-in retry logic.
+    # This method OVERRIDES the base Connection#try_connection.
+    # It is the sole retry mechanism — _do_try_connection has no internal retry.
     #
-    # Tries to connect to the api. If the connection could not be established, waits
-    # 10 sec. or one minute and reconnects.
-    #
-    # Unsuccessful connecting attemps are logged.
-    #
+    # Up to 100 attempts: first 50 retries every 10 seconds, then every 60 seconds.
+    # Subscriptions must be placed after this call returns.
     #
     protected
     def try_connection maximal_count_of_retry=100
-
-      i= -1
+      i = -1
       begin
-        _try_connection
-      rescue  Errno::ECONNREFUSED => e
-        i+=1
+        _do_try_connection
+      rescue Errno::ECONNREFUSED => e
+        i += 1
         if i < maximal_count_of_retry
           if i.zero?
             logger.info 'No TWS!'
           else
-            logger.info {"No TWS        Retry #{i}/ #{maximal_count_of_retry} " }
+            logger.info { "No TWS        Retry #{i}/ #{maximal_count_of_retry} " }
           end
-          sleep i<50 ? 10 : 60   # Die ersten 50 Versuche im 10 Sekunden Abstand, danach 1 Min.
+          sleep i < 50 ? 10 : 60
           retry
         else
-          logger.info { "Giving up!!"  }
+          logger.info { "Giving up!!" }
           return false
         end
       rescue Errno::EHOSTUNREACH => e
@@ -97,8 +143,8 @@ Provides
       rescue IB::Error => e
         logger.info e
       end
-      self #  return connection
-    end # def
+      self
+    end
 
     def submit_to_alert_1102
       current.subscribe( :Alert ) do
@@ -109,14 +155,7 @@ Provides
           current.check_connection
         end
       end
-
     end
   end
-
-  class Connection
-    alias _try_connection try_connection
-    include ConnectionTools
-  end
-
 
 end
